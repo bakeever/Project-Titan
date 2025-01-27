@@ -4,7 +4,7 @@ HAR: Hyperion-Autonomous-Rover
 Developed in part for ENGR 385 - Integration 2 - Spring 2025 - Colorado Mesa University
 
 # Overview
-Section 1: Arduino code  
+Section 1: Arduino code & wiring schematic  
 Section 2: Solidworks assembly  
 Section 3: Website source code
 
