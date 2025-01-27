@@ -1,7 +1,7 @@
 # Project HAR - Autonomous Rover Project
 HAR: Hyperion-Autonomous-Rover
 
-Developed in part for ENGR 385 - Integration 2 - Spring 2025 - Colorado Mesa University
+Developed by Bryce Keever and Benjamin Costello in part for ENGR 385 - Integration 2 - Spring 2025 - Colorado Mesa University
 
 # Overview
 Section 1: Arduino code & wiring schematic  
