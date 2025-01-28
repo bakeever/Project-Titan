@@ -1,14 +1,36 @@
-# Project HAR - Autonomous Rover Project
-HAR: Hyperion-Autonomous-Rover
+# Project HAR - Hyperion Autonomous Rover
 
-Developed by Bryce Keever and Benjamin Costello in part for ENGR 385 - Integration 2 - Spring 2025 - Colorado Mesa University
+**Developed by Bryce Keever and Benjamin Costello**  
+ENGR 385 - Integration 2 | Spring 2025  
+Colorado Mesa University  
 
-# Overview
-Section 1: Arduino code & wiring schematic  
-Section 2: Solidworks assembly  
-Section 3: Website source code
+## Overview
 
-# Functionality
-Utilizes 2 Arduino MEGAs - 1 as the brain for the rover & 1 as the brain of the handheld control console.
+Project HAR (Hyperion Autonomous Rover) is an advanced autonomous rover designed and developed to demonstrate integrated engineering concepts, including mechatronics, software development, and system integration. This project is part of the ENGR 385 - Integration 2 course at Colorado Mesa University. It serves as a comprehensive exploration of practical engineering applications, combining modern hardware, software, and design methodologies to create a fully functional autonomous system.
 
-# BOM
+The rover utilizes two Arduino MEGA microcontrollers:
+- **Rover Control Unit:** Manages autonomous navigation, sensor integration, and decision-making.
+- **Handheld Control Console:** Provides manual control and telemetry monitoring capabilities.
+
+### Features
+- **Arduino Programming:** Custom code for sensor input, motor control, and communication protocols.
+- **Mechanical Design:** A SolidWorks assembly for the rover chassis and components.
+- **Human Interface:** A handheld console for monitoring and operation, including live sensor data visualization.
+- **Obstacle Detection:** Utilizes HC-SR04 ultrasonic distance sensors for obstacle detection and avoidance.
+- **Precise Movement:** Driven by precision-controlled motors.
+- **Control Console:** An intuitive handheld device for manual operation and telemetry feedback.
+
+By leveraging a multidisciplinary approach, Project HAR demonstrates the practical integration of hardware design, embedded systems, and control strategies, providing a scalable foundation for future autonomous systems research and development.
+
+## Bill of Materials (BOM)
+| **Component**          | **Description**                                        | **Quantity** |
+|-------------------------|--------------------------------------------------------|--------------|
+| Arduino MEGA           | Microcontroller for the rover brain                   | 1            |
+| Arduino MEGA           | Microcontroller for the handheld control console      | 1            |
+| Wiring Kit             | Wiring for connections                                | Various      |
+| HC-SR04 Ultrasonic Sensors | Ultrasonic distance sensors for obstacle detection | 3          |
+| Motors                 | Motors for rover movement                             | TBD          |
+| Power Supply           | 5V DC battery pack                                    | 1            |
+| Chassis Components     | Mechanical parts for rover structure                  | TBD          |
+| Wheels/Tracks          | Mobility components                                   | TBD          |
+| Miscellaneous          | Other components and accessories                      | TBD          |
