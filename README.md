@@ -1,4 +1,4 @@
-# Project Titan - Configurations Hyperion & Theia
+# Project TITAN - Configurations Hyperion & Theia
 
 **Developed by Bryce Keever and Benjamin Costello**  
 ENGR 385 - Integration 2 | Spring 2025  
@@ -6,9 +6,9 @@ Colorado Mesa University
 
 ## Overview
 
-Project Titan is an advanced autonomous rover designed and developed to demonstrate integrated engineering concepts, including mechatronics, software development, and system integration. This project is part of the ENGR 385 - Integration 2 course at Colorado Mesa University. It serves as a comprehensive exploration of practical engineering applications, combining modern hardware, software, and design methodologies to create a fully functional autonomous system.
+Project TITAN is an advanced autonomous rover designed and developed to demonstrate integrated engineering concepts, including mechatronics, software development, and system integration. This project is part of the ENGR 385 - Integration 2 course at Colorado Mesa University. It serves as a comprehensive exploration of practical engineering applications, combining modern hardware, software, and design methodologies to create a fully functional autonomous system.
 
-The rover utilizes two Arduino MEGA microcontrollers:
+Each rover utilizes two Arduino MEGA microcontrollers:
 - **Rover Control Unit:** Manages autonomous navigation, sensor integration, and decision-making.
 - **Handheld Control Console:** Provides manual control and telemetry monitoring capabilities.
 
@@ -20,7 +20,7 @@ The rover utilizes two Arduino MEGA microcontrollers:
 - **Precise Movement:** Driven by precision-controlled motors.
 - **Control Console:** An intuitive handheld device for manual operation and telemetry feedback.
 
-By leveraging a multidisciplinary approach, Project HAR demonstrates the practical integration of hardware design, embedded systems, and control strategies, providing a scalable foundation for future autonomous systems research and development.
+By leveraging a multidisciplinary approach, Project TITAN demonstrates the practical integration of hardware design, embedded systems, and control strategies, providing a scalable foundation for future autonomous systems research and development.
 
 ## Bill of Materials (BOM)
 | **Component**          | **Description**                                        | **Quantity** |
