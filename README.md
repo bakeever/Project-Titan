@@ -1,4 +1,4 @@
-# Project HAR - Hyperion Autonomous Rover
+# Project Titan - Configurations Hyperion & Theia
 
 **Developed by Bryce Keever and Benjamin Costello**  
 ENGR 385 - Integration 2 | Spring 2025  
@@ -6,7 +6,7 @@ Colorado Mesa University
 
 ## Overview
 
-Project HAR (Hyperion Autonomous Rover) is an advanced autonomous rover designed and developed to demonstrate integrated engineering concepts, including mechatronics, software development, and system integration. This project is part of the ENGR 385 - Integration 2 course at Colorado Mesa University. It serves as a comprehensive exploration of practical engineering applications, combining modern hardware, software, and design methodologies to create a fully functional autonomous system.
+Project Titan is an advanced autonomous rover designed and developed to demonstrate integrated engineering concepts, including mechatronics, software development, and system integration. This project is part of the ENGR 385 - Integration 2 course at Colorado Mesa University. It serves as a comprehensive exploration of practical engineering applications, combining modern hardware, software, and design methodologies to create a fully functional autonomous system.
 
 The rover utilizes two Arduino MEGA microcontrollers:
 - **Rover Control Unit:** Manages autonomous navigation, sensor integration, and decision-making.
