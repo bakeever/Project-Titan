@@ -12384,7 +12384,8 @@ i.bg-color-secondary {
 }
 
 .de-pricing-plan{
-  padding: 50px 30px 30px 30px;
+  padding: 50px 60px 30px 30px;
+
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -12423,7 +12424,7 @@ i.bg-color-secondary {
 .de-pricing-plan .d-item{
   font-size: 26px;
   font-weight: bold;
-  padding: 15px 0 10px 0;
+  padding: 15px 0 10px 10px;
 }
 
 .de-pricing-plan .d-item span{
