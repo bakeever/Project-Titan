@@ -20897,3 +20897,20 @@ img {
   }
 }
 
+.text-overlay {
+  background: rgba(0, 0, 0, 0.7); /* Black with 70% opacity */
+  color: white; /* White text for contrast */
+  padding: 1px; /* Adds space inside the box */
+  border-radius: 10px; /* Optional: Rounded corners */
+  display: inline-block; /* Ensures background fits content */
+  text-align: center; /* Centers text */
+}
+
+.subtext-overlay {
+  background: rgba(0, 0, 0, 0.0); /* Black with 70% opacity */
+  color: white; /* White text for contrast */
+  padding: 2px; /* Adds space inside the box */
+  border-radius: 20px; /* Optional: Rounded corners */
+  display: inline-block; /* Ensures background fits content */
+  text-align: center; /* Centers text */
+}
