@@ -19,8 +19,8 @@
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
-#define TRIG_PIN 9  // Pin connected to the Trig pin of the sensor
-#define ECHO_PIN 10 // Pin connected to the Echo pin of the sensor
+#define TRIG_PIN 24  // Pin connected to the Trig pin of the sensor
+#define ECHO_PIN 25 // Pin connected to the Echo pin of the sensor
 
 // ==========================================================
 //                  Initialization Section
@@ -34,7 +34,7 @@ void setup() {
 //                        Main Loop 
 // ==========================================================
 void loop() {
-  long duration, dist_mm, dist_cm, dist_m;
+  long duration, dist_mm;//, dist_cm, dist_m;
 
   // ======================================================
   // Trigger Pulse
@@ -51,17 +51,17 @@ void loop() {
   // Speed of sound is ~340 m/s
   duration  = pulseIn(ECHO_PIN, HIGH); // Read the time for the pulse to return
   dist_mm   = (duration * 0.34)/2;     // Distance in mm
-  dist_cm   = (duration * 0.034)/2;    // Distance in cm
-  dist_m    = (duration * 0.00034)/2;  // Distance in meters
+  // dist_cm   = (duration * 0.034)/2;    // Distance in cm
+  // dist_m    = (duration * 0.00034)/2;  // Distance in meters
   // ======================================================
   // Print to Serial Monitor for User Feedback
   // ======================================================
   Serial.print("Distance: ");
   Serial.print(dist_mm);               // Variable for mm
-  Serial.print(" mm,");                // Label for mm
-  Serial.print(dist_cm);               // Variable for cm
-  Serial.print(" cm,");                // Label for cm
-  Serial.print(dist_m);                // Variable for m
-  Serial.println(" m");                // Label for m
+  Serial.println(" mm,");                // Label for mm
+  // Serial.print(dist_cm);               // Variable for cm
+  // Serial.print(" cm,");                // Label for cm
+  // Serial.print(dist_m);                // Variable for m
+  // Serial.println(" m");                // Label for m
   delay(500);                          // Delay for stability
 }
