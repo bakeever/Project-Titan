@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Project TITAN</title>
+    <title>Playhost - Game Hosting Website Template</title>
     <link rel="icon" href="images/icon.png" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" >
@@ -89,7 +89,7 @@
 
                                                             <div class="col-lg-3">
                                                                 <div class="d-list-small">
-                                                                    <a href="mission2.html">
+                                                                    <a href="mission2">
                                                                         <img src="images/covers-square/4.webp" class="" alt="">
                                                                         <h5>Mission 2</h5>
                                                                     </a>
@@ -137,7 +137,7 @@
                                             <li><a class="menu-item" href="tut_gps.html">GPS Functionality</a></li>
                                         </ul>
                                     </li>
-                                    <li><a class="menu-item" href="downloads.html">Downloads</a></li>
+                                    <li><a class="menu-item" href="#">Downloads</a></li>
                                 </ul>
                             </div>
                             <div class="de-flex-col">
@@ -155,80 +155,48 @@
         <!-- content begin -->
         <div class="no-bottom no-top" id="content">
             <div id="top"></div>
-
-            <section id="subheader" class="jarallax">
-                <img src="images/background/subheader-affliate.webp" class="jarallax-img" alt="">
-                <div class="container z-1000">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <h2 class="wow fadeInUp mb20" data-wow-delay=".2s">Project Requirements</h2>
-                        </div>                 
-                    </div>
+            
+            <section class="jarallax">
+                <img src="images/background/3.webp" class="jarallax-img" alt="">
+                <div class="de-gradient-edge-top"></div>
+                <div class="container">
+                    <div class="table-wrapper">
+                    <h2>Bill of Materials (BOM)</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;">Item No.</th>
+                                <th style="width: 20%;">Part Name</th>
+                                <th style="width: 30%;">Description</th>
+                                <th style="width: 10%;">Quantity</th>
+                                <th style="width: 15%;">Unit Cost ($)</th>
+                                <th style="width: 15%;">Total Cost ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td>  <td>Microcontroller (Arduino)</td>  <td>Arduino Mega 2560</td>              <td>1</td>  <td>35.00</td>  <td>35.00</td></tr>
+                            <tr><td>2</td>  <td>Chassis Frame</td>              <td>3D printed frame</td>               <td>1</td>  <td>25.00</td>  <td>25.00</td></tr>
+                            <tr><td>3</td>  <td>DC Motors + Wheels</td>         <td>5V DC Gear Motors with wheels</td>  <td>2</td>  <td>15.00</td>  <td>30.00</td></tr>
+                            <tr><td>4</td>  <td>Motor Driver</td>               <td>Adafruit Motor Shield v.1</td>      <td>1</td>  <td>8.00</td>   <td>8.00</td></tr>
+                            <tr><td>5</td>  <td>GPS Module</td>                 <td>uBlox NEO-6M</td>                   <td>1</td>  <td>20.00</td>  <td>20.00</td></tr>
+                            <tr><td>6</td>  <td>RF Transmitter</td>             <td>433MHz RF module</td>               <td>1</td>  <td>12.00</td>  <td>12.00</td></tr>
+                            <tr><td>7</td>  <td>Ultrasonic Sensors</td>         <td>HC-SR04 for obstacle detection</td> <td>2</td>  <td>4.00</td>   <td>8.00</td></tr>
+                            <tr><td>8</td>  <td>IMU Sensor</td>                 <td>MPU6050 Gyroscope</td>              <td>1</td>  <td>7.00</td>   <td>7.00</td></tr>
+                            <tr><td>9</td>  <td>Battery Pack</td>               <td>11.1V 2200mAh LiPo</td>             <td>1</td>  <td>30.00</td>  <td>30.00</td></tr>
+                            <tr><td>10</td> <td>Voltage Regulator</td>          <td>DC-DC Step-Down (5V)</td>           <td>1</td>  <td>5.00</td>   <td>5.00</td></tr>
+                            <tr><td>11</td> <td>Payload (Wooden Cube)</td>      <td>1.5"x1.5"x1.5"</td>                 <td>1</td>  <td>2.00</td>   <td>2.00</td></tr>
+                            <tr><td>12</td> <td>Enclosure</td>                  <td>Weatherproof case</td>              <td>1</td>  <td>15.00</td>  <td>15.00</td></tr>
+                            <tr><td>13</td> <td>Mounting Hardware</td>          <td>Screws, brackets</td>               <td>x</td>  <td>10.00</td>  <td>10.00</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="spacer-20"></div>
+                    <p class="total-cost">Total Estimated Cost: <strong>$207.00</strong></p>
                 </div>
             </section>
             
-            <section>
-                <div class="container">
-                    <div class="row row-flex">
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".2s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".2s">1</div>
-                                <h4>Autonomous Navigation</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".4s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".4s">2</div>
-                                <h4>Obstacle Avoidance</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".6s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".6s">3</div>
-                                <h4>Payload Handling</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".6s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".6s">4</div>
-                                <h4>RF Communication</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".6s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".6s">5</div>
-                                <h4>Weather Resistant</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".6s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".6s">6</div>
-                                <h4>Weght Limit of 4 lbs</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-4 mb30 wow fadeInRight" data-wow-delay=".6s">
-                            <div class="de-step-s1">
-                                <div class="d-number wow rotateIn" data-wow-delay=".6s">7</div>
-                                <h4>Speed & Navigation Accuracy</h4>
-                                <p class="">Amet amet enim reprehenderit et ullamco tempor minim reprehenderit amet cupidatat ullamco ut magna enim ad commodo nisi exercitation quis reprehenderit anim et ad aute officia dolor amet dolore dolore.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- add more content here -->
-                </div>
-
-            </section>
-
         </div>
         <!-- content close -->
-        <!-- footer begin -->
+        <!-- ` begin -->
         <footer>
             <div class="container">
                 <div class="row gx-5">
@@ -274,12 +242,13 @@
         </footer>
         <!-- footer close -->
     </div>
-
-
+    
     <!-- Javascript Files
     ================================================== -->
     <script src="js/plugins.js"></script>
     <script src="js/designesia.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js' async defer></script>
+    <script src="form.js"></script>
 </body>
 
 </html>

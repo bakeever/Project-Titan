@@ -20914,3 +20914,13 @@ img {
   display: inline-block; /* Ensures background fits content */
   text-align: center; /* Centers text */
 }
+
+/* Background for the table */
+.table-wrapper {
+  background: rgba(15, 16, 30, 0.95); /* Dark semi-transparent background */
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Soft shadow for depth */
+  display: inline-block;
+  margin-top: 20px;
+}
