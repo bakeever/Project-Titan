@@ -1,16 +1,56 @@
+/* ==========================================================
+ * Project Name: Project Titan - Control Console
+ * Author: Bryce Keever
+ * Date: January 27, 2025
+ * Version: 1.0
+ * Description: 
+ * ==========================================================
+ * Pin Configuration:
+ * - 
+ * ==========================================================
+ * Program Functions:
+ * - 
+ * ==========================================================
+ */
+
 #include <EEPROM.h>
 #include <SPI.h>
 #include <GD2.h>
+/* RF Communication */
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
 
 int activeMission = 1; // Default to Mission 1
 
+/* RF Communication */
+RF24 radio(7, 8); // CE, CSN
+const byte address[6] = "00001";
+// const byte address2[6] = "00002"; // Address of Theia
+
 void setup()
 {
+  Serial.begin(115200);
   GD.begin();
+  /* RF Communication */
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
 }
-
 void loop()
 {
+  // swapGUI();
+
+  const char text[] = "MOVE";
+  radio.write(&text, sizeof(text));
+  delay(1000);
+  // sendCommand();
+}
+
+
+void swapGUI(){
   GD.get_inputs(); // Read touch inputs
 
   // Update activeMission when a button is pressed
@@ -22,7 +62,7 @@ void loop()
   GD.Clear();
 
   // Title using default Font 24
-  GD.cmd_text(230, 15, 24, OPT_CENTER, "Hyperion Control Center");
+  GD.cmd_text(230, 15, 24, OPT_CENTER, "Project TITAN Main Control Center");
 
   // Draw a beige-colored box for the mission UI
   GD.ColorRGB(0xD8C3A5);  // Beige color
@@ -81,4 +121,25 @@ void loop()
   }
 
   GD.swap();
+}
+
+void sendCommand(){
+  const char command[] = "MOVE"; // Example command
+  radio.write(&command, sizeof(command));
+  Serial.println("Command sent!");
+
+  // Switch to Receive Mode to get ACK
+  radio.startListening();
+  delay(50); // Small delay to allow response
+
+  if (radio.available()) {
+      char response[32] = "";
+      radio.read(&response, sizeof(response));
+      Serial.print("Received from Slave: ");
+      Serial.println(response);
+  }
+
+  // Switch back to Transmit Mode for next command
+  radio.stopListening();
+  delay(1000); // Wait before sending next command
 }

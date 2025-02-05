@@ -12,7 +12,13 @@
 //                      Library Includes
 // ==========================================================
 #include <AFMotor.h>
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
 
+RF24 radio(24, 25); // CE, CSN
+
+const byte address[6] = "00001";
 // ==========================================================
 //                      Program Variables
 // ==========================================================
@@ -31,7 +37,7 @@
 //                      Object Declaration
 // ==========================================================
 AF_DCMotor motor1(1, MOTOR12_64KHZ); // create motor #1, 64KHz pwm
-AF_DCMotor motor2(2, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
+AF_DCMotor motor2(3, MOTOR12_64KHZ); // create motor #2, 64KHz pwm
 
 
 // ==========================================================
@@ -46,9 +52,13 @@ pinMode(TRIG_PIN_2, OUTPUT);
 pinMode(ECHO_PIN_2, INPUT);
 pinMode(TRIG_PIN_3, OUTPUT);
 pinMode(ECHO_PIN_3, INPUT);
-  Serial.begin(9600);           // set up Serial library at 9600 bps
+  Serial.begin(9600);
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
 
-  // motor_speed = 50;
+  motor_speed = 100;
 
   // forward();
   // stop();
@@ -58,11 +68,36 @@ pinMode(ECHO_PIN_3, INPUT);
   // stop();
   // left();
   // stop();
+  Serial.println("Tank boi started");
 }
 
 void loop() {
-  getDistance();
+  if (radio.available()) {
+    char text[32] = "";
+    radio.read(&text, sizeof(text));
+    Serial.println(text);
+    // Parse command
+  parseCommand(text);
+  }
+  // getDistance();
 }
+
+void parseCommand(char *message) {
+    char *command = strtok(message, ":"); // Split command
+    char *params = strtok(NULL, ":"); // Get parameters
+
+    if (strcmp(command, "MOVE") == 0) {
+        int distance = atoi(strtok(params, ",")); // First parameter
+        int speed = atoi(strtok(NULL, ",")); // Second parameter
+        forward();
+        delay(1000);
+        stop();
+    }
+    else if (strcmp(command, "STOP") == 0) {
+        stop();
+    }
+}
+
 void getDistance(){
     long distanceRight    = getDistanceRight();  
     if (distanceRight   >= 0) {Serial.print("Stable Right Side Distance: ");Serial.print(distanceRight);Serial.println(" mm");}
@@ -215,7 +250,8 @@ void forward(){
   motor2.setSpeed(motor_speed);   // set the speed to 200/255 pwm signal
   motor1.run(FORWARD);
   motor2.run(FORWARD);
-  delay(1000);
+
+
 }
 void backward(){
   motor1.setSpeed(motor_speed);   // set the speed to 200/255 pwm signal
