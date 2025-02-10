@@ -60,8 +60,8 @@ pinMode(ECHO_PIN_3, INPUT);
 
   motor_speed = 100;
 
-  // forward();
-  // stop();
+  forward();
+  stop();
   // backward();
   // stop();
   // right();
