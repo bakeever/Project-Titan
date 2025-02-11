@@ -22,7 +22,20 @@ Each rover utilizes two Arduino MEGA microcontrollers:
 
 By leveraging a multidisciplinary approach, Project TITAN demonstrates the practical integration of hardware design, embedded systems, and control strategies, providing a scalable foundation for future autonomous systems research and development.
 
-## Bill of Materials (BOM)
+## Bill of Materials - Hyperion (Tank Rover)
+| **Component**          | **Description**                                        | **Quantity** |
+|-------------------------|--------------------------------------------------------|--------------|
+| Arduino MEGA           | Microcontroller for the rover brain                   | 1            |
+| Arduino MEGA           | Microcontroller for the handheld control console      | 1            |
+| Wiring Kit             | Wiring for connections                                | Various      |
+| HC-SR04 Ultrasonic Sensors | Ultrasonic distance sensors for obstacle detection | 3          |
+| Motors                 | Motors for rover movement                             | TBD          |
+| Power Supply           | 5V DC battery pack                                    | 1            |
+| Chassis Components     | Mechanical parts for rover structure                  | TBD          |
+| Wheels/Tracks          | Mobility components                                   | TBD          |
+| Miscellaneous          | Other components and accessories                      | TBD          |
+
+## Bill of Materials - Theia (4x4 Rover)
 | **Component**          | **Description**                                        | **Quantity** |
 |-------------------------|--------------------------------------------------------|--------------|
 | Arduino MEGA           | Microcontroller for the rover brain                   | 1            |
@@ -36,4 +49,4 @@ By leveraging a multidisciplinary approach, Project TITAN demonstrates the pract
 | Miscellaneous          | Other components and accessories                      | TBD          |
 
 ## Website Link
-[TBA]
+https://org.coloradomesa.edu/~bakeever/
