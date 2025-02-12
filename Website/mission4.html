@@ -166,14 +166,48 @@
                             <div class="row gx-5 align-items-center">
                                 <div class="col-lg-6 mb-sm-30">
                                     <h1 class="slider-title text-uppercase mb-1">Mission 4 Report</h1>
-                                    <p class="slider-text">Aute esse non magna elit dolore dolore dolor sit est. Ea occaecat ea duis laborum reprehenderit id cillum tempor cupidatat qui nisi proident nostrud.</p>
+                                    <p class="slider-text"><h2>Advanced GPS Navigation</h2>
+
+                                        <p>The rover must successfully complete advanced navigation tasks using GPS waypoints and RF communication while maintaining robustness and environmental resilience.</p>
+                                        
+                                        <h3>Task 1: Waypoint Navigation</h3>
+                                        <ul>
+                                            <li>The rover must navigate to a specified GPS waypoint provided beforehand.</li>
+                                            <li>GPS waypoint coordinates may be hardcoded for this mission.</li>
+                                            <li>The rover must stop within 15 feet of the marked GPS waypoint.</li>
+                                        </ul>
+                                        
+                                        <h3>Task 2: Dynamic Waypoint Navigation and Return</h3>
+                                        <ul>
+                                            <li>The rover must receive GPS coordinates from an RF transmitter beacon located at the starting point.</li>
+                                            <li>It must place a physical marker within 15 feet of the specified waypoint.</li>
+                                            <li>After placing the marker, the rover must return to its original starting location.</li>
+                                            <li>The distance between the physical marker and the marked waypoint, as well as the distance between the start and end positions of the rover, will be measured.</li>
+                                            <li>The cumulative error (marker placement + return accuracy) should not exceed 25 feet.</li>
+                                        </ul>
+                                        
+                                        <h3>GPS Data Transmission</h3>
+                                        <ul>
+                                            <li>The GPS coordinates of the waypoint will be transmitted as a 12-character message.</li>
+                                            <li>The latitude coordinate consists of five digits preceded by ‘N’, while the longitude consists of five digits preceded by ‘W’.</li>
+                                            <li>The five latitude digits represent decimals appended to 39; the five longitude digits represent decimals appended to -108.</li>
+                                            <li>For example, a waypoint at 39.09495N, -108.58784W would be transmitted as: <code>N09495W58784</code>.</li>
+                                            <li>Coordinates will be continuously transmitted by the RF beacon at 5-second intervals.</li>
+                                        </ul>
+                                        
+                                        <h3>Performance Conditions</h3>
+                                        <ul>
+                                            <li>Full credit requires successful mission completion on rough terrain.</li>
+                                            <li>Extra credit will be awarded for successful completion on sandy terrain.</li>
+                                        </ul>
+                                        </p>
                                     <div class="row">
                                         <div class="col-lg-6"></div>
                                     </div>
                                     <div class="spacer-10"></div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <img src="images/covers-square/12.webp" class="img-fluid rounded-20" alt="">
+                                    <img src="images/file_not_found.png" class="img-fluid rounded-20" alt="">
                                 </div>
                             </div>
                         </div>
@@ -185,14 +219,15 @@
         </div>
         <!-- content close -->
         
-        <!-- footer begin -->
+        <!-- ` begin -->
         <footer>
             <div class="container">
                 <div class="row gx-5">
                     <div class="col-lg-8">
                         <img src="images/logo.png" alt="" >
                         <div class="spacer-20"></div>
-                        <p>Lorem ipsum culpa tempor tempor eu laboris adipisicing sunt excepteur enim laborum officia eiusmod laborum sint do aliqua incididunt est aute deserunt in elit non sed ut velit ullamco aliquip. Nulla cupidatat elit amet sed labore ut et consequat nostrud laboris aliqua ex est fugiat quis aliqua duis quis esse dolor laboris non duis sunt.</p>
+                        <p> Pioneering Autonomous Exploration. Designed for rugged terrains, built for precision, and driven by innovation.</p>
+                        <p>Join us as we redefine navigation and robotics.</p>
                     </div>
                     <div class="col-lg-4">
                         <div class="row">

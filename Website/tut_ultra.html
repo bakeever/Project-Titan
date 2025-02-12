@@ -230,45 +230,54 @@
                                         <h2>Sample Arduino Code</h2>
                                         <pre>
                                 <code>
-                                // ==========================================================
-                                // Project Name: Ultrasonic Distance Sensor Example
-                                // Author: Bryce Keever
-                                // Date: January 27, 2025
-                                // Version: 1.0
-                                // Description: This program uses an HC-SR04 ultrasonic sensor
-                                // to measure distance and prints the value to the Serial Monitor.
-                                // ==========================================================
-                                
-                                #define TRIG_PIN 9  // Pin connected to the Trig pin of the sensor
-                                #define ECHO_PIN 10 // Pin connected to the Echo pin of the sensor
-                                
-                                void setup() {
-                                    pinMode(TRIG_PIN, OUTPUT);
-                                    pinMode(ECHO_PIN, INPUT);
-                                    Serial.begin(9600); // Start serial communication
-                                }
-                                
-                                void loop() {
-                                    long duration, dist_mm, dist_cm, dist_m;
-                                
-                                    digitalWrite(TRIG_PIN, LOW);
-                                    delayMicroseconds(2);
-                                    digitalWrite(TRIG_PIN, HIGH);
-                                    delayMicroseconds(10);
-                                    digitalWrite(TRIG_PIN, LOW);
-                                
-                                    duration = pulseIn(ECHO_PIN, HIGH);
-                                    dist_mm = (duration * 0.34) / 2;  // Distance in mm
-                                    dist_cm = (duration * 0.034) / 2; // Distance in cm
-                                    dist_m = (duration * 0.00034) / 2; // Distance in meters
-                                
-                                    Serial.print("Distance: ");
-                                    Serial.print(dist_mm); Serial.print(" mm, ");
-                                    Serial.print(dist_cm); Serial.print(" cm, ");
-                                    Serial.print(dist_m); Serial.println(" m");
-                                    delay(500);
-                                }
-                                </code>
+                                    #define TRIG_PIN 9  // Pin connected to the Trig pin of the sensor
+                                    #define ECHO_PIN 10 // Pin connected to the Echo pin of the sensor
+                                    
+                                    void setup() {
+                                        pinMode(TRIG_PIN, OUTPUT);
+                                        pinMode(ECHO_PIN, INPUT);
+                                        Serial.begin(9600); // Start serial communication
+                                        Serial.println("Type 'Measure Distance' to get distance reading.");
+                                    }
+                                    
+                                    void loop() {
+                                        // Check if user has entered a command
+                                        if (Serial.available()) {
+                                            String command = Serial.readStringUntil('\n'); // Read user input
+                                            command.trim();  // Remove extra spaces and new lines
+                                    
+                                            if (command.equalsIgnoreCase("Measure Distance")) {
+                                                measureDistance(); // Call function to measure and display distance
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Function to measure and display distance
+                                    void measureDistance() {
+                                        long duration, dist_mm, dist_cm, dist_m;
+                                    
+                                        // Trigger the ultrasonic sensor
+                                        digitalWrite(TRIG_PIN, LOW);
+                                        delayMicroseconds(2);
+                                        digitalWrite(TRIG_PIN, HIGH);
+                                        delayMicroseconds(10);
+                                        digitalWrite(TRIG_PIN, LOW);
+                                    
+                                        // Measure the echo time
+                                        duration = pulseIn(ECHO_PIN, HIGH);
+                                    
+                                        // Convert time to distance
+                                        dist_mm = (duration * 0.34) / 2;  // Distance in mm
+                                        dist_cm = (duration * 0.034) / 2; // Distance in cm
+                                        dist_m = (duration * 0.00034) / 2; // Distance in meters
+                                    
+                                        // Print the distance values
+                                        Serial.print("Distance: ");
+                                        Serial.print(dist_mm); Serial.print(" mm, ");
+                                        Serial.print(dist_cm); Serial.print(" cm, ");
+                                        Serial.print(dist_m); Serial.println(" m");
+                                    }
+                                    
                                         </pre>
                                         <h2>References</h2>
                                         <ul>
@@ -384,7 +393,8 @@
                     <div class="col-lg-8">
                         <img src="images/logo.png" alt="" >
                         <div class="spacer-20"></div>
-                        <p>Lorem ipsum culpa tempor tempor eu laboris adipisicing sunt excepteur enim laborum officia eiusmod laborum sint do aliqua incididunt est aute deserunt in elit non sed ut velit ullamco aliquip. Nulla cupidatat elit amet sed labore ut et consequat nostrud laboris aliqua ex est fugiat quis aliqua duis quis esse dolor laboris non duis sunt.</p>
+                        <p> Pioneering Autonomous Exploration. Designed for rugged terrains, built for precision, and driven by innovation.</p>
+                        <p>Join us as we redefine navigation and robotics.</p>
                     </div>
                     <div class="col-lg-4">
                         <div class="row">

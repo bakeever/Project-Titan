@@ -175,63 +175,63 @@
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec1"><h3>Distance Capability</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec2"><h3>Time Restriction</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec3"><h3>Travel Accuracy</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec4"><h3>RF Communication</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec5"><h3>Obstacle Avoidance</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec6"><h3>GPS Communication</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec7"><h3>Drop Test</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec8"><h3>Weight Limit</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
 
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
                                 <a href="#spec9"><h3>Water Resistance</h3></a>
-                                <div class="d-subtitle">example subtext</div>
+                                <!-- <div class="d-subtitle">example subtext</div> -->
                             </div>
                         </div>
                         <div class="spacer-double"></div>
@@ -244,12 +244,12 @@
             </section>
                 <section id= spec1 class="no-top">
                     <div class="container">
-                        <div class="row g-4">
+                        <div class="row g-6">
                             <div class="spacer-double"></div>
                             <div class="spacer-double"></div>
                             <div class="col-lg-12 text-center">
                                 <h2 class="wow fadeInUp" data-wow-delay=".2s"><span class="text-gradient"></span> Distance Capability</h2>
-                                <p class="wow fadeInUp">The rover must be capable of traveling a minimum distance of 30 feet (9.14 meters) in a straight-line mission and navigating to specified GPS waypoints with an accuracy of within 15 feet (4.57 meters) of the target. The RF beacon will continuously transmit distance commands at 5-second intervals, instructing the rover to travel distances ranging from 15 to 30 feet (4.57 to 9.14 meters). The rover must accurately interpret and execute these commands to demonstrate precise motion control.</p>
+                                <p class="wow fadeInUp">The rover must be capable of traveling a minimum distance of 60 feet (18.3 meters) in during mission operation and navigating to specified GPS waypoints with an accuracy of within 1.5 feet (0.45 meters) of the target. The RF beacon will continuously transmit distance commands at regular intervals, instructing the rover to travel distances ranging from 5 to 30 feet (1.52 to 9.14 meters). The rover must accurately interpret and execute these commands to demonstrate precise motion control.</p>
                             </div>
                             <div class="spacer-double"></div>
                             <div class="spacer-double"></div>
@@ -277,7 +277,7 @@
                                 <div class="spacer-double"></div>
                                 <div class="spacer-double"></div>
                                 <h2 class="wow fadeInUp" data-wow-delay=".2s"><span class="text-gradient"></span> Travel Accuracy</h2>
-                                <p class="wow fadeInUp">The rover must receive and process 12-character messages transmitted via an RF beacon at 5-second intervals. Distance commands will be formatted as XnnZZZZZZZZZ where nn is the intended distance in feet (e.g., "X15ZZZZZZZZZ" for 15 feet). GPS coordinates are transmitted as NxxxxxWyyyyy, where xxxxx represents the decimal extension of latitude (39.xxxxx°N) and yyyyy represents the decimal extension of longitude (-108.yyyyy°W). The rover must decode and execute these commands accurately in real-time.</p>
+                                <p class="wow fadeInUp"></p>
                             </div>
                             <div class="spacer-double"></div>
                         </div>
@@ -290,7 +290,7 @@
                                 <div class="spacer-double"></div>
                                 <div class="spacer-double"></div>
                                 <h2 class="wow fadeInUp" data-wow-delay=".2s"><span class="text-gradient"></span> RF Communication</h2>
-                                <p class="wow fadeInUp">The rover must be equipped with a robust RF communication system to receive navigation commands in real time. Distance information is transmitted as a 12-character message, while GPS coordinates are sent at 5-second intervals using a predefined format. The rover must decode these signals accurately and execute the corresponding navigation tasks without external human intervention. Reliable RF communication ensures mission adaptability and remote operation.</p>
+                                <p class="wow fadeInUp">The rover must receive and process 12-character messages transmitted via an RF beacon at regular intervals. Distance commands will be formatted as XnnZZZZZZZZZ where nn is the intended distance in feet (e.g., "X15ZZZZZZZZZ" for 15 feet). GPS coordinates are transmitted as NxxxxxWyyyyy, where xxxxx represents the decimal extension of latitude (39.xxxxx°N) and yyyyy represents the decimal extension of longitude (-108.yyyyy°W). The rover must decode and execute these commands accurately in real-time.</p>
                             </div>
                             <div class="spacer-double"></div>
                         </div>
@@ -303,7 +303,7 @@
                                 <div class="spacer-double"></div>
                                 <div class="spacer-double"></div>
                                 <h2 class="wow fadeInUp" data-wow-delay=".2s"><span class="text-gradient"></span> Obstacle Avoidance</h2>
-                                <p class="wow fadeInUp">The rover must autonomously detect and avoid obstacles within its path while maintaining efficient movement. In enclosed areas, it should navigate for 60 seconds without contacting walls or other obstructions. When faced with an obstacle along a predefined path, the rover must reroute effectively and continue toward its original destination. Implementing an intelligent avoidance algorithm allows for seamless navigation in unpredictable environments.</p>
+                                <p class="wow fadeInUp">The rover must autonomously detect and avoid obstacles within its path while maintaining efficient movement. In enclosed areas, it should navigate for 60 seconds without contacting walls or other obstructions with a minimum distance of 1 inch. When faced with an obstacle along a predefined path, the rover must reroute effectively and continue toward its original destination. Implementing an intelligent avoidance algorithm allows for seamless navigation in unpredictable environments.</p>
                             </div>
                             <div class="spacer-double"></div>
                         </div>
@@ -342,7 +342,7 @@
                                 <div class="spacer-double"></div>
                                 <div class="spacer-double"></div>
                                 <h2 class="wow fadeInUp" data-wow-delay=".2s"><span class="text-gradient"></span> Weight Limit</h2>
-                                <p class="wow fadeInUp">The total weight of the rover, including its 1.5”x1.5”x1.5” (3.81x3.81x3.81 cm) payload marker, must not exceed 4.00 pounds (1.81 kg). The design should optimize weight distribution for stability while ensuring sufficient power efficiency for mobility. Material selection should prioritize lightweight yet durable components to maintain both structural integrity and maneuverability.</p>
+                                <p class="wow fadeInUp">The total weight of the rover, including its 1.5”x1.5”x1.5” payload marker, must not exceed 4.00 pounds (1.81 kg). The design should optimize weight distribution for stability while ensuring sufficient power efficiency for mobility. Material selection should prioritize lightweight yet durable components to maintain both structural integrity and maneuverability.</p>
                             </div>
                             <div class="spacer-double"></div>
                         </div>
@@ -355,7 +355,7 @@
                                 <div class="spacer-double"></div>
                                 <div class="spacer-double"></div>
                                 <h2 class="wow fadeInUp" data-wow-delay=".2s"><span class="text-gradient"></span> Water Resistance</h2>
-                                <p class="wow fadeInUp">The rover must remain operational under simulated rainy conditions, referred to as the "sprinkler test". All electrical components must be shielded from moisture exposure using waterproof enclosures or coatings. The system should function without degradation when subjected to light to moderate water spray for at least 5 minutes, ensuring reliability in unpredictable environmental conditions.</p>
+                                <p class="wow fadeInUp">The rover must remain operational under simulated rainy conditions, referred to as the "sprinkler test". All electrical components must be shielded from moisture exposure using waterproof enclosures or coatings as compliant with IP42. The system should function without degradation when subjected to light to moderate water spray for at least 5 minutes, ensuring reliability in unpredictable environmental conditions.</p>
                             </div>
                             <div class="spacer-double"></div>
                         </div>
@@ -363,14 +363,15 @@
                 </section>
         </div>
         <!-- content close -->
-        <!-- footer begin -->
+        <!-- ` begin -->
         <footer>
             <div class="container">
                 <div class="row gx-5">
                     <div class="col-lg-8">
                         <img src="images/logo.png" alt="" >
                         <div class="spacer-20"></div>
-                        <p>Lorem ipsum culpa tempor tempor eu laboris adipisicing sunt excepteur enim laborum officia eiusmod laborum sint do aliqua incididunt est aute deserunt in elit non sed ut velit ullamco aliquip. Nulla cupidatat elit amet sed labore ut et consequat nostrud laboris aliqua ex est fugiat quis aliqua duis quis esse dolor laboris non duis sunt.</p>
+                        <p> Pioneering Autonomous Exploration. Designed for rugged terrains, built for precision, and driven by innovation.</p>
+                        <p>Join us as we redefine navigation and robotics.</p>
                     </div>
                     <div class="col-lg-4">
                         <div class="row">

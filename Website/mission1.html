@@ -166,14 +166,42 @@
                             <div class="row gx-5 align-items-center">
                                 <div class="col-lg-6 mb-sm-30">
                                     <h1 class="slider-title text-uppercase mb-1">Mission 1 Report</h1>
-                                    <p class="slider-text">Aute esse non magna elit dolore dolore dolor sit est. Ea occaecat ea duis laborum reprehenderit id cillum tempor cupidatat qui nisi proident nostrud.</p>
+                                    <p class="slider-text"><h2>Rolling Chassis Requirements</h2>
+
+                                        <p>The rolling chassis must successfully complete two consecutive runs to meet the requirements.</p>
+                                        
+                                        <h3>Task 1: Square Pattern Navigation</h3>
+                                        <ul>
+                                            <li>The rover must drive in an approximately 10-foot square pattern.</li>
+                                            <li>Upon completion, it should stop at its original location and place a marker.</li>
+                                            <li>The marker should be within 3 feet of the rover’s original starting position.</li>
+                                            <li>The mission should be completed within 60 seconds.</li>
+                                        </ul>
+                                        
+                                        <h3>Task 2: Straight-Line Distance Navigation</h3>
+                                        <ul>
+                                            <li>The rover must drive straight for a specified distance between 15 and 30 feet.</li>
+                                            <li>It must place a physical marker at the designated stopping point.</li>
+                                            <li>The exact intended distance will be transmitted from an RF transmitter beacon at the starting location.</li>
+                                            <li>The marker placement must be within ±10% of the specified drive distance.</li>
+                                            <li>The task must be completed in under 30 seconds.</li>
+                                        </ul>
+                                        
+                                        <h3>RF Distance Transmission</h3>
+                                        <ul>
+                                            <li>The distance to drive will be transmitted as a 12-character message.</li>
+                                            <li>The format consists of the distance as two digits, preceded by an ‘X’, with the remaining characters padded with ‘Z’.</li>
+                                            <li>For example, a message instructing the rover to travel 15 feet would be: <code>X15ZZZZZZZZZ</code>.</li>
+                                            <li>The intended distance will be continuously transmitted from the RF beacon at 5-second intervals.</li>
+                                        </ul>
+                                        </p>
                                     <div class="row">
                                         <div class="col-lg-6"></div>
                                     </div>
                                     <div class="spacer-10"></div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <img src="images/covers-square/12.webp" class="img-fluid rounded-20" alt="">
+                                    <img src="images/file_not_found.png" class="img-fluid rounded-20" alt="">
                                 </div>
                             </div>
                         </div>
@@ -185,14 +213,15 @@
         </div>
         <!-- content close -->
         
-        <!-- footer begin -->
-        <footer>
+         <!-- ` begin -->
+         <footer>
             <div class="container">
                 <div class="row gx-5">
                     <div class="col-lg-8">
                         <img src="images/logo.png" alt="" >
                         <div class="spacer-20"></div>
-                        <p>Lorem ipsum culpa tempor tempor eu laboris adipisicing sunt excepteur enim laborum officia eiusmod laborum sint do aliqua incididunt est aute deserunt in elit non sed ut velit ullamco aliquip. Nulla cupidatat elit amet sed labore ut et consequat nostrud laboris aliqua ex est fugiat quis aliqua duis quis esse dolor laboris non duis sunt.</p>
+                        <p> Pioneering Autonomous Exploration. Designed for rugged terrains, built for precision, and driven by innovation.</p>
+                        <p>Join us as we redefine navigation and robotics.</p>
                     </div>
                     <div class="col-lg-4">
                         <div class="row">
