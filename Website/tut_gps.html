@@ -2,35 +2,25 @@
 <html lang="en">
 
 <head>
-    <title>Playhost - Game Hosting Website Template</title>
+    <title>Playhost - Arduino GPS Tutorial</title>
     <link rel="icon" href="images/icon.png" type="image/gif" sizes="16x16">
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" >
-    <meta content="Playhost - Game Hosting Website Template" name="description" >
-    <meta content="" name="keywords" >
-    <meta content="" name="author" >
-    <!-- CSS Files
-    ================================================== -->
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Arduino GPS Tutorial" name="description">
+    <meta content="" name="keywords">
+    <meta content="" name="author">
+    
+    <!-- CSS Files -->
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" id="bootstrap">
-    <link href="css/plugins.css" rel="stylesheet" type="text/css" >
-    <link href="css/swiper.css" rel="stylesheet" type="text/css" >
-    <link href="css/style.css" rel="stylesheet" type="text/css" >
-    <link href="css/coloring.css" rel="stylesheet" type="text/css" >
-    <!-- color scheme -->
-    <link id="colors" href="css/colors/scheme-04.css" rel="stylesheet" type="text/css" >
-
+    <link href="css/plugins.css" rel="stylesheet" type="text/css">
+    <link href="css/swiper.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="css/coloring.css" rel="stylesheet" type="text/css">
+    <link id="colors" href="css/colors/scheme-04.css" rel="stylesheet" type="text/css">
 </head>
 
 <body class="dark-scheme">
     <div id="wrapper">
-        <div class="float-text show-on-scroll">
-            <span><a href="#">Scroll to top</a></span>
-        </div>
-        <div class="scrollbar-v show-on-scroll"></div>
-        <!-- page preloader begin -->
-        <div id="de-loader"></div>
-        <!-- page preloader close -->
-
         <!-- header begin -->
         <header class="transparent">
             <div class="container">
@@ -151,8 +141,7 @@
                 </div>
             </div>
         </header>
-        <!-- header close -->
-        <!-- content begin -->
+        <!-- Content -->
         <div class="no-bottom no-top" id="content">
             <div class="spacer-20"></div>
             <div id="top"></div>
@@ -162,145 +151,238 @@
                 <div class="de-gradient-edge-bottom"></div>
                 <div class="container z-1000">
                     <div class="row align-items-center gx-5">
-
                         <div class="col-lg-8">
-                            <h2 class="wow fadeInUp" data-wow-delay=".2s">Arduino Tutorial</h2>
-                            <h2 class="wow fadeInUp" data-wow-delay=".2s">Adafruit Ultimate GPS</h2>
-                            
-                            <p class="wow fadeInUp">Intro</p>
-                        </p>
+                            <h2 class="wow fadeInUp">Arduino GPS Tutorial</h2>
+                            <h2 class="wow fadeInUp">Adafruit Ultimate GPS</h2>
+                            <p class="wow fadeInUp">This Arduino GPS Navigation tutorial utilizes the Adafruit Ultimate GPS Breakout (66-channel, 10 Hz updates) along with the TinyGPS++ library to provide real-time location tracking and navigation. The system allows a user to request:
+                            </p>
+                            <p>1. Current Location (Latitude & Longitude) by typing "Show Location" in the Serial Monitor.</p>
+                            <p>2. Navigation Data (Distance & Bearing to a target location) by typing "Chart Course to Target".</p>
                         </div>
-
-                        <div class="col-lg-4" >
+                        <div class="col-lg-4">
                             <div class="d_wrap">
-                                <img src="images/ultimategps.jpg" class="lazy img-fluid wow fadeIn" data-wow-delay=".6s" alt="">
+                                <img src="images/ultimategps.jpg" class="lazy img-fluid wow fadeIn" alt="">
                             </div>
                         </div>
-
                     </div>
                 </div>
             </section>
 
-
+            <!-- Tutorial Section -->
             <section class="no-bottom">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="padding60 sm-padding40 sm-p-2 jarallax position-relative">
                                 <img src="images/background/11.webp" class="jarallax-img" alt="">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h2>Application for Autonomous Rover Missions</h2>
-                                        <p></p> <div class="spacer-10"></div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                    <h2>Required Hardware</h2>
-                                    <p>To complete this tutorial, you will need:</p>
-                                    <ul>
-                                        <li>Arduino Uno</li>
-                                        <li>HC-SR04 Ultrasonic Sensor</li>
-                                        <li>Breadboard</li>
-                                        <li>Jumper Wires</li>
-                                        <li>USB Cable for Arduino</li>
-                                    </ul>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12"></div>
-                                    <h2>Required Libraries</h2>
-                                    <p>No additional libraries are required for this project.</p>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                    <h2>Wiring Diagram</h2>
-                                    <p>Below is a simple wiring guide for connecting the HC-SR04 sensor to the Arduino:</p>
-                                    <ul>
-                                        <li>VCC (Sensor) → 5V (Arduino)</li>
-                                        <li>GND (Sensor) → GND (Arduino)</li>
+                                
+                                <h2>Application for Autonomous Rover Missions</h2>
+                                <p>This GPS tutorial is crucial for navigation in autonomous rover missions.</p>
+                                <div class="spacer-10"></div>
 
-                                    </ul>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h2>Sample Arduino Code</h2>
-                                        <pre>
-                                <code>
-                               
-                                </code>
-                                        </pre>
-                                        <h2>References</h2>
-                                        <ul>
-                                            <li><a href="https://www.arduino.cc/" target="_blank">Arduino Official Website</a></li>
-                                            <li><a href="https://randomnerdtutorials.com/" target="_blank">Random Nerd Tutorials</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                                <h2>Required Hardware</h2>
+                                <p>To complete this tutorial, you will need:</p>
+                                <ul>
+                                    <li>Arduino Uno</li>
+                                    <li>Adafruit Ultimate GPS (MTK3329/MTK3339)</li>
+                                    <li>Jumper Wires</li>
+                                    <li>Breadboard</li>
+                                    <li>USB Cable for Arduino</li>
+                                </ul>
 
+                                <h2>Required Libraries</h2>
+                                <p>Install the following libraries in the Arduino IDE:</p>
+                                <ul>
+                                    <li>Adafruit_GPS Library</li>
+                                    <li>SoftwareSerial Library</li>
+                                </ul>
+
+                                <h2>Wiring Diagram</h2>
+                                <p>Below is a simple wiring guide for connecting the Adafruit GPS module to the Arduino:</p>
+                                <ul>
+                                    <li>VCC (GPS) → 5V (Arduino)</li>
+                                    <li>GND (GPS) → GND (Arduino)</li>
+                                    <li>TX (GPS) → Digital Pin 8 (Arduino)</li>
+                                    <li>RX (GPS) → Digital Pin 7 (Arduino)</li>
+                                    <div class="spacer-10"></div>
+                                    <img src="images/Ultimate GPS to Arduino UNO_bb.png" style="width: 600px; height: auto;">
+                                </ul>
+                                <div class="spacer-20"></div>
+                                <h2>Sample Arduino Code</h2>
+                                <pre>
+<code>
+    // ==========================================================
+    // Project Name: Ultimate GPS Tutorial
+    // Author: Bryce Keever
+    // Date: Febuary 1, 2025
+    // Version: 1.0
+    // Description: This program interfaces with the Adafruit Ultimate GPS Breakout 
+    // to obtain real-time location data. It allows users to request the current 
+    // latitude and longitude or calculate the distance and bearing to a predefined 
+    // target location using the TinyGPS++ library. 
+    // ===============================================
+    
+    #include &lt;Adafruit_GPS.h&gt;
+    #include &lt;SoftwareSerial.h&gt;
+    #include &lt;TinyGPS++.h&gt;
+    
+    // Define GPS Module connection (SoftwareSerial for Arduino Uno)
+    SoftwareSerial mySerial(8,7);  // RX (GPS) -> 8, TX (GPS) -> 7
+    Adafruit_GPS GPS(&mySerial);
+    TinyGPSPlus gpsParser;
+    
+    #define GPSECHO false  // Set to true for debugging
+    
+    // Target GPS Coordinates (specified location)
+    // Example Location is Confluence Hall
+    const double targetLat = 39.080709173856086;  
+    const double targetLon = -108.56006936806281; 
+    
+    void setup() {
+        // Startup sequence for serial connections
+        Serial.begin(115200);
+        delay(5000);
+        GPS.begin(9600);
+        Serial.print("Initializing GPS Module...");
+    
+        // GPS configuration commands
+        GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCONLY);  // Minimum recommended data
+        GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);  // Set update rate to 1Hz
+    
+        // Serial feedback for user
+        Serial.println("Searching for Starlink...");
+    
+        // Wait until the GPS gets a valid fix
+        while (true) {
+            // Read a character from the GPS module's serial output
+            char c = GPS.read();
+    
+            // If GPSECHO is enabled, print the raw GPS data to Serial Monitor for debugging
+            if (c && GPSECHO) Serial.write(c);
+    
+            // Check if a new NMEA sentence has been received from the GPS module
+            if (GPS.newNMEAreceived()) {
+              break;  // Exit the loop once valid GPS data is received
+            }
+    
+            // Print a dot (.) every second to indicate waiting for GPS fix
+            Serial.print(".");
+            delay(1000);  // Wait 1 second before checking again
+    
+        }
+    
+        Serial.println("\nGPS fix acquired! Type 'Show Location' or 'Chart Course to Target'.");
+    }
+    
+    void loop() {
+        // Read data from the GPS module
+        char c = GPS.read();
+        
+        // If GPSECHO is enabled, print raw GPS data to Serial Monitor for debugging
+        if (c && GPSECHO) Serial.write(c);
+    
+        // Check if a new NMEA sentence has been received
+        if (GPS.newNMEAreceived()) {
+            // Attempt to parse the received GPS data
+            // If parsing fails, exit the function and wait for the next data update
+            if (!GPS.parse(GPS.lastNMEA())) return;
+        }
+    
+        // Check if there is incoming data from the Serial Monitor (user input)
+        if (Serial.available()) {
+            // Read the full command string from Serial Monitor until newline character ('\n')
+            String command = Serial.readStringUntil('\n');
+            command.trim();  // Remove any leading/trailing whitespace and new lines
+    
+            // Compare the user input and execute the corresponding function
+            if (command.equalsIgnoreCase("Show Location")) {
+                displayCurrLoc();  // Display current latitude and longitude
+            } 
+            else if (command.equalsIgnoreCase("Chart Course to Target")) {
+                navigateToTarget();  // Compute and display distance & bearing to the target location
+            }
+        }
+    }
+    
+    
+    // Function to display the current location
+    void displayCurrLoc() {
+        Serial.println("\nCurrent Location:");
+        Serial.print("Latitude: "); 
+        Serial.println(GPS.latitudeDegrees, 6);
+        Serial.print("Longitude: "); 
+        Serial.println(GPS.longitudeDegrees, 6);
+    }
+    
+    // Function to calculate distance and bearing to the target location
+    void navigateToTarget() {
+        // Retrieve the current latitude and longitude from the GPS module
+        double currentLat = GPS.latitudeDegrees;
+        double currentLon = GPS.longitudeDegrees;
+    
+        // Calculate the distance (in meters) from the current location to the target location
+        double distanceToTarget = gpsParser.distanceBetween(
+            currentLat, currentLon, targetLat, targetLon
+        );
+    
+        // Calculate the course (bearing in degrees) from the current location to the target location
+        double courseToTarget = gpsParser.courseTo(
+            currentLat, currentLon, targetLat, targetLon
+        );
+    
+        Serial.println("\nNavigation Data:");
+        Serial.print("Distance to Target: "); Serial.print(distanceToTarget, 2); Serial.println(" meters");
+        Serial.print("Course to Target: "); Serial.print(courseToTarget, 2); Serial.println(" degrees");
+    }
+    
+</code>
+                                </pre>
+
+                                <h2>References</h2>
+                                <ul>
+                                    <li><a href="https://github.com/mikalhart/TinyGPSPlus" target="_blank">Tiny GPS++</a></li>
+                                    <li><a href="https://learn.adafruit.com/adafruit-ultimate-gps" target="_blank">Adafruit GPS Guide</a></li>
+                                </ul>
+
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-        
-        <!-- ` begin -->
-        <footer>
-            <div class="container">
-                <div class="row gx-5">
-                    <div class="col-lg-8">
-                        <img src="images/logo.png" alt="" >
-                        <div class="spacer-20"></div>
-                        <p>Lorem ipsum culpa tempor tempor eu laboris adipisicing sunt excepteur enim laborum officia eiusmod laborum sint do aliqua incididunt est aute deserunt in elit non sed ut velit ullamco aliquip. Nulla cupidatat elit amet sed labore ut et consequat nostrud laboris aliqua ex est fugiat quis aliqua duis quis esse dolor laboris non duis sunt.</p>
+            <!-- Footer -->
+            <footer>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <img src="images/logo.png" alt="">
+                            <p>Explore the world of Arduino and GPS navigation.</p>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
+                </div>
+                <div class="subfooter">
+                    <div class="container">
                         <div class="row">
-                            <div class="col-lg-6 col-sm-6">
-                                <div class="widget">
-                                    <h5>Pages</h5>
-                                    <ul>
-                                        <li><a href="#">About Us</a></li>
-                                        <li><a href="#">Misc Class Documents</a></li>
+                            <div class="col-md-12">
+                                <div class="de-flex">
+                                    <a href="index.html">Copyright 2025 - B^2</a>
+                                    <ul class="menu-simple">
+                                        <li><a href="#">Terms &amp; Conditions</a></li>
+                                        <li><a href="#">Privacy Policy</a></li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="subfooter">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="de-flex">
-                                <div class="de-flex-col">
-                                    <a href="index.html">
-                                        Copyright 2025 - B^2
-                                    </a>
-                                </div>
-                                <ul class="menu-simple">
-                                    <li><a href="#">Terms &amp; Conditions</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <!-- footer close -->
+            </footer>
+        </div>
     </div>
-    
-    <!-- Javascript Files
-    ================================================== -->
+
+    <!-- JavaScript Files -->
     <script src="js/plugins.js"></script>
     <script src="js/designesia.js"></script>
     <script src="js/swiper.js"></script>
-    <script src="js/custom-marquee.js"></script>
-    <script src="js/custom-swiper-1.js"></script>
-    <script src='https://www.google.com/recaptcha/api.js' async defer></script>
-    <script src="form.js"></script>
-    <script src="recaptcha.js"></script>
 
 </body>
 
