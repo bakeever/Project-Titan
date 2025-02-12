@@ -32,7 +32,7 @@
 // ==========================================================
 //                      Object Declaration
 // ==========================================================
-AF_DCMotor m1(1); // create motor #1, LEft Side
+AF_DCMotor m1(1); // create motor #1, Left Side
 AF_DCMotor m2(3); // create motor #2, Right Side
 
 // Create ASK object
