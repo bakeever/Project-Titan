@@ -32,7 +32,11 @@
 // ==========================================================
 //                      Object Declaration
 // ==========================================================
+<<<<<<< Updated upstream
 AF_DCMotor m1(1); // create motor #1, Left Side
+=======
+AF_DCMotor m1(1); // create motor #1, LEft Side
+>>>>>>> Stashed changes
 AF_DCMotor m2(3); // create motor #2, Right Side
 
 // Create ASK object
@@ -47,6 +51,7 @@ uint8_t i;
 
 
 void setup() {
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 pinMode(TRIG_PIN_1, OUTPUT);
 pinMode(ECHO_PIN_1, INPUT);
@@ -67,6 +72,8 @@ pinMode(ECHO_PIN_3, INPUT);
   // backward();
   // stop();
 =======
+=======
+>>>>>>> Stashed changes
     // Setup Serial Monitor
   Serial.begin(115200);
   Serial1.begin(9600);
@@ -78,6 +85,9 @@ pinMode(ECHO_PIN_3, INPUT);
   // // tenmp test code
   // // forward();
   // // backward();
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   // right();
   // left();
