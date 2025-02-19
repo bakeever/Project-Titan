@@ -1,24 +1,26 @@
 #include <TFT_HX8357.h>
-#include <SPI.h> // Required for display
-#include <RH_ASK.h> // Include RadioHead ASK Library
+#include <SPI.h>
+#include <RH_ASK.h>
 
 // Create TFT object
 TFT_HX8357 tft = TFT_HX8357();
-// Create RF module object
-RH_ASK rf_driver;
-
+// Create ASK objects for RF Communication
+RH_ASK rf_driver1(2000,17,12,10,true); // Reciever
+RH_ASK rf_driver(2000,16,12,10,true); // Transmitter
 // Define named button pins
 const int button1 = 11;
 const int button2 = 10;
 const int button3 = 9;
 const int button4 = 8;
-const int button5 = 7;
+const int button5 = 7; // Move Forward
 const int button6 = 6;
+const int button7 = 5;
+const int button8 = 4;
+const int button9 = 3; // E-STOP
 
 volatile bool loopEnabled = true;
-
-String activeMission = "None"; // Dynamic label for active mission
-String missionData = "Awaiting Data"; // Dynamic label for mission data
+String activeMission = "None";
+String missionData = "Awaiting Data";
 
 // Button states for toggling
 bool buttonState1 = false;
@@ -26,8 +28,11 @@ bool buttonState2 = false;
 bool buttonState3 = false;
 bool buttonState4 = false;
 bool buttonState5 = false;
+bool buttonState6 = false;
+bool buttonState7 = false;
+bool buttonState8 = false;
 
-// Previous button states for detecting changes
+// Previous button states
 bool prevButtonState1 = HIGH;
 bool prevButtonState2 = HIGH;
 bool prevButtonState3 = HIGH;
@@ -35,141 +40,115 @@ bool prevButtonState4 = HIGH;
 bool prevButtonState5 = HIGH;
 
 void toggleLoop() {
-    loopEnabled = !loopEnabled;
+    Serial.println("E-STOP Works");
 }
 
 void setup() {
     Serial.begin(115200);
     tft.begin();
-    tft.setRotation(3);  // Flipped screen orientation
-    rf_driver.init(); // Initialize RF module
+    tft.setRotation(1);
+    // Initialize ASK Object
+    if (!rf_driver.init()) {
+        Serial.println("RF Module Initialization Failed!");
+    } else {
+        Serial.println("RF Module Initialized.");
+    }
 
-    // Attach interrupt to button6
-    pinMode(button6, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(button6), toggleLoop, FALLING);
+    pinMode(button9, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(button9), toggleLoop, FALLING);
 
-    // Display splash screen with "Project Titan" text
+    // Display splash screen
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setTextSize(3);
-    int16_t text_x_center = (480 - (12 * 11)) / 2; // Approximate centering
-    tft.setCursor(text_x_center, 140);
+    tft.setCursor((480 - (12 * 11)) / 2, 140);
     tft.print("Project Titan");
-    delay(3000); // Show splash screen for 3 seconds
+    delay(3000);
 
-    tft.fillScreen(TFT_BLACK);  // Clear screen with black background
-
-    // Set text properties for title
-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    tft.fillScreen(TFT_BLACK);
     tft.setTextSize(2);
-    int16_t x_center = (480 - (25 * 2 * 7)) / 2;
-    tft.setCursor(x_center, 10);
+    tft.setCursor((480 - (25 * 2 * 7)) / 2, 10);
     tft.print("Project Titan Control Center");
 
-    // Centered Active Mission label and dynamic mission text
-    String activeMissionText = "Active Mission: " + activeMission;
-    int16_t mission_width = activeMissionText.length() * 12; // Approximate text width
-    int16_t mission_x_center = (480 - mission_width) / 2;
-    tft.setCursor(mission_x_center, 40);
-    tft.print(activeMissionText);
-
-    // Move and resize mission data box to align left edge with buffer
-    int boxWidth = 460;
-    int boxHeight = 240;
-    int boxX = 10; // Left-aligned with 10px buffer
-    int boxY = 320 - boxHeight - 10; // Bottom-aligned with 10px buffer
-    
-    tft.drawRect(boxX, boxY, boxWidth, boxHeight, TFT_WHITE); // Expanded box for mission data
+    // Draw mission data box
+    int boxX = 10, boxY = 70, boxWidth = 460, boxHeight = 240;
+    tft.drawRect(boxX, boxY, boxWidth, boxHeight, TFT_WHITE);
     tft.setCursor(boxX + 10, boxY + 10);
     tft.print("Mission Data:");
     tft.setCursor(boxX + 10, boxY + 30);
     tft.print(missionData);
 
     // Initialize button inputs
-    pinMode(button1, INPUT_PULLUP);
-    pinMode(button2, INPUT_PULLUP);
-    pinMode(button3, INPUT_PULLUP);
-    pinMode(button4, INPUT_PULLUP);
-    pinMode(button5, INPUT_PULLUP);
+    for (int i = 4; i <= 11; i++) {
+        pinMode(i, INPUT_PULLUP);
+    }
 }
-
 void sendCommand(const char *command) {
     rf_driver.send((uint8_t *)command, strlen(command));
     rf_driver.waitPacketSent();
+    delay(1000);
+    Serial.print("Sent: ");
     Serial.println(command);
 }
 
-void updateActiveMission(String mission) {
-    if (mission == activeMission) {
-        return; // Do nothing if the mission is unchanged
-    }
-    activeMission = mission;
 
-    // Center the updated Active Mission text
-    String activeMissionText = "Active Mission: " + activeMission;
-    int16_t mission_width = activeMissionText.length() * 12;
-    int16_t mission_x_center = (480 - mission_width) / 2;
-    tft.fillRect(0, 40, 480, 20, TFT_BLACK); // Clear previous mission text
-    tft.setCursor(mission_x_center, 40);
-    tft.print(activeMissionText);
+void updateActiveMission(String mission) {
+    if (mission != activeMission) {
+        activeMission = mission;
+        // Center the updated Active Mission text
+        String activeMissionText = "Active Mission: " + activeMission;
+        int16_t mission_width = activeMissionText.length() * 12;
+        int16_t mission_x_center = (480 - mission_width) / 2;
+        tft.fillRect(0, 40, 480, 20, TFT_BLACK); // Clear previous mission text
+        tft.setCursor(mission_x_center, 35);
+        tft.print(activeMissionText);
+    }
 }
 
 void updateMissionData(String data) {
-    if (data == missionData) {
-        return; // Do nothing if the data is unchanged
+    if (data != missionData) {
+        missionData = data;
+        tft.fillRect(20, 100, 440, 220, TFT_BLACK);
+        tft.setCursor(20, 100);
+        tft.print(missionData);
     }
-    missionData = data;
+}
 
-    int boxWidth = 460;
-    int boxHeight = 240;
-    int boxX = 10;
-    int boxY = 320 - boxHeight - 10;
-    
-    tft.fillRect(boxX + 10, boxY + 30, boxWidth - 20, boxHeight - 40, TFT_BLACK); // Clear previous mission data in larger box
-    tft.setCursor(boxX + 10, boxY + 30);
-    tft.print(missionData);
+void handleMissionButton(int button, bool &buttonState, bool &prevButtonState, const String &mission, const String &activeMsg, const String &stopMsg) {
+    if (digitalRead(button) == LOW && prevButtonState == HIGH) {
+        buttonState = !buttonState;
+        updateActiveMission(mission);
+        updateMissionData(buttonState ? activeMsg : "Idle");
+        sendCommand(buttonState ? mission.c_str() : stopMsg.c_str());
+    }
+    prevButtonState = digitalRead(button);
+}
+
+void moveForward() { 
+  sendCommand("FORWARD"); 
+  Serial.print("Jog Forward");
+}
+void moveBackward() { 
+  sendCommand("BACKWARD"); 
+  Serial.print("Jog Backward");
+}
+void turnLeft() { 
+  sendCommand("LEFT"); 
+  Serial.print("Jog Left");
+}
+void turnRight() { 
+  sendCommand("RIGHT"); 
+  Serial.print("Jog Right");
 }
 
 void loop() {
-    if (!loopEnabled) return;
+    handleMissionButton(button1, buttonState1, prevButtonState1, "Mission 1", "Scounting Perimeter", "Stop Mission 1");
+    handleMissionButton(button2, buttonState2, prevButtonState2, "Mission 2", "Locating distress beacon", "Stop Mission 2");
+    handleMissionButton(button3, buttonState3, prevButtonState3, "Mission 3", "Analyzing minerals", "Stop Mission 3");
+    handleMissionButton(button4, buttonState4, prevButtonState4, "Mission 4", "Delivering payload", "Stop Mission 4");
 
-    delay(50); // Small debounce delay to avoid rapid toggles
-    if (!loopEnabled) return;
-
-    if (digitalRead(button1) == LOW && prevButtonState1 == HIGH) {
-        buttonState1 = !buttonState1;
-        updateActiveMission("Mission 1");
-        updateMissionData(buttonState1 ? "Scanning terrain" : "Idle");
-        sendCommand(buttonState1 ? "Mission 1" : "Stop Mission 1");
-    }
-    if (digitalRead(button2) == LOW && prevButtonState2 == HIGH) {
-        buttonState2 = !buttonState2;
-        updateActiveMission("Mission 2");
-        updateMissionData(buttonState2 ? "Locating distress beacon" : "Idle");
-        sendCommand(buttonState2 ? "Mission 2" : "Stop Mission 2");
-    }
-    if (digitalRead(button3) == LOW && prevButtonState3 == HIGH) {
-        buttonState3 = !buttonState3;
-        updateActiveMission("Mission 3");
-        updateMissionData(buttonState3 ? "Analyzing minerals" : "Idle");
-        sendCommand(buttonState3 ? "Mission 3" : "Stop Mission 3");
-    }
-    prevButtonState1 = digitalRead(button1);
-    prevButtonState2 = digitalRead(button2);
-    prevButtonState3 = digitalRead(button3);
-    
-    if (digitalRead(button4) == LOW && prevButtonState4 == HIGH) {
-        buttonState4 = !buttonState4;
-        updateActiveMission("Mission 4");
-        updateMissionData(buttonState4 ? "Delivering payload" : "Idle");
-        sendCommand(buttonState4 ? "Mission 4" : "Stop Mission 4");
-    }
-    if (digitalRead(button5) == LOW && prevButtonState5 == HIGH) {
-        buttonState5 = !buttonState5;
-        updateActiveMission("Maintenance");
-        updateMissionData(buttonState5 ? "Inspecting rover" : "Idle");
-        sendCommand(buttonState5 ? "Maintenance" : "Stop Maintenance");
-    }
-    prevButtonState4 = digitalRead(button4);
-    prevButtonState5 = digitalRead(button5);
+    if (digitalRead(button5) == LOW) moveBackward();
+    if (digitalRead(button6) == LOW) turnRight();
+    if (digitalRead(button7) == LOW) turnLeft();
+    if (digitalRead(button8) == LOW) moveForward();
 }
