@@ -39,7 +39,7 @@ const long sensorInterval = 1000;  // 1-second interval
 //                      Object Declaration
 // ==========================================================
 AF_DCMotor m1(2); // create motor #1, Right Side
-AF_DCMotor m2(4); // create motor #2, Left Side
+AF_DCMotor m2(3); // create motor #2, Left Side
 
 // Create ASK objects for RF Communication
 RH_ASK rf_driver(2000,19,12,10,true); // Reciever
@@ -89,12 +89,17 @@ void setup() {
   pinMode(ECHO_PIN_LEFT, INPUT);
   pinMode(TRIG_PIN_RIGHT, OUTPUT);
   pinMode(ECHO_PIN_RIGHT, INPUT);
+  /* Motor handshake */
+  // if(handshakeMotor()){
 
+  // }
+  
   // Setup Serial Monitor
   Serial.begin(115200);
   Serial1.begin(9600);
   Serial.println("Waiting for message");
   // Initialize ASK Object
+  rf_driver.init();
   if (!rf_driver.init()) {
       Serial.println("RF Module Initialization Failed!");
   } else {
@@ -102,10 +107,7 @@ void setup() {
       Serial.println("Waiting for messages...");
   }
   
-  /* Motor handshake */
-  if(handshakeMotor()){
 
-  }
   // /* RF Handshake */
   // if(handshakeRF() == true){
   //   continue;
@@ -118,6 +120,22 @@ void setup() {
 }
 
 void loop() {
+  /* RF Messaging */
+  static uint8_t buf[10] = {0};  
+  uint8_t buflen = sizeof(buf);
+  
+  if (rf_driver.recv(buf, &buflen)) {
+      buf[buflen] = '\0';  // Null-terminate the received message
+      Serial.print("Received: ");
+      Serial.println((char*)buf);
+
+      // Process movement commands
+      parseCommand((char*)buf);
+      Serial.print("Waiting for next command");
+      memset(buf, 0, sizeof(buf));
+      delay(50);  // Small delay to prevent CPU overload
+  }
+
     //   if (sensorsEnabled) {  // Check if sensors are enabled
     //     long distanceLeft = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
     //     long distanceRight = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
@@ -136,23 +154,6 @@ void loop() {
     // } else {
     //     Serial.println("Sensors are disabled.");
     // }
-    /* RF Messaging */
-    static uint8_t buf[10] = {0};  
-    uint8_t buflen = sizeof(buf);
-    
-    if (rf_driver.recv(buf, &buflen)) {
-        buf[buflen] = '\0';  // Null-terminate the received message
-        Serial.print("Received: ");
-        Serial.println((char*)buf);
-
-        // Process movement commands
-        parseCommand((char*)buf);
-        Serial.print("Waiting for next command");
-        memset(buf, 0, sizeof(buf));
-        delay(50);  // Small delay to prevent CPU overload
-    }
-
-
 }
 
 void parseCommand(char *message) {
