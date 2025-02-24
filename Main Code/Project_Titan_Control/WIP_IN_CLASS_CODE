@@ -1,0 +1,21 @@
+  #include <RH_ASK.h>
+  #include <SPI.h>
+  // RH_ASK rf_driver;
+  RH_ASK driver(2000,17,16,10);
+
+  void setup() {
+      Serial.begin(115200);
+      if (!driver.init()) {
+          Serial.println("RF Module Initialization Failed!");
+      } else {
+          Serial.println("RF Module Initialized.");
+      }
+  }
+
+    void loop() {
+    const char *msg = "FORWARD";
+    driver.send((uint8_t *)msg, strlen(msg));
+    driver.waitPacketSent();
+    Serial.println(msg);
+    delay(1000);
+    }    
