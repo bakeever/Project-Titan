@@ -18,7 +18,7 @@ RH_ASK driver;
 void setup()
 {
 #ifdef RH_HAVE_SERIAL
-    Serial.begin(9600);	  // Debugging only
+    Serial.begin(115200);	  // Debugging only
 #endif
     if (!driver.init())
 #ifdef RH_HAVE_SERIAL
@@ -26,6 +26,7 @@ void setup()
 #else
 	;
 #endif
+Serial.print("Listening...");
 }
 
 void loop()
