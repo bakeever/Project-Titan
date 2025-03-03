@@ -1,6 +1,6 @@
 /*
  * ==========================================================
- * Project Name: Ultrasonic Distance Sensor Example
+ * Project Name: Project Titan Hyperion
  * Author: Bryce Keever
  * Date: January 27, 2025
  * Version: 1.0
@@ -15,6 +15,8 @@
 #include <SPI.h>
 // Include RadioHead Amplitude Shift Keying Library
 #include <RH_ASK.h>
+#include <Servo.h>  // Include the Servo library
+
 // ==========================================================
 //                      Program Variables
 // ==========================================================
@@ -22,8 +24,10 @@
 #define PULSE_TIMEOUT 30000  // Timeout for pulseIn() in microseconds
 
 bool sensorsEnabled = true;  // Boolean flag to enable or disable sensors
-unsigned long previousMillis = 0;  // Stores last time sensors were read
 const long sensorInterval = 1000;  // 1-second interval
+
+unsigned long previousMillis = 0;
+const long interval = 3000; // 3 seconds
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -42,13 +46,15 @@ AF_DCMotor m1(2); // create motor #1, Right Side
 AF_DCMotor m2(3); // create motor #2, Left Side
 
 // Create ASK objects for RF Communication
-RH_ASK rf_driver(2000,19,12,10,true); // Reciever
-RH_ASK rf_driver1(2000,18,12,10,true); // Transmitter
+RH_ASK rf_driver(2000,19,18,10); // Reciever
+RH_ASK rf_driver1(2000,18,19,10,true); // Transmitter
+
+Servo myServo;  // Create a servo object
 // ==========================================================
 //                  Initialization Section
 // ==========================================================
-uint16_t outer_tread = 100;
-uint16_t inner_tread = 100;
+uint16_t outer_tread = 250;
+uint16_t inner_tread = 250;
 uint8_t i; // For accel and deccel
 
 void handshakeRF(){
@@ -72,8 +78,8 @@ void handshakeUltra(){
 }
 bool handshakeMotor(){
   // Rotate Left 
-  m1.setSpeed(outer_tread);
-  m2.setSpeed(inner_tread);
+  m1.setSpeed(150);
+  m2.setSpeed(150);
   m1.run(FORWARD);
   m2.run(FORWARD);
   delay(1000);
@@ -84,6 +90,28 @@ bool handshakeMotor(){
   m2.run(RELEASE);
   return true;
 }
+
+void mission_1(){
+  int counter = 0;  // Initialize counter
+
+  while (counter < 4) {  // Run while counter is less than 4
+    Serial.print("Counter: ");
+    Serial.println(counter);
+    forward();
+    delay(500);
+    right();
+    counter++;  // Increment counter
+    delay(1500);
+  }
+  payload();
+}
+void mission_2(){
+}
+void mission_3(){
+}
+void mission_4(){
+}
+
 void setup() {
   pinMode(TRIG_PIN_LEFT, OUTPUT);
   pinMode(ECHO_PIN_LEFT, INPUT);
@@ -91,7 +119,7 @@ void setup() {
   pinMode(ECHO_PIN_RIGHT, INPUT);
   /* Motor handshake */
   // if(handshakeMotor()){
-
+  //   Serial.println("Motor Initialize Complete");
   // }
   
   // Setup Serial Monitor
@@ -107,6 +135,7 @@ void setup() {
       Serial.println("Waiting for messages...");
   }
   
+  myServo.attach(9);  // Attach the servo to pin 9
 
   // /* RF Handshake */
   // if(handshakeRF() == true){
@@ -135,6 +164,7 @@ void loop() {
       memset(buf, 0, sizeof(buf));
       delay(50);  // Small delay to prevent CPU overload
   }
+  /* Ultrasonic Sensor Check */
 
     //   if (sensorsEnabled) {  // Check if sensors are enabled
     //     long distanceLeft = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
@@ -173,16 +203,16 @@ void parseCommand(char *message) {
         m1.run(RELEASE);
         m2.run(RELEASE);
     }
-    else if (strcmp(message, "MISSION1") == 0) {
+    else if (strcmp(message, "Mission 1") == 0) {
         mission_1();
     }  
-    else if (strcmp(message, "MISISON2") == 0) {
+    else if (strcmp(message, "Mission 2") == 0) {
         mission_2();
     }
-    else if (strcmp(message, "MISSION3") == 0) {
+    else if (strcmp(message, "Mission 3") == 0) {
         mission_3();
     }
-    else if (strcmp(message, "MISSION4") == 0) {
+    else if (strcmp(message, "Mission 4") == 0) {
         mission_4();
     }
     else{
@@ -190,27 +220,18 @@ void parseCommand(char *message) {
     }
 }
 
-void mission_1(){
-}
-void mission_2(){
-}
-void mission_3(){
-}
-void mission_4(){
-}
-
-
-void accel(){
+void accel() {
   static int i = 0;
   static unsigned long lastUpdate = 0;
-  
-  if (i < 255 && millis() - lastUpdate > 5) {
+
+  if (i < 255 && millis() - lastUpdate > 250) { // Slower acceleration
     m1.setSpeed(i);
     m2.setSpeed(i);
-    i++;
+    i += 0.1;  // Change to i += 2 for a faster increase
     lastUpdate = millis();
   }
 }
+
 void decel(){
   static int i = 255;
   static unsigned long lastUpdate = 0;
@@ -223,17 +244,24 @@ void decel(){
   }
 }
 void forward(){
+  Serial.print("Forward debug");
+  m1.setSpeed(250);
+  m2.setSpeed(250);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  accel();
-  decel();
+  delay(1000);
+  m1.setSpeed(0);
+  m2.setSpeed(0);
+  delay(100);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void backward(){
+  Serial.print("Backward debug");
   m1.run(BACKWARD);
   m2.run(BACKWARD);
   accel();
+  delay(500);
   decel();
   m1.run(RELEASE);
   m2.run(RELEASE);
@@ -244,19 +272,19 @@ void release(){
   Serial.println("System Update: Motors released");
 }
 void right(){
-  m1.setSpeed(outer_tread);
-  m2.setSpeed(inner_tread);
-  m1.run(FORWARD);
-  m2.run(BACKWARD);
+  m1.setSpeed(150);
+  m2.setSpeed(150);
+  m1.run(BACKWARD);
+  m2.run(FORWARD);
   delay(500);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void left(){
-  m1.setSpeed(inner_tread);
-  m2.setSpeed(outer_tread);
-  m1.run(BACKWARD);
-  m2.run(FORWARD);
+  m1.setSpeed(150);
+  m2.setSpeed(150);
+  m1.run(FORWARD);
+  m2.run(BACKWARD);
   delay(500);
   m1.run(RELEASE);
   m2.run(RELEASE);
@@ -289,4 +317,13 @@ long getDistance(int trigPin, int echoPin) {
     }
 
     return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
+}
+
+void payload(){
+  myServo.write(0); // Move servo to 180 degrees
+  delay(1000);        // Wait 1 second
+  myServo.write(180); // Move servo to 180 degrees
+  delay(1000);        // Wait 1 second
+  myServo.write(0); // Move servo to 180 degrees
+  delay(1000);        // Wait 1 second
 }

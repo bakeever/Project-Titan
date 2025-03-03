@@ -1,12 +1,30 @@
+/*
+ * ==========================================================
+ * Project Name: Project Titan Control Center
+ * Author: Bryce Keever
+ * Date: January 27, 2025
+ * Version: 1.0
+ * Description: 
+ * ==========================================================
+ */
+// ==========================================================
+//                      Library Includes
+// ==========================================================
 #include <TFT_HX8357.h>
 #include <SPI.h>
 #include <RH_ASK.h>
 
+// ==========================================================
+//                      Object Declaration
+// ==========================================================
 // Create TFT object
 TFT_HX8357 tft = TFT_HX8357();
 // Create ASK objects for RF Communication
 RH_ASK rf_driver1(2000,17,12,10,true); // Reciever
-RH_ASK rf_driver(2000,16,12,10,true); // Transmitter
+  RH_ASK rf_driver(2000,17,16,10); // Transmitter
+// ==========================================================
+//                      Pin Declaration
+// ==========================================================
 // Define named button pins
 const int button1 = 11;
 const int button2 = 10;
@@ -17,7 +35,11 @@ const int button6 = 6;
 const int button7 = 5;
 const int button8 = 4;
 const int button9 = 3; // E-STOP
+const int m_select = 2; // Mission Part Selection
 
+// ==========================================================
+//                      Program Variables
+// ==========================================================
 volatile bool loopEnabled = true;
 String activeMission = "None";
 String missionData = "Awaiting Data";
@@ -31,6 +53,8 @@ bool buttonState5 = false;
 bool buttonState6 = false;
 bool buttonState7 = false;
 bool buttonState8 = false;
+
+bool m_selectState = false;
 
 // Previous button states
 bool prevButtonState1 = HIGH;
@@ -121,7 +145,6 @@ void handleMissionButton(int button, bool &buttonState, bool &prevButtonState, c
         updateMissionData(buttonState ? activeMsg : "Idle");
         sendCommand(buttonState ? mission.c_str() : stopMsg.c_str());
     }
-    prevButtonState = digitalRead(button);
 }
 
 void moveForward() { 
@@ -140,15 +163,30 @@ void turnRight() {
   sendCommand("RIGHT"); 
   Serial.print("Jog Right");
 }
+void mission_11(){
+  sendCommand("M11");
+    Serial.print("Mission 1 Part A");
+}
+void mission_12(){
+  sendCommand("M12");
+    Serial.print("Mission 1 Part B");
+}
+void mission_21(){
+  sendCommand("M21");
+}
+void mission_22(){
+  sendCommand("M22");
+}
 
 void loop() {
     handleMissionButton(button1, buttonState1, prevButtonState1, "Mission 1", "Scounting Perimeter", "Stop Mission 1");
     handleMissionButton(button2, buttonState2, prevButtonState2, "Mission 2", "Locating distress beacon", "Stop Mission 2");
     handleMissionButton(button3, buttonState3, prevButtonState3, "Mission 3", "Analyzing minerals", "Stop Mission 3");
     handleMissionButton(button4, buttonState4, prevButtonState4, "Mission 4", "Delivering payload", "Stop Mission 4");
-
+    
     if (digitalRead(button5) == LOW) moveBackward();
-    if (digitalRead(button6) == LOW) turnRight();
-    if (digitalRead(button7) == LOW) turnLeft();
+    if (digitalRead(button6) == LOW) turnLeft();
+    if (digitalRead(button7) == LOW) turnRight();
     if (digitalRead(button8) == LOW) moveForward();
+
 }
