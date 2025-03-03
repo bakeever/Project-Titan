@@ -28,6 +28,8 @@ const long sensorInterval = 1000;  // 1-second interval
 
 unsigned long previousMillis = 0;
 const long interval = 3000; // 3 seconds
+
+int pos = 0;
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -94,7 +96,7 @@ bool handshakeMotor(){
 void mission_1(){
   int counter = 0;  // Initialize counter
 
-  while (counter < 4) {  // Run while counter is less than 4
+  while (counter < 3) {  // Run while counter is less than 4
     Serial.print("Counter: ");
     Serial.println(counter);
     forward();
@@ -103,6 +105,9 @@ void mission_1(){
     counter++;  // Increment counter
     delay(1500);
   }
+  forward();
+  delay(500);
+  release();
   payload();
 }
 void mission_2(){
@@ -134,9 +139,9 @@ void setup() {
       Serial.println("RF Module Initialized.");
       Serial.println("Waiting for messages...");
   }
-  
+  myServo.write(pos); // put it before the attach() so it goes straight to that position
   myServo.attach(9);  // Attach the servo to pin 9
-
+  payload();
   // /* RF Handshake */
   // if(handshakeRF() == true){
   //   continue;
@@ -249,15 +254,14 @@ void forward(){
   m2.setSpeed(250);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  delay(1000);
-  m1.setSpeed(0);
-  m2.setSpeed(0);
-  delay(100);
+  delay(3000);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void backward(){
   Serial.print("Backward debug");
+  m1.setSpeed(250);
+  m2.setSpeed(250);
   m1.run(BACKWARD);
   m2.run(BACKWARD);
   accel();
@@ -272,20 +276,20 @@ void release(){
   Serial.println("System Update: Motors released");
 }
 void right(){
-  m1.setSpeed(150);
-  m2.setSpeed(150);
+  m1.setSpeed(250);
+  m2.setSpeed(250);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  delay(500);
+  delay(750);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void left(){
-  m1.setSpeed(150);
-  m2.setSpeed(150);
+  m1.setSpeed(250);
+  m2.setSpeed(250);
   m1.run(FORWARD);
   m2.run(BACKWARD);
-  delay(500);
+  delay(750);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
@@ -320,10 +324,20 @@ long getDistance(int trigPin, int echoPin) {
 }
 
 void payload(){
-  myServo.write(0); // Move servo to 180 degrees
-  delay(1000);        // Wait 1 second
-  myServo.write(180); // Move servo to 180 degrees
-  delay(1000);        // Wait 1 second
-  myServo.write(0); // Move servo to 180 degrees
-  delay(1000);        // Wait 1 second
+  int pos = 0;    // variable to store the servo position
+  // myServo.write(0); // Move servo to 180 degrees
+  // delay(1000);        // Wait 1 second
+  // myServo.write(-180); // Move servo to 180 degrees
+  // delay(1000);        // Wait 1 second
+  // myServo.write(0); // Move servo to 180 degrees
+  // delay(1000);        // Wait 1 second
+  for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
+    myServo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(2);                       // waits 15ms for the servo to reach the position
+  }
+    for (pos = 0; pos <= 180; pos += 1) { // goes from 0 degrees to 180 degrees
+    // in steps of 1 degree
+    myServo.write(pos);              // tell servo to go to position in variable 'pos'
+    delay(5);                       // waits 15ms for the servo to reach the position
+  }
 }
