@@ -254,7 +254,7 @@ void forward(){
   m2.setSpeed(250);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  delay(3000);
+  delay(5000);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
