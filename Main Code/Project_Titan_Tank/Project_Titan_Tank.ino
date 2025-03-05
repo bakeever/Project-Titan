@@ -93,24 +93,66 @@ bool handshakeMotor(){
   return true;
 }
 
-void mission_1(){
+void mission_11(){
   int counter = 0;  // Initialize counter
 
   while (counter < 3) {  // Run while counter is less than 4
     Serial.print("Counter: ");
     Serial.println(counter);
-    forward();
+    forward(4000);
     delay(500);
     right();
     counter++;  // Increment counter
-    delay(1500);
+    delay(1000);
+
   }
-  forward();
+  forward(4000);
   delay(500);
-  release();
   payload();
+  forward(500);
+
 }
-void mission_2(){
+void mission_12(){
+// Function that waits until a valid RF message is received,
+// verifies it, and passes the number to travelDistance()
+  uint8_t buf[13] = {0};
+  uint8_t buflen = sizeof(buf);
+  Serial.print("Starting Mission 1B");
+  // Loop continuously until a valid message is received
+  while (true) {
+    // Check if a message has been received
+    if (rf_driver.recv(buf, &buflen)) {
+      // Check if the message starts with 'X'
+      if (buf[0] == 'X') {
+        // Convert the subsequent characters into an integer
+        int receivedNum = atoi((char*)&buf[1]);
+        Serial.print("Message Received: ");
+        Serial.println((char*)buf);
+        // Pass the parsed number to the travelDistance function
+        travelDistance(receivedNum);
+        break; // Exit the loop once a valid message is processed
+      } else {
+        Serial.println("Invalid message format received.");
+      }
+      // Reset the buffer length for the next attempt
+      buflen = sizeof(buf);
+    }
+    delay(100); // Small delay to avoid busy waiting
+  }
+}
+void travelDistance(int distance){
+  // Given that 10 feet takes 4000ms, calculate delay as 400ms per foot
+  int delayTime = distance * 415;
+  Serial.print("Traveling ");
+  Serial.print(distance);
+  Serial.print(" feet (");
+  Serial.print(delayTime);
+  Serial.println(" ms).");
+  forward(delayTime);
+  delay(1000);
+  payload();
+  delay(500);
+  forward(500);
 }
 void mission_3(){
 }
@@ -193,7 +235,7 @@ void loop() {
 
 void parseCommand(char *message) {
     if (strcmp(message, "FORWARD") == 0) {
-        forward();
+        forward(1000);
     }
     else if (strcmp(message, "BACKWARD") == 0) {
         backward();
@@ -208,11 +250,11 @@ void parseCommand(char *message) {
         m1.run(RELEASE);
         m2.run(RELEASE);
     }
-    else if (strcmp(message, "Mission 1") == 0) {
-        mission_1();
+    else if (strcmp(message, "Mission 1A") == 0) {
+        mission_11();
     }  
-    else if (strcmp(message, "Mission 2") == 0) {
-        mission_2();
+    else if (strcmp(message, "Mission 1B") == 0) {
+        mission_12();
     }
     else if (strcmp(message, "Mission 3") == 0) {
         mission_3();
@@ -220,6 +262,7 @@ void parseCommand(char *message) {
     else if (strcmp(message, "Mission 4") == 0) {
         mission_4();
     }
+    // else if (strcmp(message, "ADJUST") == 0)
     else{
       return;
     }
@@ -248,13 +291,13 @@ void decel(){
     lastUpdate = millis();
   }
 }
-void forward(){
+void forward(int wait){
   Serial.print("Forward debug");
-  m1.setSpeed(250);
-  m2.setSpeed(250);
+  m1.setSpeed(255);
+  m2.setSpeed(255);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  delay(5000);
+  delay(wait);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
@@ -276,8 +319,8 @@ void release(){
   Serial.println("System Update: Motors released");
 }
 void right(){
-  m1.setSpeed(250);
-  m2.setSpeed(250);
+  m1.setSpeed(200);
+  m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
   delay(750);
@@ -285,8 +328,8 @@ void right(){
   m2.run(RELEASE);
 }
 void left(){
-  m1.setSpeed(250);
-  m2.setSpeed(250);
+  m1.setSpeed(200);
+  m2.setSpeed(200);
   m1.run(FORWARD);
   m2.run(BACKWARD);
   delay(750);

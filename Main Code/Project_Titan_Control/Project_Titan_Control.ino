@@ -26,17 +26,30 @@ RH_ASK rf_driver1(2000,17,12,10,true); // Reciever
 //                      Pin Declaration
 // ==========================================================
 // Define named button pins
-const int button1 = 11;
-const int button2 = 10;
-const int button3 = 9;
-const int button4 = 8;
-const int button5 = 7; // Move Forward
-const int button6 = 6;
-const int button7 = 5;
-const int button8 = 4;
-const int button9 = 3; // E-STOP
-const int m_select = 2; // Mission Part Selection
+const int button11 = 11;  // Mission 1
+const int button10 = 10;  // Mission 2
+const int button9 = 9;    // Mission 3
+const int button8 = 8;    // Mission 4
+const int button7 = 7;    // Move Backward
+const int button6 = 6;    // Move Left
+const int button5 = 5;    // Move Right
+const int button4 = 4;    // Move Forward
+const int button3 = 3;    // E-STOP
+const int button2 = 2;    // Mission Part Selection
+  
+const int button24 = 24;  // Manual Adjust 1 -
+const int button25 = 25;  // Manual Adjust 2 -
+const int button26 = 26;  // Manual Adjust 3 -
+const int button27 = 27;  // Manual Adjust 4 -
+const int button28 = 28;  // Set Manual Adjust 1
+const int button29 = 29;  // Set Manual Adjust 2  
+const int button30 = 30;  // Set Manual Adjust 3
+const int button31 = 31;  // Set Manual Adjust 4 
 
+const int potPin_1 = A0;
+const int potPin_2 = A1;
+const int potPin_3 = A2;
+const int potPin_4 = A3;
 // ==========================================================
 //                      Program Variables
 // ==========================================================
@@ -44,17 +57,35 @@ volatile bool loopEnabled = true;
 String activeMission = "None";
 String missionData = "Awaiting Data";
 
-// Button states for toggling
-bool buttonState1 = false;
-bool buttonState2 = false;
-bool buttonState3 = false;
-bool buttonState4 = false;
-bool buttonState5 = false;
-bool buttonState6 = false;
-bool buttonState7 = false;
-bool buttonState8 = false;
+// Variables to store value for pots
+int potValue_1 = 0;
+int potValue_2 = 0;
+int potValue_3 = 0;
+int potValue_4 = 0;
 
-bool m_selectState = false;
+// Button states for toggling
+// Mission buttons
+bool buttonState11 = false;  // Mission 1
+bool buttonState10 = false;  // Mission 2
+bool buttonState9 = false;   // Mission 3
+bool buttonState8 = false;   // Mission 4
+bool buttonState7 = false;   // Move Backward
+bool buttonState6 = false;   // Move Left
+bool buttonState5 = false;   // Move Right
+bool buttonState4 = false;   // Move Forward
+bool buttonState3 = false;   // E-STOP
+bool buttonState2 = false;   // Mission Part Selection
+
+// Manual adjustment buttons
+bool buttonState24 = false;  // Manual Adjust 1 -
+bool buttonState25 = false;  // Manual Adjust 2 -
+bool buttonState26 = false;  // Manual Adjust 3 -
+bool buttonState27 = false;  // Manual Adjust 4 -
+bool buttonState28 = false;  // Set Manual Adjust 1
+bool buttonState29 = false;  // Set Manual Adjust 2  
+bool buttonState30 = false;  // Set Manual Adjust 3
+bool buttonState31 = false;  // Set Manual Adjust 4
+
 
 // Previous button states
 bool prevButtonState1 = HIGH;
@@ -67,21 +98,14 @@ void toggleLoop() {
     Serial.println("E-STOP Works");
 }
 
-void setup() {
-    Serial.begin(115200);
-    tft.begin();
-    tft.setRotation(1);
-    // Initialize ASK Object
-    if (!rf_driver.init()) {
-        Serial.println("RF Module Initialization Failed!");
-    } else {
-        Serial.println("RF Module Initialized.");
-    }
-
-    pinMode(button9, INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(button9), toggleLoop, FALLING);
-
-    // Display splash screen
+void readPot(){
+  potValue_1 = analogRead(potPin_1); // Read the analog value (0-1023)
+  Serial.print("Potentiometer Value: ");
+  Serial.println(potValue_1); // Print value to Serial Monitor
+  delay(100); // Delay for stability
+}
+void splash(){
+// Display splash screen
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setTextSize(3);
@@ -101,6 +125,23 @@ void setup() {
     tft.print("Mission Data:");
     tft.setCursor(boxX + 10, boxY + 30);
     tft.print(missionData);
+
+}
+void setup() {
+    Serial.begin(115200);
+    tft.begin();
+    tft.setRotation(1);
+    // Initialize ASK Object
+    if (!rf_driver.init()) {
+        Serial.println("RF Module Initialization Failed!");
+    } else {
+        Serial.println("RF Module Initialized.");
+    }
+
+    pinMode(button3, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(button3), toggleLoop, FALLING);
+
+    splash(); // Initializes display
 
     // Initialize button inputs
     for (int i = 4; i <= 11; i++) {
@@ -179,14 +220,14 @@ void mission_22(){
 }
 
 void loop() {
-    handleMissionButton(button1, buttonState1, prevButtonState1, "Mission 1", "Scounting Perimeter", "Stop Mission 1");
-    handleMissionButton(button2, buttonState2, prevButtonState2, "Mission 2", "Locating distress beacon", "Stop Mission 2");
-    handleMissionButton(button3, buttonState3, prevButtonState3, "Mission 3", "Analyzing minerals", "Stop Mission 3");
-    handleMissionButton(button4, buttonState4, prevButtonState4, "Mission 4", "Delivering payload", "Stop Mission 4");
+    handleMissionButton(button11, buttonState11, prevButtonState1, "Mission 1A", "Scounting Perimeter", "Stop Mission 1A");
+    handleMissionButton(button10, buttonState10, prevButtonState2, "Mission 1B", "Kamakaze Assignment", "Mission 1B");
+    handleMissionButton(button9, buttonState9, prevButtonState3, "X10ZZZZZZZZZ", "Analyzing minerals", "X10ZZZZZZZZZ");
+    handleMissionButton(button8, buttonState8, prevButtonState4, "Mission 4", "Delivering payload", "Stop Mission 4");
     
-    if (digitalRead(button5) == LOW) moveBackward();
+    if (digitalRead(button7) == LOW) moveBackward();
     if (digitalRead(button6) == LOW) turnLeft();
-    if (digitalRead(button7) == LOW) turnRight();
-    if (digitalRead(button8) == LOW) moveForward();
+    if (digitalRead(button5) == LOW) turnRight();
+    if (digitalRead(button4) == LOW) moveForward();
 
 }
