@@ -99,14 +99,14 @@ void mission_11(){
   while (counter < 3) {  // Run while counter is less than 4
     Serial.print("Counter: ");
     Serial.println(counter);
-    forward(4255);
+    forward(3800);
     delay(500);
     right();
     counter++;  // Increment counter
     delay(1000);
 
   }
-  forward(4255);
+  forward(3800);
   delay(500);
   payload();
   forward(500);
@@ -142,7 +142,7 @@ void mission_12(){
 }
 void travelDistance(int distance){
   // Given that 10 feet takes 4000ms, calculate delay as 400ms per foot - changed to 4.77/ft
-  int delayTime = distance * 477;
+  int delayTime = distance * 380;
   Serial.print("Traveling ");
   Serial.print(distance);
   Serial.print(" feet (");
@@ -323,7 +323,7 @@ void right(){
   m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  delay(600);
+  delay(576);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
