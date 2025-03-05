@@ -99,14 +99,14 @@ void mission_11(){
   while (counter < 3) {  // Run while counter is less than 4
     Serial.print("Counter: ");
     Serial.println(counter);
-    forward(4500);
+    forward(4255);
     delay(500);
     right();
     counter++;  // Increment counter
     delay(1000);
 
   }
-  forward(4500);
+  forward(4255);
   delay(500);
   payload();
   forward(500);
@@ -323,7 +323,7 @@ void right(){
   m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  delay(650);
+  delay(600);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
