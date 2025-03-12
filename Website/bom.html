@@ -60,6 +60,7 @@
                                             
                                             <li><a class="menu-item" href="requirements.html">Project Requirements</a></li>
                                             <li><a class="menu-item" href="specifications.html">Engineering Specs</a></li>
+                                            <li><a class="menu-item" href="testplans.html">Test Plans</a></li>
                                         </ul>
                                     </li>
                                     <li>
@@ -89,7 +90,7 @@
 
                                                             <div class="col-lg-3">
                                                                 <div class="d-list-small">
-                                                                    <a href="mission2">
+                                                                    <a href="mission2.html">
                                                                         <img src="images/covers-square/4.webp" class="" alt="">
                                                                         <h5>Mission 2</h5>
                                                                     </a>
@@ -137,7 +138,7 @@
                                             <li><a class="menu-item" href="tut_gps.html">GPS Functionality</a></li>
                                         </ul>
                                     </li>
-                                    <li><a class="menu-item" href="#">Downloads</a></li>
+                                    <li><a class="menu-item" href="downloads.html">Downloads</a></li>
                                 </ul>
                             </div>
                             <div class="de-flex-col">
@@ -161,38 +162,35 @@
                 <div class="de-gradient-edge-top"></div>
                 <div class="container">
                     <div class="table-wrapper">
-                    <h2>Bill of Materials (BOM)</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 10%;">Item No.</th>
-                                <th style="width: 20%;">Part Name</th>
-                                <th style="width: 30%;">Description</th>
-                                <th style="width: 10%;">Quantity</th>
-                                <th style="width: 15%;">Unit Cost ($)</th>
-                                <th style="width: 15%;">Total Cost ($)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>1</td>  <td>Microcontroller (Arduino)</td>  <td>Arduino Mega 2560</td>              <td>1</td>  <td>35.00</td>  <td>35.00</td></tr>
-                            <tr><td>2</td>  <td>Chassis Frame</td>              <td>3D printed frame</td>               <td>1</td>  <td>25.00</td>  <td>25.00</td></tr>
-                            <tr><td>3</td>  <td>DC Motors + Wheels</td>         <td>5V DC Gear Motors with wheels</td>  <td>2</td>  <td>15.00</td>  <td>30.00</td></tr>
-                            <tr><td>4</td>  <td>Motor Driver</td>               <td>Adafruit Motor Shield v.1</td>      <td>1</td>  <td>8.00</td>   <td>8.00</td></tr>
-                            <tr><td>5</td>  <td>GPS Module</td>                 <td>uBlox NEO-6M</td>                   <td>1</td>  <td>20.00</td>  <td>20.00</td></tr>
-                            <tr><td>6</td>  <td>RF Transmitter</td>             <td>433MHz RF module</td>               <td>1</td>  <td>12.00</td>  <td>12.00</td></tr>
-                            <tr><td>7</td>  <td>Ultrasonic Sensors</td>         <td>HC-SR04 for obstacle detection</td> <td>2</td>  <td>4.00</td>   <td>8.00</td></tr>
-                            <tr><td>8</td>  <td>IMU Sensor</td>                 <td>MPU6050 Gyroscope</td>              <td>1</td>  <td>7.00</td>   <td>7.00</td></tr>
-                            <tr><td>9</td>  <td>Battery Pack</td>               <td>11.1V 2200mAh LiPo</td>             <td>1</td>  <td>30.00</td>  <td>30.00</td></tr>
-                            <tr><td>10</td> <td>Voltage Regulator</td>          <td>DC-DC Step-Down (5V)</td>           <td>1</td>  <td>5.00</td>   <td>5.00</td></tr>
-                            <tr><td>11</td> <td>Payload (Wooden Cube)</td>      <td>1.5"x1.5"x1.5"</td>                 <td>1</td>  <td>2.00</td>   <td>2.00</td></tr>
-                            <tr><td>12</td> <td>Enclosure</td>                  <td>Weatherproof case</td>              <td>1</td>  <td>15.00</td>  <td>15.00</td></tr>
-                            <tr><td>13</td> <td>Mounting Hardware</td>          <td>Screws, brackets</td>               <td>x</td>  <td>10.00</td>  <td>10.00</td></tr>
-                        </tbody>
-                    </table>
-                    <div class="spacer-20"></div>
-                    <p class="total-cost">Total Estimated Cost: <strong>$207.00</strong></p>
+                        <h2>Bill of Materials (BOM)</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 10%;">Item No.</th>
+                                    <th style="width: 20%;">Part Name</th>
+                                    <th style="width: 30%;">Description</th>
+                                    <th style="width: 10%;">Quantity</th>
+                                    <th style="width: 15%;">Unit Cost ($)</th>
+                                    <th style="width: 15%;">Total Cost ($)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>1</td>  <td>GPS Module</td>                      <td>M100-5883 (Pack of Two)</td>         <td>1</td>  <td>32.00</td>  <td>32.00</td></tr>
+                                <tr><td>2</td>  <td>Shock Absorbers</td>               <td>Shock absorbers (4-pack)</td>       <td>2</td>  <td>10.99</td>  <td>21.98</td></tr>
+                                <tr><td>3</td>  <td>Obstacle Avoidance Sensor</td>     <td>Ultrasonic Distance Sensor (HC-SR04)</td> <td>3</td>  <td>2.00</td>   <td>6.00</td></tr>
+                                <tr><td>4</td>  <td>Sand Tires</td>                    <td>Paddle Tires</td>                   <td>2</td>  <td>21.98</td>  <td>43.96</td></tr>
+                                <tr><td>5</td>  <td>RF Communication</td>              <td>NRF24L01+PA+LNA Wireless Transceiver</td> <td>0</td>  <td>10.00</td>  <td>0.00</td></tr>
+                                <tr><td>6</td>  <td>Microcontroller</td>               <td>Arduino MEGA</td>                   <td>2</td>  <td>22.99</td>  <td>45.98</td></tr>
+                                <tr><td>7</td>  <td>Battery</td>                       <td>5V 8Ah battery</td>                 <td>2</td>  <td>20.99</td>  <td>41.98</td></tr>
+                                <tr><td>8</td>  <td>Motors + Tread</td>                <td>Tank Kit</td>                       <td>1</td>  <td>21.99</td>  <td>21.99</td></tr>
+                            </tbody>
+                        </table>
+                        <div class="spacer-20"></div>
+                        <p class="total-cost">Total Estimated Cost: <strong>$106.95</strong></p>
+                    </div>
                 </div>
             </section>
+            
             
         </div>
         <!-- content close -->
