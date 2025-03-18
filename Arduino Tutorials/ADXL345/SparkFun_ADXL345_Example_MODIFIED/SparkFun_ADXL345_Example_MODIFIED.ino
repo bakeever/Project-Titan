@@ -3,6 +3,7 @@
     by Dejan, https://howtomechatronics.com
 
     Another source to use: https://makersportal.com/blog/2017/9/25/accelerometer-on-an-elevator
+    https://www.instructables.com/Arduino-Self-Balancing-Robot-1/
 */
 
 #include <Wire.h> // Wire library - used for I2C communication
