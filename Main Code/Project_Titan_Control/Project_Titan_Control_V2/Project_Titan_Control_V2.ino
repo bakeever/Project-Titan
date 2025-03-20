@@ -19,9 +19,10 @@
 // ==========================================================
 // Create TFT object
 TFT_HX8357 tft = TFT_HX8357();
-// Create ASK objects for RF Communication
-RH_ASK rf_driver1(2000,17,12,10,true); // Reciever
-  RH_ASK rf_driver(2000,17,16,10); // Transmitter
+// Create ASK objects for RF Communication [200byte/sec, TX on D3 (pin 2), RX on D4 (pin 3)]
+RH_ASK rf_driverR(2000,19,18,10); // Reciever
+RH_ASK rf_driverT(2000,19,18,10); // Transmitter
+
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -46,11 +47,11 @@ const int button15 = 15;  // Set Manual Adjust 2
 const int button16 = 16;  // Set Manual Adjust 3
 const int button17 = 17;  // Set Manual Adjust 4 
 
-
-const int button27 = 27;  
-const int button28 = 28;    
-const int button29 = 29;  
-const int button30 = 30;  
+// Adjustment Mode Buttons
+const int button27 = 27;  // Adjustment Mode 1 - 
+const int button28 = 28;  // Adjustment Mode 2 - 
+const int button29 = 29;  // Adjustment Mode 3 - 
+const int button30 = 30;  // Adjustment Mode 4 - 
 
 const int potPin_1 = A0;
 const int potPin_2 = A1;
@@ -105,6 +106,7 @@ bool prevButtonState5 = HIGH;
 
 void toggleLoop() {
     Serial.println("E-STOP Works");
+    sendCommand("ESTOP");
 }
 
 void readPot1(){
@@ -155,17 +157,19 @@ void splash(){
     tft.print(missionData);
 
 }
+
 void setup() {
     Serial.begin(115200);
     tft.begin();
     tft.setRotation(1);
     // Initialize ASK Object
-    if (!rf_driver.init()) {
+    if (!rf_driverT.init()) {
         Serial.println("RF Module Initialization Failed!");
     } else {
         Serial.println("RF Module Initialized.");
     }
 
+    // Initialize ETOP Interrupt
     pinMode(button3, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(button3), toggleLoop, FALLING);
 
@@ -182,14 +186,14 @@ void setup() {
         pinMode(i, INPUT_PULLUP);
     }
 }
+
 void sendCommand(const char *command) {
-    rf_driver.send((uint8_t *)command, strlen(command));
-    rf_driver.waitPacketSent();
+    rf_driverT.send((uint8_t *)command, strlen(command));
+    rf_driverT.waitPacketSent();
     delay(1000);
     Serial.print("Sent: ");
     Serial.println(command);
 }
-
 
 void updateActiveMission(String mission) {
     if (mission != activeMission) {
@@ -221,23 +225,43 @@ void handleMissionButton(int button, bool &buttonState, bool &prevButtonState, c
         sendCommand(buttonState ? mission.c_str() : stopMsg.c_str());
     }
 }
-
-void moveForward() { 
-  sendCommand("FORWARD"); 
-  Serial.print("Jog Forward");
-}
 void moveBackward() { 
   sendCommand("BACKWARD"); 
   Serial.print("Jog Backward");
+  while(digitalRead(button7) == LOW)
+    if(digitalRead(button7) == HIGH){
+      sendCommand("STOP");
+      break;
+    }
 }
 void turnLeft() { 
   sendCommand("LEFT"); 
   Serial.print("Jog Left");
+  while(digitalRead(button6) == LOW)
+    if(digitalRead(button6) == HIGH){
+      sendCommand("STOP");
+      break;
+  }
 }
 void turnRight() { 
   sendCommand("RIGHT"); 
   Serial.print("Jog Right");
+  while(digitalRead(button5) == LOW)
+    if(digitalRead(button5) == HIGH){
+      sendCommand("STOP");
+      break;
+  }
 }
+void moveForward() { 
+  sendCommand("FORWARD"); 
+  Serial.print("Jog Forward");
+  while(digitalRead(button4) == LOW)
+    if(digitalRead(button4) == HIGH){
+      sendCommand("STOP");
+      break;
+  }
+}
+
 void mission_11(){
   sendCommand("M11");
     Serial.print("Mission 1 Part A");
@@ -254,10 +278,10 @@ void mission_22(){
 }
 
 void loop() {
-    handleMissionButton(button11, buttonState11, prevButtonState1, "Mission 1A", "Scounting Perimeter", "Stop Mission 1A");
-    handleMissionButton(button10, buttonState10, prevButtonState2, "Mission 1B", "Kamakaze Assignment", "Mission 1B");
-    handleMissionButton(button9, buttonState9, prevButtonState3, "X10ZZZZZZZZZ", "Analyzing minerals", "X10ZZZZZZZZZ");
-    handleMissionButton(button8, buttonState8, prevButtonState4, "Mission 4", "Delivering payload", "Stop Mission 4");
+    handleMissionButton(button11, buttonState11, prevButtonState1, "Mission 1A", "Scounting Perimeter", "Mission 1B");
+    handleMissionButton(button10, buttonState10, prevButtonState2, "Mission 2A", "Kamakaze Assignment", "Mission 2B");
+    handleMissionButton(button9, buttonState9, prevButtonState3, "Mission 3A", "Analyzing minerals", "Mission 3B");
+    handleMissionButton(button8, buttonState8, prevButtonState4, "Mission 4A", "Delivering payload", "Mission 4B");
     
     if (digitalRead(button7) == LOW) moveBackward();
     if (digitalRead(button6) == LOW) turnLeft();
