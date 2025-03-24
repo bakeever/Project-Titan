@@ -154,6 +154,43 @@ void travelDistance(int distance){
   delay(500);
   forward(500);
 }
+void mission_21(){
+/*Drive in an enclosed area (approx 6’x6’) 
+//without contacting walls or obstacles. 
+//Themission will last 60 seconds.
+*/
+
+//Use alternate forward() to cause rover to wobble left and right.
+//This allows the rover to see walls sooner.
+  while (true){
+    //check both distance sensors to see if there's a wall.
+    L_dist = getDistance( "pin", "pin");
+    R_dist = getDistance( "pin", "pin");
+
+    //If both sensors detect that we're close to a wall, U-turn
+    if (L_dist < "5 inches" and R_dist < "5 inches"){
+      Right();
+      Right();
+    }
+    //If left sensor sees something, turn right 90 degrees
+    else if(L_dist < "5 inches" and R_dist > "5 inches"){
+      Right();
+    }
+    //If Right sensor sees something, rutn left 90 degrees.
+    else if(L_dist > "5 inches" and R_dist < "5 inches"){
+      Left();
+    }
+    //If neither sensor sees something, wobble forward
+    else if(L_dist > "5 inches" and R_dist > "5 inches"){
+      forward(10,5)//This is the alternate forward for wobbling.
+    }
+
+
+
+  }
+}
+void mission_22(){
+}
 void mission_3(){
 }
 void mission_4(){
@@ -301,6 +338,31 @@ void forward(int wait){
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
+
+void forward(int wait, int loops){
+  //this function modifies the standard forward function by
+  //controlling each motor on a sinusoidal pattern to
+  //cause the rover to drive in a wobbly fashion, 
+  //thus increasing the chance of seeing a wall before 
+  //running into it.
+  int i = 0;
+  float angle = 0; //this angle is in RADIANS
+  while (i<loops){
+    float m1_speed = (sin(angle+3.14159))*255;
+    float m2_speed = (sin(angle))*255;
+    Serial.print("Forward debug");
+    m1.setSpeed(m1_speed);
+    m2.setSpeed(m2_speed);
+    m1.run(FORWARD);
+    m2.run(FORWARD);
+    delay(wait);
+    m1.run(RELEASE);
+    m2.run(RELEASE);
+    angle = angle + 3.14159;
+    i++;
+  }
+}
+
 void backward(){
   Serial.print("Backward debug");
   m1.setSpeed(250);
