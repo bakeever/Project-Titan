@@ -2116,6 +2116,23 @@
     )
   )
 
+  (sheet (at -29.21 303.53) (size 478.79 293.37) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 5fdd947f-b283-469a-8e6a-e2aef2c8707a)
+    (property "Sheetname" "Hyperion" (at -29.21 300.9534 0)
+      (effects (font (size 5 5)) (justify left bottom))
+    )
+    (property "Sheetfile" "Hyperion.kicad_sch" (at -29.21 597.4846 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "Project Titan"
+        (path "/d057b949-c57e-49d7-8001-3a4b7593e964" (page "2"))
+      )
+    )
+  )
+
   (sheet_instances
     (path "/" (page "1"))
   )
