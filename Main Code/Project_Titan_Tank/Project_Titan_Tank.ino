@@ -348,8 +348,8 @@ void forward(int wait, int loops){
   int i = 0;
   float angle = 0; //this angle is in RADIANS
   while (i<loops){
-    float m1_speed = (sin(angle+3.14159))*255;
-    float m2_speed = (sin(angle))*255;
+    float m1_speed = (sin(angle+3.14159)+1)*255;
+    float m2_speed = (sin(angle)+1)*255;
     Serial.print("Forward debug");
     m1.setSpeed(m1_speed);
     m2.setSpeed(m2_speed);
