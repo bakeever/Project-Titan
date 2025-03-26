@@ -189,7 +189,37 @@ void mission_12(){
 }
 
 void mission_21(){
+  /*Drive in an enclosed area (approx 6’x6’) 
+  //without contacting walls or obstacles. 
+  //Themission will last 60 seconds.
+  */
 
+  //Use alternate forward() to cause rover to wobble left and right.
+  //This allows the rover to see walls sooner.
+  long L_dist, R_dist;
+  while (true){
+    //check both distance sensors to see if there's a wall.
+    L_dist = getDistance(TRIG_PIN_LEFT,ECHO_PIN_LEFT);
+    R_dist = getDistance(TRIG_PIN_RIGHT,ECHO_PIN_RIGHT);
+
+    //If both sensors detect that we're close to a wall, U-turn
+    if (L_dist < 127 and R_dist < 127){ //5 inches is 127 mm
+      right();
+      right();
+    }
+    //If left sensor sees something, turn right 90 degrees
+    else if(L_dist < 127 and R_dist > 127){
+      right();
+    }
+    //If Right sensor sees something, rutn left 90 degrees.
+    else if(L_dist > 127 and R_dist < 127){
+      left();
+    }
+    //If neither sensor sees something, wobble forward
+    else if(L_dist > 127 and R_dist > 127){
+      forward(10,5);//This is the alternate forward for wobbling.
+    }
+  }
 }
 
 void mission_22(){
@@ -295,6 +325,34 @@ void checkDist(){/* Ultrasonic Sensor Check */
   // Convert time to distance
   dist_mm = (duration * 0.34) / 2;  // Distance in mm
 }
+long getDistance(int trigPin, int echoPin) {
+    long totalDistance = 0;
+    int validReadings = 0;
+
+    for (int i = 0; i < NUM_SAMPLES; i++) {
+        long duration, distance;
+
+        digitalWrite(trigPin, LOW);
+        delayMicroseconds(2);
+        digitalWrite(trigPin, HIGH);
+        delayMicroseconds(10);
+        digitalWrite(trigPin, LOW);
+
+        duration = pulseIn(echoPin, HIGH, PULSE_TIMEOUT);
+
+        if (duration == 0) continue;  // Skip invalid readings
+
+        distance = (duration * 0.34) / 2;
+
+        if (distance > 400 || distance < 2) continue;  // Ignore out-of-range values
+
+        totalDistance += distance;
+        validReadings++;
+        delay(50);
+    }
+
+    return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
+}
 
 void parseCommand(char *message) {
     if (strcmp(message, "FORWARD") == 0) {
@@ -364,6 +422,29 @@ void forward(int wait){
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
+void forward(int wait, int loops){
+  //this function modifies the standard forward function by
+  //controlling each motor on a sinusoidal pattern to
+  //cause the rover to drive in a wobbly fashion, 
+  //thus increasing the chance of seeing a wall before 
+  //running into it.
+  int i = 0;
+  float angle = 0; //this angle is in RADIANS
+  while (i<loops){
+    float m1_speed = (sin(angle+3.14159)+1)*255;
+    float m2_speed = (sin(angle)+1)*255;
+    Serial.print("Forward debug");
+    m1.setSpeed(m1_speed);
+    m2.setSpeed(m2_speed);
+    m1.run(FORWARD);
+    m2.run(FORWARD);
+    delay(wait);
+    m1.run(RELEASE);
+    m2.run(RELEASE);
+    angle = angle + 3.14159;
+    i++;
+  }
+}
 void backward(){
   Serial.print("Backward debug");
   m1.setSpeed(250);
@@ -400,34 +481,6 @@ void left(){
   m2.run(RELEASE);
 }
 
-long getDistance(int trigPin, int echoPin) {
-    long totalDistance = 0;
-    int validReadings = 0;
-
-    for (int i = 0; i < NUM_SAMPLES; i++) {
-        long duration, distance;
-
-        digitalWrite(trigPin, LOW);
-        delayMicroseconds(2);
-        digitalWrite(trigPin, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(trigPin, LOW);
-
-        duration = pulseIn(echoPin, HIGH, PULSE_TIMEOUT);
-
-        if (duration == 0) continue;  // Skip invalid readings
-
-        distance = (duration * 0.34) / 2;
-
-        if (distance > 400 || distance < 2) continue;  // Ignore out-of-range values
-
-        totalDistance += distance;
-        validReadings++;
-        delay(50);
-    }
-
-    return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
-}
 
 void payload(){
   int pos = 0;    // variable to store the servo position
