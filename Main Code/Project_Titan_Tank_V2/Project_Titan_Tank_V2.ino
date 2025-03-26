@@ -16,7 +16,10 @@
 // Include RadioHead Amplitude Shift Keying Library
 #include <RH_ASK.h>
 #include <Servo.h>  // Include the Servo library
-
+// I2C Library
+#include <Wire.h>
+// QMC5883L Compass Library
+#include <QMC5883LCompass.h>
 // ==========================================================
 //                      Program Variables
 // ==========================================================
@@ -30,6 +33,8 @@ unsigned long previousMillis = 0;
 const long interval = 3000; // 3 seconds
 
 int pos = 0;
+
+
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -52,6 +57,8 @@ RH_ASK rf_driver(2000,19,18,10); // Reciever
 RH_ASK rf_driver1(2000,18,19,10,true); // Transmitter
 
 Servo myServo;  // Create a servo object
+
+QMC5883LCompass compass;
 // ==========================================================
 //                  Initialization Section
 // ==========================================================
@@ -114,14 +121,15 @@ bool handshakeUltra(){
         Serial.print(distR);
         Serial.println(" mm");
         flagRight = true;
-  }
-  if(flagLeft == true && flagRight == true){
-    return true;
-  }
+    }
+    // if(flagLeft == true || flagRight == true){
+    //   return true;
+    // }
 
   } 
   else {
     Serial.println("Sensors are disabled.");
+    return false;
   }
 }
 
@@ -222,9 +230,130 @@ void mission_21(){
   }
 }
 
-void mission_22(){
+static const unsigned long TRAVEL_TIME_FOR_30_FEET = 5000UL;  // 
 
+void mission_22() 
+{
+  /* 
+    Drive forward ~30 feet directly ahead. 
+    Demonstrate obstacle avoidance by resuming path to the original waypoint 
+    after detouring around a single obstacle. 
+    Stop within 5 ft of the waypoint, all under 120 seconds (user requirement).
+  */
+
+  // Read initial heading
+  compass.read();
+  int startHeading = compass.getAzimuth();
+
+  // Setup motor speeds
+  int M1Speed = 255;
+  int M2Speed = 255;
+  m1.setSpeed(M1Speed);
+  m2.setSpeed(M2Speed);
+
+  // Start motors
+  m1.run(FORWARD);
+  m2.run(FORWARD);
+
+  // Track times
+  unsigned long startTime     = millis();
+  unsigned long obstacleTime  = 0; 
+  unsigned long secondStart   = 0; 
+  // We'll use 'flag' to indicate if we've already performed obstacle avoidance
+  int flag = 0;
+
+  while (true)
+  {
+    // Continuously read compass and distance sensors
+    compass.read();
+    int currentHeading = compass.getAzimuth();
+    long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
+    long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
+
+    // Basic heading correction: If off course, adjust motor speeds
+    if (currentHeading < startHeading) {
+      M1Speed -= 5;
+      M2Speed += 5;
+      m1.setSpeed(M1Speed);
+      m2.setSpeed(M2Speed);
+    }
+    else if (currentHeading > startHeading) {
+      M1Speed += 5;
+      M2Speed -= 5;
+      m1.setSpeed(M1Speed);
+      m2.setSpeed(M2Speed);
+    }
+
+    // Detect obstacle if either side sensor < 5 inches (127mm) 
+    if ((L_dist < 127) || (R_dist < 127)) {
+      // If we haven't yet performed avoidance
+      if (flag == 0) {
+        obstacleTime = millis(); 
+        unsigned long traveledTime = (obstacleTime - startTime);
+
+        // Stop motors while we do avoidance maneuvers
+        m1.run(RELEASE);
+        m2.run(RELEASE);
+
+        // Example obstacle-avoidance sequence:
+        left();
+        forward(500);   // Move forward (500 ms) after turning left
+        right();
+
+        // Mark that we’ve already done our single obstacle detour
+        flag = 1;
+
+        // Optionally re-read heading if it changed significantly
+        compass.read();
+        startHeading = compass.getAzimuth(); 
+      }
+    }
+
+    // Now start moving again toward the final waypoint
+    secondStart = millis();
+    M1Speed = 255;
+    M2Speed = 255;
+    m1.setSpeed(M1Speed);
+    m2.setSpeed(M2Speed);
+    m1.run(FORWARD);
+    m2.run(FORWARD);
+
+    // Calculate how long we traveled before the obstacle 
+    // (so we only complete the "remaining" distance)
+    unsigned long traveledSoFar = (obstacleTime > 0) ? (obstacleTime - startTime) : 0;
+
+    // Continue driving until we’ve covered total “30 ft” time
+    while (traveledSoFar + (millis() - secondStart) < TRAVEL_TIME_FOR_30_FEET) 
+    {
+      // Continuously correct heading inside this inner loop
+      compass.read();
+      currentHeading = compass.getAzimuth();
+
+      if (currentHeading < startHeading) {
+        M1Speed -= 5;
+        m1.setSpeed(M1Speed);
+        M2Speed += 5;
+        m2.setSpeed(M2Speed);
+      }
+      else if (currentHeading > startHeading) {
+        M1Speed += 5;
+        m1.setSpeed(M1Speed);
+        M2Speed -= 5;
+        m2.setSpeed(M2Speed);
+      }
+
+      // Optionally check sensors again in here 
+    }
+
+    // Stop motors at the final waypoint
+    m1.run(RELEASE);
+    m2.run(RELEASE);
+
+    // End this mission
+    break;
+  }
 }
+
 
 void mission_31(){
 }
@@ -263,7 +392,7 @@ void setup() {
   // if(handshakeMotor()){
   //   Serial.println("Motor Initialize Complete");
   // }
-  
+
   // Setup Serial Monitor
   Serial.begin(115200);
   Serial1.begin(9600);
@@ -288,6 +417,16 @@ void setup() {
   if(handshakeUltra() == true){
     Serial.print("Ultrasonic Handshake Successful");
   }
+  //*****COMPASS SETUP*****
+  // Wire.begin();
+  compass.init();
+  // compass.setCalibrationOffsets(-5.00, 72.00, -142.00);
+  // compass.setCalibrationScales(1.02, 72.00, 1.03);
+  // compass.setMode("0x00", "0x00", "0x10", "0x00");
+  compass.read();
+  float heading = compass.getAzimuth();
+  Serial.print("Heading: ");
+  Serial.println(heading);
 
 }
 
@@ -377,11 +516,11 @@ void parseCommand(char *message) {
     else if (strcmp(message, "Mission 1B") == 0) {
         mission_12();
     }
-    else if (strcmp(message, "Mission 3") == 0) {
-        mission_31();
+    else if (strcmp(message, "Mission 2A") == 0) {
+        mission_21();
     }
-    else if (strcmp(message, "Mission 4") == 0) {
-        mission_41();
+    else if (strcmp(message, "Mission 2B") == 0) {
+        mission_22();
     }
     // else if (strcmp(message, "ADJUST") == 0)
     else{

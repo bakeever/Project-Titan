@@ -222,8 +222,8 @@ void mission_22(){
 void loop() {
     handleMissionButton(button11, buttonState11, prevButtonState1, "Mission 1A", "Scounting Perimeter", "Stop Mission 1A");
     handleMissionButton(button10, buttonState10, prevButtonState2, "Mission 1B", "Kamakaze Assignment", "Mission 1B");
-    handleMissionButton(button9, buttonState9, prevButtonState3, "X10ZZZZZZZZZ", "Analyzing minerals", "X10ZZZZZZZZZ");
-    handleMissionButton(button8, buttonState8, prevButtonState4, "Mission 4", "Delivering payload", "Stop Mission 4");
+    handleMissionButton(button9, buttonState9, prevButtonState3, "Mission 2A", "Analyzing minerals", "Mission 2A");
+    handleMissionButton(button8, buttonState8, prevButtonState4, "Mission 2B", "Delivering payload", "Mission 2B");
     
     if (digitalRead(button7) == LOW) moveBackward();
     if (digitalRead(button6) == LOW) turnLeft();
