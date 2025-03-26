@@ -84,7 +84,6 @@ void handshakeRF(){
   //       return true;
   //   }
 }
-
 bool handshakeUltra(){
   bool flagLeft = false;
   bool flagRight = false;
@@ -132,7 +131,6 @@ bool handshakeUltra(){
     return false;
   }
 }
-
 bool handshakeMotor(){
   // Rotate Left 
   m1.setSpeed(150);
@@ -147,6 +145,304 @@ bool handshakeMotor(){
   m2.run(RELEASE);
   return true;
 }
+// void mission_11(){
+//   int counter = 0;  // Initialize counter
+
+//   while (counter < 3) {  // Run while counter is less than 4
+//     Serial.print("Counter: ");
+//     Serial.println(counter);
+//     forward(3800);
+//     delay(500);
+//     //right();
+//     counter++;  // Increment counter
+//     delay(1000);
+
+//   }
+//   forward(3800);
+//   delay(500);
+//   //payload();
+//   forward(500);
+
+// }
+// void mission_12(){
+//   // Function that waits until a valid RF message is received,
+//   // verifies it, and passes the number to travelDistance()
+//   uint8_t buf[13] = {0};
+//   uint8_t buflen = sizeof(buf);
+//   Serial.print("Starting Mission 1B");
+//   // Loop continuously until a valid message is received
+//   while (true) {
+//     // Check if a message has been received
+//     if (rf_driver.recv(buf, &buflen)) {
+//       // Check if the message starts with 'X'
+//       if (buf[0] == 'X') {
+//         // Convert the subsequent characters into an integer
+//         int receivedNum = atoi((char*)&buf[1]);
+//         Serial.print("Message Received: ");
+//         Serial.println((char*)buf);
+//         // Pass the parsed number to the travelDistance function
+//         travelDistance(receivedNum);
+//         break; // Exit the loop once a valid message is processed
+//       } else {
+//         Serial.println("Invalid message format received.");
+//       }
+//       // Reset the buffer length for the next attempt
+//       buflen = sizeof(buf);
+//     }
+//     delay(100); // Small delay to avoid busy waiting
+//   }
+// }
+// void mission_21(){
+//   /*Drive in an enclosed area (approx 6’x6’) 
+//   //without contacting walls or obstacles. 
+//   //Themission will last 60 seconds.
+//   */
+
+//   //Use alternate forward() to cause rover to wobble left and right.
+//   //This allows the rover to see walls sooner.
+//   Serial.println("RUNNING MISSION 2A");
+//   long L_dist, R_dist;
+//   while (true){
+//     //check both distance sensors to see if there's a wall.
+//     L_dist = getDistance(TRIG_PIN_LEFT,ECHO_PIN_LEFT);
+//     R_dist = getDistance(TRIG_PIN_RIGHT,ECHO_PIN_RIGHT);
+//     Serial.print("Left: ");
+//     Serial.print(L_dist);
+//     Serial.print("     Right: ");
+//     Serial.println(R_dist);
+
+//     //If both sensors detect that we're close to a wall, U-turn
+//     if (L_dist < 127 and R_dist < 127){ //5 inches is 127 mm
+//       Serial.println("U-turn");
+//       right();
+//       right();
+//     }
+//     //If left sensor sees something, turn right 90 degrees
+//     else if(L_dist < 127 and R_dist > 127){
+//       Serial.println("Turn Right");
+//       right();
+//     }
+//     //If Right sensor sees something, rutn left 90 degrees.
+//     else if(L_dist > 127 and R_dist < 127){
+//       Serial.println("Turn Left");
+//       left();
+//     }
+//     //If neither sensor sees something, wobble forward
+//     else if(L_dist > 127 and R_dist > 127){
+//       Serial.println("Forward");
+//       forward(10,5);//This is the alternate forward for wobbling.
+//     }
+//   }
+// }
+
+// static const unsigned long TRAVEL_TIME_FOR_30_FEET = 5000UL;  // 
+
+// void mission_22(){
+//   /* 
+//     Drive forward ~30 feet directly ahead. 
+//     Demonstrate obstacle avoidance by resuming path to the original waypoint 
+//     after detouring around a single obstacle. 
+//     Stop within 5 ft of the waypoint, all under 120 seconds (user requirement).
+//   */
+
+//   // Read initial heading
+//   compass.read();
+//   int startHeading = compass.getAzimuth();
+
+//   // Setup motor speeds
+//   int M1Speed = 255;
+//   int M2Speed = 255;
+//   m1.setSpeed(M1Speed);
+//   m2.setSpeed(M2Speed);
+
+//   // Start motors
+//   m1.run(FORWARD);
+//   m2.run(FORWARD);
+
+//   // Track times
+//   unsigned long startTime     = millis();
+//   unsigned long obstacleTime  = 0; 
+//   unsigned long secondStart   = 0; 
+//   // We'll use 'flag' to indicate if we've already performed obstacle avoidance
+//   int flag = 0;
+
+//   while (true)
+//   {
+//     // Continuously read compass and distance sensors
+//     compass.read();
+//     int currentHeading = compass.getAzimuth();
+//     long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
+//     long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
+
+//     // Basic heading correction: If off course, adjust motor speeds
+//     if (currentHeading < startHeading) {
+//       M1Speed -= 5;
+//       M2Speed += 5;
+//       m1.setSpeed(M1Speed);
+//       m2.setSpeed(M2Speed);
+//     }
+//     else if (currentHeading > startHeading) {
+//       M1Speed += 5;
+//       M2Speed -= 5;
+//       m1.setSpeed(M1Speed);
+//       m2.setSpeed(M2Speed);
+//     }
+
+//     // Detect obstacle if either side sensor < 5 inches (127mm) 
+//     if ((L_dist < 127) || (R_dist < 127)) {
+//       // If we haven't yet performed avoidance
+//       if (flag == 0) {
+//         obstacleTime = millis(); 
+//         unsigned long traveledTime = (obstacleTime - startTime);
+
+//         // Stop motors while we do avoidance maneuvers
+//         m1.run(RELEASE);
+//         m2.run(RELEASE);
+
+//         // Example obstacle-avoidance sequence:
+//         left();
+//         forward(500);   // Move forward (500 ms) after turning left
+//         right();
+
+//         // Mark that we’ve already done our single obstacle detour
+//         flag = 1;
+
+//         // Optionally re-read heading if it changed significantly
+//         compass.read();
+//         startHeading = compass.getAzimuth(); 
+//       }
+//     }
+
+//     // Now start moving again toward the final waypoint
+//     secondStart = millis();
+//     M1Speed = 255;
+//     M2Speed = 255;
+//     m1.setSpeed(M1Speed);
+//     m2.setSpeed(M2Speed);
+//     m1.run(FORWARD);
+//     m2.run(FORWARD);
+
+//     // Calculate how long we traveled before the obstacle 
+//     // (so we only complete the "remaining" distance)
+//     unsigned long traveledSoFar = (obstacleTime > 0) ? (obstacleTime - startTime) : 0;
+
+//     // Continue driving until we’ve covered total “30 ft” time
+//     while (traveledSoFar + (millis() - secondStart) < TRAVEL_TIME_FOR_30_FEET) 
+//     {
+//       // Continuously correct heading inside this inner loop
+//       compass.read();
+//       currentHeading = compass.getAzimuth();
+
+//       if (currentHeading < startHeading) {
+//         M1Speed -= 5;
+//         m1.setSpeed(M1Speed);
+//         M2Speed += 5;
+//         m2.setSpeed(M2Speed);
+//       }
+//       else if (currentHeading > startHeading) {
+//         M1Speed += 5;
+//         m1.setSpeed(M1Speed);
+//         M2Speed -= 5;
+//         m2.setSpeed(M2Speed);
+//       }
+
+//       // Optionally check sensors again in here 
+//     }
+
+//     // Stop motors at the final waypoint
+//     m1.run(RELEASE);
+//     m2.run(RELEASE);
+
+//     // End this mission
+//     break;
+//   }
+// }
+// void mission_31(){
+// }
+// void mission_32(){
+// }
+// void mission_41(){
+// }
+// void mission_42(){
+// }
+// void travelDistance(int distance){
+//   // Given that 10 feet takes 4000ms, calculate delay as 400ms per foot - changed to 4.77/ft
+//   int delayTime = distance * 380;
+//   Serial.print("Traveling ");
+//   Serial.print(distance);
+//   Serial.print(" feet (");
+//   Serial.print(delayTime);
+//   Serial.println(" ms).");
+//   forward(delayTime);
+//   delay(1000);
+//   payload();
+//   delay(500);
+//   forward(500);
+// }
+
+void setup() {
+  pinMode(TRIG_PIN_LEFT, OUTPUT);
+  pinMode(ECHO_PIN_LEFT, INPUT);
+  pinMode(TRIG_PIN_RIGHT, OUTPUT);
+  pinMode(ECHO_PIN_RIGHT, INPUT);
+  /* Motor handshake */
+  // if(handshakeMotor()){
+  //   Serial.println("Motor Initialize Complete");
+  // }
+
+  // Setup Serial Monitor
+  Serial.begin(115200);
+  Serial1.begin(9600);
+  Serial.println("Waiting for message");
+  // Initialize ASK Object
+  rf_driver.init();
+  if (!rf_driver.init()) {
+      Serial.println("RF Module Initialization Failed!");
+  } else {
+      Serial.println("RF Module Initialized.");
+      Serial.println("Waiting for messages...");
+  }
+  myServo.write(pos); // put it before the attach() so it goes straight to that position
+  myServo.attach(9);  // Attach the servo to pin 9
+  // payload();
+  // /* RF Handshake */
+  // if(handshakeRF() == true){
+  //   continue;
+  // }
+
+  /* Ultrasonic Handshake */
+  if(handshakeUltra() == true){
+    Serial.print("Ultrasonic Handshake Successful");
+  }
+  //*****COMPASS SETUP*****
+  Wire.begin();
+  compass.init();
+  compass.setCalibrationOffsets(-471.00, -148.00, -991.00);
+  compass.setCalibrationScales(1.01, 1.21, 0.85);
+  compass.read();
+  float heading = compass.getAzimuth();
+  Serial.print("Heading: ");
+  Serial.println(heading);
+
+}
+void loop() {
+  /* RF Messaging */
+  static uint8_t buf[10] = {0};  
+  uint8_t buflen = sizeof(buf);
+  
+  if (rf_driver.recv(buf, &buflen)) {
+      buf[buflen] = '\0';  // Null-terminate the received message
+      Serial.print("Received: ");
+      Serial.println((char*)buf);
+
+      // Process movement commands
+      parseCommand((char*)buf);
+      Serial.print("Waiting for next command");
+      memset(buf, 0, sizeof(buf));
+      delay(50);  // Small delay to prevent CPU overload
+  }
+
+}
 
 void mission_11(){
   int counter = 0;  // Initialize counter
@@ -156,14 +452,14 @@ void mission_11(){
     Serial.println(counter);
     forward(3800);
     delay(500);
-    right();
+    //right();
     counter++;  // Increment counter
     delay(1000);
 
   }
   forward(3800);
   delay(500);
-  payload();
+  //payload();
   forward(500);
 
 }
@@ -195,7 +491,6 @@ void mission_12(){
     delay(100); // Small delay to avoid busy waiting
   }
 }
-
 void mission_21(){
   /*Drive in an enclosed area (approx 6’x6’) 
   //without contacting walls or obstacles. 
@@ -204,36 +499,44 @@ void mission_21(){
 
   //Use alternate forward() to cause rover to wobble left and right.
   //This allows the rover to see walls sooner.
+  Serial.println("RUNNING MISSION 2A");
   long L_dist, R_dist;
   while (true){
     //check both distance sensors to see if there's a wall.
     L_dist = getDistance(TRIG_PIN_LEFT,ECHO_PIN_LEFT);
     R_dist = getDistance(TRIG_PIN_RIGHT,ECHO_PIN_RIGHT);
+    Serial.print("Left: ");
+    Serial.print(L_dist);
+    Serial.print("     Right: ");
+    Serial.println(R_dist);
 
     //If both sensors detect that we're close to a wall, U-turn
     if (L_dist < 127 and R_dist < 127){ //5 inches is 127 mm
+      Serial.println("U-turn");
       right();
       right();
     }
     //If left sensor sees something, turn right 90 degrees
     else if(L_dist < 127 and R_dist > 127){
+      Serial.println("Turn Right");
       right();
     }
     //If Right sensor sees something, rutn left 90 degrees.
     else if(L_dist > 127 and R_dist < 127){
+      Serial.println("Turn Left");
       left();
     }
     //If neither sensor sees something, wobble forward
     else if(L_dist > 127 and R_dist > 127){
-      forward(10,5);//This is the alternate forward for wobbling.
+      Serial.println("Forward");
+      forward(10,30);//This is the alternate forward for wobbling.
     }
   }
 }
 
 static const unsigned long TRAVEL_TIME_FOR_30_FEET = 5000UL;  // 
 
-void mission_22() 
-{
+void mission_22(){
   /* 
     Drive forward ~30 feet directly ahead. 
     Demonstrate obstacle avoidance by resuming path to the original waypoint 
@@ -353,21 +656,14 @@ void mission_22()
     break;
   }
 }
-
-
 void mission_31(){
 }
-
 void mission_32(){
-
 }
 void mission_41(){
 }
-
 void mission_42(){
-
 }
-
 void travelDistance(int distance){
   // Given that 10 feet takes 4000ms, calculate delay as 400ms per foot - changed to 4.77/ft
   int delayTime = distance * 380;
@@ -381,72 +677,6 @@ void travelDistance(int distance){
   payload();
   delay(500);
   forward(500);
-}
-
-void setup() {
-  pinMode(TRIG_PIN_LEFT, OUTPUT);
-  pinMode(ECHO_PIN_LEFT, INPUT);
-  pinMode(TRIG_PIN_RIGHT, OUTPUT);
-  pinMode(ECHO_PIN_RIGHT, INPUT);
-  /* Motor handshake */
-  // if(handshakeMotor()){
-  //   Serial.println("Motor Initialize Complete");
-  // }
-
-  // Setup Serial Monitor
-  Serial.begin(115200);
-  Serial1.begin(9600);
-  Serial.println("Waiting for message");
-  // Initialize ASK Object
-  rf_driver.init();
-  if (!rf_driver.init()) {
-      Serial.println("RF Module Initialization Failed!");
-  } else {
-      Serial.println("RF Module Initialized.");
-      Serial.println("Waiting for messages...");
-  }
-  myServo.write(pos); // put it before the attach() so it goes straight to that position
-  myServo.attach(9);  // Attach the servo to pin 9
-  payload();
-  // /* RF Handshake */
-  // if(handshakeRF() == true){
-  //   continue;
-  // }
-
-  /* Ultrasonic Handshake */
-  if(handshakeUltra() == true){
-    Serial.print("Ultrasonic Handshake Successful");
-  }
-  //*****COMPASS SETUP*****
-  // Wire.begin();
-  compass.init();
-  // compass.setCalibrationOffsets(-5.00, 72.00, -142.00);
-  // compass.setCalibrationScales(1.02, 72.00, 1.03);
-  // compass.setMode("0x00", "0x00", "0x10", "0x00");
-  compass.read();
-  float heading = compass.getAzimuth();
-  Serial.print("Heading: ");
-  Serial.println(heading);
-
-}
-
-void loop() {
-  /* RF Messaging */
-  static uint8_t buf[10] = {0};  
-  uint8_t buflen = sizeof(buf);
-  
-  if (rf_driver.recv(buf, &buflen)) {
-      buf[buflen] = '\0';  // Null-terminate the received message
-      Serial.print("Received: ");
-      Serial.println((char*)buf);
-
-      // Process movement commands
-      parseCommand((char*)buf);
-      Serial.print("Waiting for next command");
-      memset(buf, 0, sizeof(buf));
-      delay(50);  // Small delay to prevent CPU overload
-  }
-
 }
 void checkDist(){/* Ultrasonic Sensor Check */
   long duration, dist_mm, dist_cm, dist_m;
@@ -492,7 +722,6 @@ long getDistance(int trigPin, int echoPin) {
 
     return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
 }
-
 void parseCommand(char *message) {
     if (strcmp(message, "FORWARD") == 0) {
         forward(1000);
@@ -527,7 +756,6 @@ void parseCommand(char *message) {
       return;
     }
 }
-
 void accel() {
   static int i = 0;
   static unsigned long lastUpdate = 0;
@@ -539,7 +767,6 @@ void accel() {
     lastUpdate = millis();
   }
 }
-
 void decel(){
   static int i = 255;
   static unsigned long lastUpdate = 0;
@@ -552,12 +779,33 @@ void decel(){
   }
 }
 void forward(int wait){
+  compass.read();
+  int ForwardHeading = compass.getAzimuth();
+  int startTime = millis();
+  int CurrentHeading = 0;
+  int M1Speed = 255;
+  int M2Speed = 255;
   Serial.print("Forward debug");
   m1.setSpeed(255);
   m2.setSpeed(255);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  delay(wait);
+  while (millis() > startTime + wait){
+    compass.read();
+    CurrentHeading = compass.getAzimuth();
+    if (CurrentHeading < ForwardHeading){
+        M1Speed = M1Speed-5;
+        m1.setSpeed(M1Speed);
+        M2Speed = M2Speed+5;
+        m2.setSpeed(M2Speed);
+      }
+      else if (CurrentHeading > ForwardHeading){
+        M1Speed = M1Speed+5;
+        m1.setSpeed(M1Speed);
+        M2Speed = M2Speed-5;
+        m2.setSpeed(M2Speed);
+    }
+  }
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
@@ -578,11 +826,12 @@ void forward(int wait, int loops){
     m1.run(FORWARD);
     m2.run(FORWARD);
     delay(wait);
-    m1.run(RELEASE);
-    m2.run(RELEASE);
+
     angle = angle + 3.14159;
     i++;
   }
+    m1.run(RELEASE);
+    m2.run(RELEASE);
 }
 void backward(){
   Serial.print("Backward debug");
@@ -602,25 +851,45 @@ void release(){
   Serial.println("System Update: Motors released");
 }
 void right(){
+  Serial.println("RIGHT TURN");
+  compass.read();
+  int ForwardHeading = compass.getAzimuth();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  delay(576);
+  // int starttime = millis();
+  // int endtime = starttime+1000;
+  // while (millis()<endtime){
+  //   compass.read();
+  //   Serial.print("Degrees right to turn: ");
+  //   Serial.println(compass.getAzimuth()-ForwardHeading+90);
+  //   delay(5);
+  // }
+  delay(500);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void left(){
+  Serial.println("LEFT TURN");
+  compass.read();
+  int ForwardHeading = compass.getAzimuth();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(FORWARD);
   m2.run(BACKWARD);
-  delay(750);
+  // int starttime = millis();
+  // int endtime = starttime+1000;
+  // while (millis()<endtime){
+  //   compass.read();
+  //   Serial.print("Degrees left to turn: ");
+  //   Serial.println(compass.getAzimuth()-ForwardHeading+90);
+  //   delay(5);
+  // }
+  delay(500);
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
-
-
 void payload(){
   int pos = 0;    // variable to store the servo position
   // myServo.write(0); // Move servo to 180 degrees
