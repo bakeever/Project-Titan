@@ -16,6 +16,12 @@
 // Include RadioHead Amplitude Shift Keying Library
 #include <RH_ASK.h>
 #include <Servo.h>  // Include the Servo library
+// I2C Library
+#include <Wire.h>
+// QMC5883L Compass Library
+#include <QMC5883LCompass.h>
+
+QMC5883LCompass compass;
 
 // ==========================================================
 //                      Program Variables
@@ -113,8 +119,8 @@ void mission_11(){
 
 }
 void mission_12(){
-// Function that waits until a valid RF message is received,
-// verifies it, and passes the number to travelDistance()
+  // Function that waits until a valid RF message is received,
+  // verifies it, and passes the number to travelDistance()
   uint8_t buf[13] = {0};
   uint8_t buflen = sizeof(buf);
   Serial.print("Starting Mission 1B");
@@ -155,13 +161,13 @@ void travelDistance(int distance){
   forward(500);
 }
 void mission_21(){
-/*Drive in an enclosed area (approx 6’x6’) 
-//without contacting walls or obstacles. 
-//Themission will last 60 seconds.
-*/
+  /*Drive in an enclosed area (approx 6’x6’) 
+  //without contacting walls or obstacles. 
+  //Themission will last 60 seconds.
+  */
 
-//Use alternate forward() to cause rover to wobble left and right.
-//This allows the rover to see walls sooner.
+  //Use alternate forward() to cause rover to wobble left and right.
+  //This allows the rover to see walls sooner.
   while (true){
     //check both distance sensors to see if there's a wall.
     L_dist = getDistance( "pin", "pin");
@@ -190,6 +196,84 @@ void mission_21(){
   }
 }
 void mission_22(){
+  /*Drive forward to waypoint 30’ directly ahead of robot. Demonstrate avoidance 
+  algorithm by continuing to original waypoint after navigating around a single
+  obstacle. The rover should stop within 5ft of the marked waypoint and complete the
+  mission in under 120 seconds.
+  */
+  //DETERMINE DISTANCE TRAVELED BY TIME DIFFERENCE FROM WHEN ROVER STARTS MOVING
+  compass.read();
+  int flag = 0;
+  int StartTime = millis();
+  int SecondStart = 0;
+  int ObstacleTime = 0;
+  int HoldTime = 0;
+  int StartHeading = compass.getAzimuth();
+  int M1Speed = 255;
+  int M2Speed = 255;
+  m1.setSpeed(255);
+  m2.setSpeed(255);
+  m1.run(FORWARD);
+  m2.run(FORWARD);
+  while (True){
+    compass.read();
+    CurrentHeading = compass.getAzimuth();
+    L_dist = getDistance( "pin", "pin");
+    R_dist = getDistance( "pin", "pin");
+    //make sure rover drives straight
+    if (CurrentHeading < StartHeading){
+      M1Speed = M1Speed-5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed+5;
+      m2.setSpeed(M2Speed);
+    }
+    else if (CurrentHeading > StartHeading){
+      M1Speed = M1Speed+5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed-5;
+      m2.setSpeed(M2Speed);
+    }
+    //detect wall and navigate around it
+    if (L_dist < "5 in" or R_dist < "5in"){
+      if (flag = 0){
+        ObstacleTime = millis();
+        TravelledTime = ObstacleTime-StartTime;
+        m1.run(RELEASE);
+        m2.run(RELEASE);
+        //Navigate around obstacle
+        left();
+        forward(500);
+        right();
+        forward(75);
+        right();
+        forward(500);
+        left();
+        flag = 1;
+      }
+    }
+    SecondStart = millis();
+    m1.setSpeed(255);
+    m2.setSpeed(255);
+    m1.run(FORWARD);
+    m2.run(FORWARD);
+    while(TravelledTime+millis()-SecondStart < "TRAVEL TIME FOR 30 FEET"){
+      if (CurrentHeading < StartHeading){
+      M1Speed = M1Speed-5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed+5;
+      m2.setSpeed(M2Speed);
+      }
+      else if (CurrentHeading > StartHeading){
+      M1Speed = M1Speed+5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed-5;
+      m2.setSpeed(M2Speed);
+      }
+    }
+    m1.run(RELEASE);
+    m2.run(RELEASE);
+    breakl
+  }
 }
 void mission_3(){
 }
@@ -206,7 +290,13 @@ void setup() {
   //   Serial.println("Motor Initialize Complete");
   // }
   
-  // Setup Serial Monitor
+  //*****COMPASS SETUP*****
+  Wire.begin();
+  compass.init();
+  compass.setCalibrationOffsets(-5.00, 72.00, -142.00);
+  compass.setCalibrationScales(1.02, 72.00, 1.03);
+  compass.setMode("0x00", "0x00", "0x10", "0x00");
+  //*****Setup Serial Monitor*****
   Serial.begin(115200);
   Serial1.begin(9600);
   Serial.println("Waiting for message");
@@ -329,14 +419,29 @@ void decel(){
   }
 }
 void forward(int wait){
+  compass.read();
+  ForwardHeading = compass.getAzimuth();
+  startTime = millis();
   Serial.print("Forward debug");
   m1.setSpeed(255);
   m2.setSpeed(255);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  delay(wait);
-  m1.run(RELEASE);
-  m2.run(RELEASE);
+  if (CurrentHeading < StartHeading){
+      M1Speed = M1Speed-5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed+5;
+      m2.setSpeed(M2Speed);
+    }
+    else if (CurrentHeading > StartHeading){
+      M1Speed = M1Speed+5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed-5;
+      m2.setSpeed(M2Speed);
+  if (millis() > startTime + wait){
+    m1.run(RELEASE);
+    m2.run(RELEASE);
+  }
 }
 
 void forward(int wait, int loops){
@@ -381,20 +486,30 @@ void release(){
   Serial.println("System Update: Motors released");
 }
 void right(){
+  compass.read();
+  ForwardHeading = compass.getAzimuth();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  delay(576);
+  while (compass.getAzimuth() > ForwardHeading+90){
+    Serial.print("turning");
+    delay(5);
+  }
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void left(){
+  compass.read();
+  ForwardHeading = compass.getAzimuth();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(FORWARD);
   m2.run(BACKWARD);
-  delay(750);
+  while (compass.getAzimuth() < ForwardHeading+90){
+    Serial.print("turning");
+    delay(5);
+  }
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
