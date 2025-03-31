@@ -88,7 +88,10 @@ bool handshakeUltra(){
   bool flagLeft = false;
   bool flagRight = false;
   if (sensorsEnabled) {  // Check if sensors are enabled
-    long durationL, durationR, distL, distR;
+    long durationL=0;
+    long durationR=0;
+    long distL=0;
+    long distR=0;
 
     // Trigger the ultrasonic sensor - left
     digitalWrite(TRIG_PIN_LEFT, LOW);
@@ -106,13 +109,13 @@ bool handshakeUltra(){
         Serial.println(" mm");
         flagLeft = true;
     }
+    delay(500);
     // Trigger the ultrasonic sensor - right
     digitalWrite(TRIG_PIN_RIGHT, LOW);
     delayMicroseconds(2);
     digitalWrite(TRIG_PIN_RIGHT, HIGH);
     delayMicroseconds(10);
     digitalWrite(TRIG_PIN_RIGHT, LOW);
-
     durationR = pulseIn(ECHO_PIN_RIGHT, HIGH); // Measure the echo time
     distR = (durationR * 0.34) / 2;  // Distance in mm - converted from time
     if (distR >= 0) {
@@ -121,10 +124,6 @@ bool handshakeUltra(){
         Serial.println(" mm");
         flagRight = true;
     }
-    // if(flagLeft == true || flagRight == true){
-    //   return true;
-    // }
-
   } 
   else {
     Serial.println("Sensors are disabled.");
