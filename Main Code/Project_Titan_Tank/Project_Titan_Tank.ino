@@ -64,7 +64,7 @@ Servo myServo;  // Create a servo object
 uint16_t outer_tread = 250;
 uint16_t inner_tread = 250;
 uint8_t i; // For accel and deccel
-
+//*****STARTUP VALIDATION*****
 void handshakeRF(){
   // if (rf_driver.recv(buf, &buflen)) {
   //   buf[buflen] = '\0';  // Null-terminate the received message
@@ -80,9 +80,7 @@ void handshakeRF(){
   //       return true;
   //   }
 }
-
 void handshakeUltra(){
-
 }
 bool handshakeMotor(){
   // Rotate Left 
@@ -99,6 +97,7 @@ bool handshakeMotor(){
   return true;
 }
 
+//*****MISSION FUNCTIONS*****
 void mission_11(){
   int counter = 0;  // Initialize counter
 
@@ -280,6 +279,7 @@ void mission_3(){
 void mission_4(){
 }
 
+//*****PRIMARY LOOP*****
 void setup() {
   pinMode(TRIG_PIN_LEFT, OUTPUT);
   pinMode(ECHO_PIN_LEFT, INPUT);
@@ -292,10 +292,8 @@ void setup() {
   
   //*****COMPASS SETUP*****
   Wire.begin();
+  //DON'T USE CALIBRATION. FACTORY SETTINGS ARE SUFFICIENT
   compass.init();
-  compass.setCalibrationOffsets(-5.00, 72.00, -142.00);
-  compass.setCalibrationScales(1.02, 72.00, 1.03);
-  compass.setMode("0x00", "0x00", "0x10", "0x00");
   //*****Setup Serial Monitor*****
   Serial.begin(115200);
   Serial1.begin(9600);
@@ -319,9 +317,7 @@ void setup() {
   // if(handshakeUltra() == true){
   //   continue;
   // }
-
 }
-
 void loop() {
   /* RF Messaging */
   static uint8_t buf[10] = {0};  
@@ -359,7 +355,6 @@ void loop() {
     //     Serial.println("Sensors are disabled.");
     // }
 }
-
 void parseCommand(char *message) {
     if (strcmp(message, "FORWARD") == 0) {
         forward(1000);
@@ -395,6 +390,7 @@ void parseCommand(char *message) {
     }
 }
 
+//*****TREAD FUNCTIONS*****
 void accel() {
   static int i = 0;
   static unsigned long lastUpdate = 0;
@@ -406,7 +402,6 @@ void accel() {
     lastUpdate = millis();
   }
 }
-
 void decel(){
   static int i = 255;
   static unsigned long lastUpdate = 0;
@@ -419,21 +414,20 @@ void decel(){
   }
 }
 void forward(int wait){
-  compass.read();
-  ForwardHeading = compass.getAzimuth();
+  int ForwardHeading = getBearing();
   startTime = millis();
   Serial.print("Forward debug");
   m1.setSpeed(255);
   m2.setSpeed(255);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  if (CurrentHeading < StartHeading){
+  if (getBearing() < ForwardHeading){
       M1Speed = M1Speed-5;
       m1.setSpeed(M1Speed);
       M2Speed = M2Speed+5;
       m2.setSpeed(M2Speed);
     }
-    else if (CurrentHeading > StartHeading){
+    else if (getBearing() > ForwardHeading){
       M1Speed = M1Speed+5;
       m1.setSpeed(M1Speed);
       M2Speed = M2Speed-5;
@@ -443,7 +437,6 @@ void forward(int wait){
     m2.run(RELEASE);
   }
 }
-
 void forward(int wait, int loops){
   //this function modifies the standard forward function by
   //controlling each motor on a sinusoidal pattern to
@@ -467,7 +460,6 @@ void forward(int wait, int loops){
     i++;
   }
 }
-
 void backward(){
   Serial.print("Backward debug");
   m1.setSpeed(250);
@@ -486,13 +478,12 @@ void release(){
   Serial.println("System Update: Motors released");
 }
 void right(){
-  compass.read();
-  ForwardHeading = compass.getAzimuth();
+  int ForwardHeading = getBearing();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  while (compass.getAzimuth() > ForwardHeading+90){
+  while (getBearing() > ForwardHeading-90){
     Serial.print("turning");
     delay(5);
   }
@@ -500,13 +491,12 @@ void right(){
   m2.run(RELEASE);
 }
 void left(){
-  compass.read();
-  ForwardHeading = compass.getAzimuth();
+  int ForwardHeading = getBearing();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(FORWARD);
   m2.run(BACKWARD);
-  while (compass.getAzimuth() < ForwardHeading+90){
+  while (getBearing() < ForwardHeading+90){
     Serial.print("turning");
     delay(5);
   }
@@ -514,6 +504,16 @@ void left(){
   m2.run(RELEASE);
 }
 
+//*****SENSOR FUNCTIONS*****
+int getBearing(){
+  int bearing = compass.getAzimuth();
+  //adjust for factory calibration being off by 90 degrees
+  bearing = bearing + 270;
+  //Adjust for values over 360
+  if(bearing>360){bearing=bearing-360;}
+
+  return bearing;
+}
 long getDistance(int trigPin, int echoPin) {
     long totalDistance = 0;
     int validReadings = 0;
@@ -543,6 +543,7 @@ long getDistance(int trigPin, int echoPin) {
     return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
 }
 
+//*****DROP PAYLOAD*****
 void payload(){
   int pos = 0;    // variable to store the servo position
   // myServo.write(0); // Move servo to 180 degrees
