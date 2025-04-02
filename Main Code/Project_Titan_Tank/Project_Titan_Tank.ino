@@ -276,8 +276,8 @@ void mission_22(){
 }
 void mission_3(){
   while(getBearing() > 10 or getBearing() < 350){
-    m1.setSpeed(200);
-    m2.setSpeed(200);
+    m1.setSpeed(100);
+    m2.setSpeed(100);
     m1.run(BACKWARD);
     m2.run(FORWARD);
     delay(5);
