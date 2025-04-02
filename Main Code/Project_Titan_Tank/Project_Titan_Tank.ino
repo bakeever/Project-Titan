@@ -100,7 +100,6 @@ bool handshakeMotor(){
 //*****MISSION FUNCTIONS*****
 void mission_11(){
   int counter = 0;  // Initialize counter
-
   while (counter < 3) {  // Run while counter is less than 4
     Serial.print("Counter: ");
     Serial.println(counter);
@@ -109,13 +108,11 @@ void mission_11(){
     right();
     counter++;  // Increment counter
     delay(1000);
-
   }
   forward(3800);
   delay(500);
   payload();
   forward(500);
-
 }
 void mission_12(){
   // Function that waits until a valid RF message is received,

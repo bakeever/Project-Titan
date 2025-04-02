@@ -349,9 +349,15 @@ void mission_22(){
     break;
   }
 }
-void mission_31(){
-}
-void mission_32(){
+void mission_3(){
+  while(getBearing() > 10 or getBearing() < 350){
+    m1.setSpeed(100);
+    m2.setSpeed(100);
+    m1.run(BACKWARD);
+    m2.run(FORWARD);
+    delay(5);
+  }
+  release();
 }
 void mission_41(){
 }
@@ -397,6 +403,15 @@ void checkDist(){/* Ultrasonic Sensor Check */
 
   distR = (duration * 0.34) / 2;
 
+}
+int getBearing(){
+  int bearing = compass.getAzimuth();
+  //adjust for factory calibration being off by 90 degrees
+  bearing = bearing + 270;
+  //Adjust for values over 360
+  if(bearing>360){bearing=bearing-360;}
+
+  return bearing;
 }
 long getDistance(int trigPin, int echoPin) {
     long totalDistance, duration, distance;
@@ -465,10 +480,7 @@ void parseCommand(char *message) {
         mission_22();
     }
     else if (strcmp(message, "Mission 3A") == 0) {
-        mission_31();
-    }
-    else if (strcmp(message, "Mission 3B") == 0) {
-        mission_32();
+        mission_3();
     }
     else if (strcmp(message, "Mission 4A") == 0) {
         mission_41();
@@ -503,35 +515,28 @@ void decel(){
   }
 }
 void forward(int wait){
-  compass.read();
-  int ForwardHeading = compass.getAzimuth();
-  int startTime = millis();
-  int CurrentHeading = 0;
-  int M1Speed = 255;
-  int M2Speed = 255;
+  int ForwardHeading = getBearing();
+  startTime = millis();
   Serial.print("Forward debug");
   m1.setSpeed(255);
   m2.setSpeed(255);
   m1.run(FORWARD);
   m2.run(FORWARD);
-  while (millis() > startTime + wait){
-    compass.read();
-    CurrentHeading = compass.getAzimuth();
-    if (CurrentHeading < ForwardHeading){
-        M1Speed = M1Speed-5;
-        m1.setSpeed(M1Speed);
-        M2Speed = M2Speed+5;
-        m2.setSpeed(M2Speed);
-      }
-      else if (CurrentHeading > ForwardHeading){
-        M1Speed = M1Speed+5;
-        m1.setSpeed(M1Speed);
-        M2Speed = M2Speed-5;
-        m2.setSpeed(M2Speed);
+  if (getBearing() < ForwardHeading){
+      M1Speed = M1Speed-5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed+5;
+      m2.setSpeed(M2Speed);
     }
+    else if (getBearing() > ForwardHeading){
+      M1Speed = M1Speed+5;
+      m1.setSpeed(M1Speed);
+      M2Speed = M2Speed-5;
+      m2.setSpeed(M2Speed);
+  if (millis() > startTime + wait){
+    m1.run(RELEASE);
+    m2.run(RELEASE);
   }
-  m1.run(RELEASE);
-  m2.run(RELEASE);
 }
 void forward(int wait, int loops){
   /*
@@ -577,25 +582,29 @@ void release(){
 }
 void right(){
   Serial.println("RIGHT TURN");
-  compass.read();
-  int ForwardHeading = compass.getAzimuth();
+  int ForwardHeading = getBearing();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(BACKWARD);
   m2.run(FORWARD);
-  delay(500);
+  while (getBearing() > ForwardHeading-90){
+    Serial.print("turning");
+    delay(5);
+  }
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
 void left(){
   Serial.println("LEFT TURN");
-  compass.read();
-  int ForwardHeading = compass.getAzimuth();
+  int ForwardHeading = getBearing();
   m1.setSpeed(200);
   m2.setSpeed(200);
   m1.run(FORWARD);
   m2.run(BACKWARD);
-  delay(500);
+  while (getBearing() < ForwardHeading+90){
+    Serial.print("turning");
+    delay(5);
+  }
   m1.run(RELEASE);
   m2.run(RELEASE);
 }
