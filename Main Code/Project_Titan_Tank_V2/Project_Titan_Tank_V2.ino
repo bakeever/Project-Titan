@@ -127,12 +127,13 @@ void checkDist(){/* Ultrasonic Sensor Check */
 
 }
 int getBearing(){
+  compass.read();
   int bearing = compass.getAzimuth();
   //adjust for factory calibration being off by 90 degrees
   bearing = bearing + 270;
   //Adjust for values over 360
   if(bearing>360){bearing=bearing-360;}
-
+  if(bearing<0){bearing = bearing+360;}
   return bearing;
 }
 long getDistance(int trigPin, int echoPin) {
@@ -198,8 +199,8 @@ void forward(int wait){
   int ForwardHeading = getBearing();
   int startTime = millis();
   Serial.print("Forward debug");
-  int M1Speed = 255;
-  int M2Speed = 255;
+  int M1Speed = 135;
+  int M2Speed = 135;
   m1.setSpeed(M1Speed);
   m2.setSpeed(M2Speed);
   m1.run(FORWARD);
@@ -265,6 +266,14 @@ void release(){
 }
 void right(){
   Serial.println("RIGHT TURN");
+  m1.setSpeed(200);
+  m2.setSpeed(200);
+  m1.run(BACKWARD);
+  m2.run(FORWARD);
+  delay(300);
+}
+void right3(){
+  Serial.println("RIGHT TURN");
   int ForwardHeading = getBearing();
   m1.setSpeed(200);
   m2.setSpeed(200);
@@ -278,6 +287,14 @@ void right(){
   m2.run(RELEASE);
 }
 void left(){
+  Serial.println("LEFT TURN");
+  m1.setSpeed(200);
+  m2.setSpeed(200);
+  m1.run(FORWARD);
+  m2.run(BACKWARD);
+  delay(300);
+}
+void left3(){
   Serial.println("LEFT TURN");
   int ForwardHeading = getBearing();
   m1.setSpeed(200);
@@ -431,7 +448,7 @@ void mission_21(){
     //If neither sensor sees something, wobble forward
     else if(L_dist > 127 and R_dist > 127){
       Serial.println("Forward");
-      forward(10,30);//This is the alternate forward for wobbling.
+      forward(10);//This is the alternate forward for wobbling.
     }
   }
 }
@@ -559,14 +576,24 @@ void mission_22(){
   }
 }
 void mission_3(){
-  while(getBearing() > 10 or getBearing() < 350){
-    m1.setSpeed(100);
-    m2.setSpeed(100);
+  int i = 10;
+  while(1<2){
+    compass.read();
+    i = compass.getAzimuth();
+    Serial.print("m3: ");
+    Serial.println(i);
+    if(i > 35 and i < 55){
+      Serial.println("Mission 3 complete");
+      break;
+    }
+    m1.setSpeed(250);
+    m2.setSpeed(250);
     m1.run(BACKWARD);
     m2.run(FORWARD);
-    delay(5);
+    delay(200);
   }
   release();
+  payload();
 }
 void mission_41(){
 }
@@ -658,7 +685,6 @@ void setup() {
   float heading = compass.getAzimuth();
   Serial.print("Heading: ");
   Serial.println(heading);
-
 }
 void loop() {
   /* RF Messaging */
