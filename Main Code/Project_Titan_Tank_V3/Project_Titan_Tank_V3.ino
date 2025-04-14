@@ -2,7 +2,7 @@
  * ==========================================================
  * Project Name: Project Titan Hyperion
  * Author: Bryce Keever
- * Date: January 27, 2025
+ * Date: April 9, 2025
  * Version: 3.0
  * Description: Using Arduino Motor Shield Rev3 Clone
  * ==========================================================
@@ -32,56 +32,54 @@ const long sensorInterval = 1000;  // 1-second interval
 unsigned long previousMillis = 0;
 const long interval = 3000; // 3 seconds
 
-int pos = 0;
+int pos = 0; // Initial position for servo
 
+uint16_t tread_right = 250; // Initial speed for 
+uint16_t tread_left = 250;
+uint8_t i; // For accel and deccel
 
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
+/* Ultrasonic Sensor Pins */
 #define TRIG_PIN_LEFT 22  // Pin connected to the Trig pin of the sensor
 #define ECHO_PIN_LEFT 23 // Pin connected to the Echo pin of the sensor
 #define TRIG_PIN_RIGHT 24  // Pin connected to the Trig pin of the sensor
 #define ECHO_PIN_RIGHT 25 // Pin connected to the Echo pin of the sensor
-// const int TRIG_PIN_LEFT = 22;
-// const int ECHO_PIN_LEFT = 23;
-// const int TRIG_PIN_RIGHT = 24;
-// const int ECHO_PIN_RIGHT = 25;
 #define STARTUP_ERROR 28
 #define MAIN_ERROR 29
 
-// ==========================================================
-//                      Object Declaration
-// ==========================================================
-// AF_DCMotor m1(2); // create motor #1, Right Side
-// AF_DCMotor m2(4); // create motor #2, Left Side
-int directionPinR = 12;
-int pwmPinR = 3;
-int brakePinR = 9;
-
-//uncomment if using channel B, and remove above definitions
+/* Motor Hat Pins */
+int directionPinR = 12; // Direction Pins
 int directionPinL = 13;
+
+int pwmPinR = 3; // PWM Pins
 int pwmPinL = 11;
+
+int brakePinR = 9; // Brake Pins
 int brakePinL = 8;
 
-//boolean to switch direction
-bool directionState;
+bool directionState; //boolean to switch direction
 
-// Create ASK objects for RF Communication
-RH_ASK rf_driver(2000,19,18,10); // Reciever
-RH_ASK rf_driver1(2000,18,19,10,true); // Transmitter
+// ==========================================================
+//                   Object Declaration
+// ========================================================== 
 
+/* Create ASK objects for RF Communication */
+RH_ASK rf_driver(2000,19,18,10); // Reciever [Pin 18]
+RH_ASK rf_driver1(2000,18,19,10,true); // Transmitter [Pin 19]
+
+/* Servo object */
 Servo myServo;  // Create a servo object
 
+/* Compass Object */
 QMC5883LCompass compass;
-// ==========================================================
-//                  Initialization Section
-// ==========================================================
-uint16_t tread_right = 250;
-uint16_t tread_left = 250;
-uint8_t i; // For accel and deccel
 
-// long distanceLeft = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
-// long distanceRight = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
+// ==========================================================
+//               Program Variable Initialization
+// ==========================================================
+
+
 
 bool handshakeUltra(){
   long duration, distL, distR;
