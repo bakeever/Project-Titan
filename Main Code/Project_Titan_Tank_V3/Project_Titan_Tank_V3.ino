@@ -79,8 +79,6 @@ QMC5883LCompass compass;
 //               Program Variable Initialization
 // ==========================================================
 
-
-
 bool handshakeUltra(){
   long duration, distL, distR;
 
@@ -221,9 +219,6 @@ void setBrakes(bool state){
     digitalWrite(brakePinR, LOW);
     digitalWrite(brakePinL, LOW);
   }
-  else{
-    return;
-  }
 }
 // void accel() {
 //   static int i = 0;
@@ -249,17 +244,20 @@ void setBrakes(bool state){
 // }
 void forward(){
     Serial.print("Forward debug");
-    setDirFor(); // Set Rover Direction to forward
-    setBrakes(false); //release breaks
-        //set work duty for the motor (manual control - will remove)
-    setDutyRight(250);
-    setDutyLeft(250);
+    //Motor A forward @ full speed
+    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+
+    //Motor B backward @ half speed
+    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
+
     delay(1000);
-        //activate breaks
-    setBrakes(true);
-    //set work duty for the motor to 0 (off)
-    setDutyRight(0);
-    setDutyLeft(0);
+
+    digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+    digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 }
 // Function: Forward command until wait ends
 void forward(int wait){
@@ -273,18 +271,18 @@ void forward(int wait){
     setDutyRight(200);
     setDutyLeft(200);
 
-    // if (getBearing() < ForwardHeading){
-    //     tread_right = tread_right - 5;
-    //     setDutyRight(tread_right);
-    //     tread_left = tread_left +5;
-    //     setDutyLeft(tread_left);
-    // }
-    // else if (getBearing() > ForwardHeading){
-    //     tread_right = tread_right + 5;
-    //     setDutyRight(tread_right);
-    //     tread_left = tread_left - 5;
-    //     setDutyLeft(tread_left);
-    // }
+    if (getBearing() < ForwardHeading){
+        tread_right = tread_right - 5;
+        setDutyRight(tread_right);
+        tread_left = tread_left +5;
+        setDutyLeft(tread_left);
+    }
+    else if (getBearing() > ForwardHeading){
+        tread_right = tread_right + 5;
+        setDutyRight(tread_right);
+        tread_left = tread_left - 5;
+        setDutyLeft(tread_left);
+    }
     if (millis() > startTime + wait){
     //activate breaks
     setBrakes(true);
@@ -328,33 +326,48 @@ void forward(int wait, int loops){
   setDutyLeft(0);
 }
 // Function: Backward command with acceleration and deceleration
-void backward(int wait){
+void backward(){
     Serial.print("Backward debug");
 
-    // Set rover direction to backward
-    setDirBack();         
-    setBrakes(false);     // Release brakes
+    //Motor A forward @ full speed
+    digitalWrite(12, LOW); //Establishes forward direction of Channel A
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
 
-    // Set initial duty cycles
-    setDutyRight(250);
-    setDutyLeft(250);
+    //Motor B backward @ half speed
+    digitalWrite(13, HIGH);  //Establishes backward direction of Channel B
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(wait);           // Move backward for 500ms
+    delay(1000);
 
-    // Stop the rover
-    setBrakes(true);      // Apply brakes
-    setDutyRight(0);      // Cut power
-    setDutyLeft(0);
+    digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+    digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 }
 // Function: Right turn
 void right(){
     Serial.println("RIGHT TURN");
-    setDirRight();        // Set motors to turn right (left motor forward, right motor backward)
-    setBrakes(false);     // Release brakes
-    setDutyRight(200);    // Power for right motor (backward)
-    setDutyLeft(200);     // Power for left motor (forward)
-    delay(300);           // Duration of the turn
-    setBrakes(true);      // Apply brakes
+      //Motor A forward @ full speed
+    digitalWrite(12, LOW); //Establishes forward direction of Channel A
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+
+    //Motor B backward @ half speed
+    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
+
+    delay(1000);
+
+    digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+    digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+    
+    // setDirRight();        // Set motors to turn right (left motor forward, right motor backward)
+    // setBrakes(false);     // Release brakes
+    // setDutyRight(200);    // Power for right motor (backward)
+    // setDutyLeft(200);     // Power for left motor (forward)
+    // delay(300);           // Duration of the turn
+    // setBrakes(true);      // Apply brakes
     // setDutyRight(0);      // Stop motors
     // setDutyLeft(0);
 }
@@ -381,14 +394,29 @@ void right3(){
 // Function: Left turn
 void left(){
     Serial.println("LEFT TURN");
-    setDirLeft();         // Set motors to turn left (right motor forward, left motor backward)
-    setBrakes(false);     // Release brakes
-    setDutyRight(200);    // Power for right motor (forward)
-    setDutyLeft(200);     // Power for left motor (backward)
-    delay(300);           // Duration of the turn
-    setBrakes(true);      // Apply brakes
-    setDutyRight(0);      // Stop motors
-    setDutyLeft(0);
+    //Motor A forward @ full speed
+    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+
+    //Motor B backward @ half speed
+    digitalWrite(13, HIGH);  //Establishes backward direction of Channel B
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
+
+    delay(1000);
+
+    digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+    digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+
+    // setDirLeft();         // Set motors to turn left (right motor forward, left motor backward)
+    // setBrakes(false);     // Release brakes
+    // setDutyRight(200);    // Power for right motor (forward)
+    // setDutyLeft(200);     // Power for left motor (backward)
+    // delay(300);           // Duration of the turn
+    // setBrakes(true);      // Apply brakes
+    // setDutyRight(0);      // Stop motors
+    // setDutyLeft(0);
 }
 // Function: Left turn until rover has rotated approximately 90 degrees
 void left3(){
@@ -701,10 +729,10 @@ void mission_42(){
 // Parses a string command and executes the corresponding movement or mission routine.
 void parseCommand(char *message) {
     if (strcmp(message, "FORWARD") == 0) {
-      forward(1000);
+      forward();
     }
     else if (strcmp(message, "BACKWARD") == 0) {
-      backward(1000);
+      backward();
     }
     else if (strcmp(message, "RIGHT") == 0) {
       right();
@@ -751,6 +779,7 @@ void setup() {
   pinMode(directionPinR, OUTPUT);
   pinMode(pwmPinR, OUTPUT);
   pinMode(brakePinR, OUTPUT);
+
   pinMode(directionPinL, OUTPUT);
   pinMode(pwmPinL, OUTPUT);
   pinMode(brakePinL, OUTPUT);
@@ -797,6 +826,7 @@ void setup() {
 
   // mission_21();
   forward();
+
 }
 void loop() {
   /* RF Messaging */
