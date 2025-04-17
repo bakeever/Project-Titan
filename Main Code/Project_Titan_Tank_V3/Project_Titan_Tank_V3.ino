@@ -254,10 +254,11 @@ void forward(){
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(1000);
+    delay(15);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+
 }
 // Function: Forward command until wait ends
 void forward(int wait){
@@ -357,7 +358,7 @@ void right(){
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(1000);
+    delay(300);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
@@ -404,7 +405,7 @@ void left(){
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(1000);
+    delay(300);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
@@ -564,25 +565,32 @@ void mission_21(){
     Serial.println(R_dist);
 
     //If both sensors detect that we're close to a wall, U-turn
-    if (L_dist < 200 and R_dist < 200){ //5 inches is 200 mm
+    if (L_dist < 400 and R_dist < 400){ //5 inches is 200 mm
       Serial.println("U-turn");
-      right();
+      digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+      digitalWrite(8, HIGH);  //Engage the Brake for Channel B
       right();
     }
     //If left sensor sees something, turn right 90 degrees
-    else if(L_dist < 200 and R_dist > 200){
+    else if(L_dist < 400 and R_dist > 400){
       Serial.println("Turn Right");
+      digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+      digitalWrite(8, HIGH);  //Engage the Brake for Channel B
       right();
     }
     //If Right sensor sees something, rutn left 90 degrees.
-    else if(L_dist > 200 and R_dist < 200){
+    else if(L_dist > 400 and R_dist < 400){
       Serial.println("Turn Left");
+      digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+      digitalWrite(8, HIGH);  //Engage the Brake for Channel B
       left();
     }
     //If neither sensor sees something, wobble forward
-    else if(L_dist > 200 and R_dist > 200){
+    else if(L_dist > 400 and R_dist > 400){
       Serial.println("Forward");
-      forward(10);//This is the alternate forward for wobbling.
+      digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+      digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+      forward();//This is the alternate forward for wobbling.
     }
   }
 }
