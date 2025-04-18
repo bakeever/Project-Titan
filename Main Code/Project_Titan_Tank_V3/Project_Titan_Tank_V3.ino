@@ -180,32 +180,32 @@ long getDistance(int trigPin, int echoPin) {
 
     //return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
 }
-void setDutyRight(int duty){
-  analogWrite(pwmPinR,duty);
-}
-void setDutyLeft(int duty){
-  analogWrite(pwmPinL,duty);
-}
-// Function: Sets Rover Direction Forward
-void setDirFor(){
-  digitalWrite(directionPinR, HIGH); 
-  digitalWrite(directionPinL, LOW);  
-}
-// Function: Sets Rover Direction Backwards
-void setDirBack(){
-  digitalWrite(directionPinR, LOW); 
-  digitalWrite(directionPinL, HIGH);  
-}
-// Function: Sets Rover Direction Right
-void setDirRight(){
-  digitalWrite(directionPinR, LOW); 
-  digitalWrite(directionPinL, LOW);  
-}
-// Function: Sets Rover Direction Left
-void setDirLeft(){
-  digitalWrite(directionPinR, HIGH); 
-  digitalWrite(directionPinL, HIGH);  
-}
+// void setDutyRight(int duty){
+//   analogWrite(pwmPinR,duty);
+// }
+// void setDutyLeft(int duty){
+//   analogWrite(pwmPinL,duty);
+// }
+// // Function: Sets Rover Direction Forward
+// void setDirFor(){
+//   digitalWrite(directionPinR, HIGH); 
+//   digitalWrite(directionPinL, LOW);  
+// }
+// // Function: Sets Rover Direction Backwards
+// void setDirBack(){
+//   digitalWrite(directionPinR, LOW); 
+//   digitalWrite(directionPinL, HIGH);  
+// }
+// // Function: Sets Rover Direction Right
+// void setDirRight(){
+//   digitalWrite(directionPinR, LOW); 
+//   digitalWrite(directionPinL, LOW);  
+// }
+// // Function: Sets Rover Direction Left
+// void setDirLeft(){
+//   digitalWrite(directionPinR, HIGH); 
+//   digitalWrite(directionPinL, HIGH);  
+// }
 
 // Function: Sets Rover Direction Forward
 void setBrakes(bool state){
@@ -244,14 +244,16 @@ void setBrakes(bool state){
 // }
 void forward(){
     Serial.print("Forward debug");
-    //Motor A forward @ full speed
-    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
 
-    //Motor B backward @ half speed
+    // Set Direction Forward
+    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
     digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+
+    // 
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+  
+    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
     delay(15);
@@ -265,31 +267,36 @@ void forward(int wait){
     int ForwardHeading = getBearing();
     int startTime = millis();
     Serial.print("Forward debug");
-    setDirFor(); // Set Rover Direction to forward
-    setBrakes(false); //release breaks
+    // Set Direction Forward
+    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
 
-    //set work duty for the motor (manual control - will remove)
-    setDutyRight(200);
-    setDutyLeft(200);
+    // Disengagese Brakes
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+  
+    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
     if (getBearing() < ForwardHeading){
         tread_right = tread_right - 5;
-        setDutyRight(tread_right);
+        // setDutyRight(tread_right);
+        analogWrite(3, treat_right);   // Changes the speed of Channel A
         tread_left = tread_left +5;
-        setDutyLeft(tread_left);
+        // setDutyLeft(tread_left);
+        analogWrite(11, tread_left);    // Changes the speed of Channel B
     }
     else if (getBearing() > ForwardHeading){
         tread_right = tread_right + 5;
-        setDutyRight(tread_right);
+        // setDutyRight(tread_right);
+        analogWrite(3, treat_right);   // Changes the speed of Channel A
         tread_left = tread_left - 5;
-        setDutyLeft(tread_left);
+        // setDutyLeft(tread_left);
+        analogWrite(11, tread_left);    // Changes the speed of Channel B
     }
     if (millis() > startTime + wait){
-    //activate breaks
-    setBrakes(true);
-    //set work duty for the motor to 0 (off)
-    setDutyRight(0);
-    setDutyLeft(0);
+      digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+      digitalWrite(8, HIGH);  //Engage the Brake for Channel B
     }
 }
 // Function: Forward command until wait & loops end
@@ -302,29 +309,38 @@ void forward(int wait, int loops){
   */
   int i = 0; // Variable for number of loops
   float angle = 0; //this angle is in RADIANS
-  setDirFor();
-  setBrakes(false); //release breaks
+  // setDirFor();
+  // setBrakes(false); //release breaks
+  // setDutyRight(255);
+  // setDutyLeft(255);
 
-  //set work duty for the motor (manual control - will remove)
-  setDutyRight(255);
-  setDutyLeft(255);
+  // Set Direction Forward
+  digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+  digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+  // Disengagese Brakes
+  digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+  digitalWrite(8, LOW);   //Disengage the Brake for Channel B
 
   while (i<loops){
     float tread_right = (sin(angle+3.14159)+1)*255;
     float tread_left = (sin(angle)+1)*255;
     Serial.print("Forward debug");
-    setDutyRight(tread_right);
-    setDutyLeft(tread_left);
+    // setDutyRight(tread_right);
+    // setDutyLeft(tread_left);
+    analogWrite(3, treat_right);   // Changes the speed of Channel A
+    analogWrite(11, tread_left);    // Changes the speed of Channel B
     delay(wait);
 
     angle = angle + 3.14159;
     i++;
   }
   //activate breaks
-  setBrakes(true);
-  //set work duty for the motor to 0 (off)
-  setDutyRight(0);
-  setDutyLeft(0);
+  // setBrakes(true);
+  // //set work duty for the motor to 0 (off)
+  // setDutyRight(0);
+  // setDutyLeft(0);
+  digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+  digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 }
 // Function: Backward command with acceleration and deceleration
 void backward(){
@@ -479,25 +495,28 @@ void travelDistance(int distance){
 //         return true;
 //     }
 // }
+/* Handshake function: Verifies functionality of both motors, direction setting and brakes. */
 bool handshakeMotor(){
-  //   //change direction every loop()
-  // directionState = !directionState;
-
-  // //write a high state to the direction pin (13)
-  // else{
-    digitalWrite(directionPinR, HIGH); // Sets right tread to forward
-    digitalWrite(directionPinL, LOW);  // Sets left tread to forward
-  // }
-
+  // Set Direction Forward
+  digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+  digitalWrite(13, LOW);  //Establishes backward direction of Channel B
   //release breaks
   digitalWrite(brakePinR, LOW);
   digitalWrite(brakePinL, LOW);
-
   //set work duty for the motor
   analogWrite(pwmPinR, 255);
   analogWrite(pwmPinL, 255);
-  delay(2000);
-
+  delay(500);
+  //activate breaks
+  digitalWrite(brakePinR, HIGH);
+  digitalWrite(brakePinL, HIGH);
+  // Set Direction Backward
+  digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+  digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+  //set work duty for the motor
+  analogWrite(pwmPinR, 255);
+  analogWrite(pwmPinL, 255);
+  delay(500);
   //activate breaks
   digitalWrite(brakePinR, HIGH);
   digitalWrite(brakePinL, HIGH);
@@ -507,6 +526,7 @@ bool handshakeMotor(){
   delay(1000);
   return true;
 }
+/*Mission 1: Drives in a 10'x10' square path.*/
 void mission_11(){
   int counter = 0;  // Initialize counter
   while (counter < 3) {  // Run while counter is less than 4
@@ -517,14 +537,13 @@ void mission_11(){
     //right();
     counter++;  // Increment counter
     delay(1000);
-
   }
   forward(3800);
   delay(500);
   //payload();
   forward(500);
 }
-// Function that waits until a valid RF message is received, verifies it, and passes the number to travelDistance()
+/* Misson 2B: Waits for distance command and then travels distance */
 void mission_12(){
   uint8_t buf[13] = {0};
   uint8_t buflen = sizeof(buf);
@@ -545,8 +564,7 @@ void mission_12(){
       } else {
         Serial.println("Invalid message format received.");
       }
-      // Reset the buffer length for the next attempt
-      buflen = sizeof(buf);
+      buflen = sizeof(buf);      // Reset the buffer length for the next attempt
     }
     delay(100); // Small delay to avoid busy waiting
   }
