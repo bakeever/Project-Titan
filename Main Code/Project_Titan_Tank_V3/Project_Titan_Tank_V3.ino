@@ -826,6 +826,7 @@ void setup() {
 
   // mission_21();
   forward();
+  mission_21();
 
 }
 void loop() {
