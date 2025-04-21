@@ -173,55 +173,37 @@
                     <div class="row g-4">
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec1"><h3>Target Speed</h3></a>
+                                <a href="#spec1"><h3>Straight Line Movement</h3></a>
                             </div>
                         </div>
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec2"><h3>Operating Time</h3></a>
+                                <a href="#spec2"><h3>Accepts RF Communication</h3></a>
                             </div>
                         </div>
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec3"><h3>GPS Accuracy</h3></a>
+                                <a href="#spec3"><h3>Radio Range</h3></a>
                             </div>
                         </div>
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec4"><h3>Radio Range</h3></a>
+                                <a href="#spec4"><h3>Payload Drop Mechanism</h3></a>
                             </div>
                         </div>
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec5"><h3>Payload Drop Mechanism</h3></a>
+                                <a href="#spec5"><h3>Obstacle Avoidance</h3></a>
                             </div>
                         </div>
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec6"><h3>Obstacle Avoidance</h3></a>
-                            </div>
-                        </div>
-            
-                        <div class="col-lg-4 col-md-6">
-                            <div class="de-box-cat h-100">
-                                <a href="#spec7"><h3>Toughness</h3></a>
-                            </div>
-                        </div>
-            
-                        <div class="col-lg-4 col-md-6">
-                            <div class="de-box-cat h-100">
-                                <a href="#spec8"><h3>Weight Limit</h3></a>
-                            </div>
-                        </div>
-            
-                        <div class="col-lg-4 col-md-6">
-                            <div class="de-box-cat h-100">
-                                <a href="#spec9"><h3>Rain Tight (IP42)</h3></a>
+                                <a href="#spec6"><h3>Weight Limit</h3></a>
                             </div>
                         </div>
             
@@ -243,24 +225,102 @@
                         <div class="spacer-double"></div>
                         <div class="col-lg-12">
                             <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Target Speed (5-10 mph)
+                                <span class="text-gradient"></span> Straight Line Movement
                             </h2>
             
                             <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Ensure the rover maintains a consistent travel speed within the range of 5 to 10 mph to optimize navigation efficiency and prevent instability.</p>
-            
+                            <p>Ensure the rover maintains a consistent travel direction.
                             <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
                             <p>1. Fully charge the rover's battery and ensure the motor controller is functioning properly.</p>
-                            <p>2. Place the rover on a level test track, at least 50 feet in length, with clearly marked distance markers.</p>
-                            <p>3. Start the rover and measure its speed using a radar gun, high-precision GPS tracker, or an onboard speed sensor.</p>
-                            <p>4. Conduct five test runs, recording speed at multiple checkpoints (e.g., every 10 feet).</p>
+                            <p>2. Place the rover on a level test track.</p>
+                            <p>3. Run program to move the rover forward for 3 seconds.</p>
+                            <p>4. Conduct five test runs, recording distace at multiple checkpoints (e.g., every 1 foot).</p>
                             <p>5. Repeat the test on different terrain types such as concrete, grass, and sand.</p>
             
                             <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The rover’s speed must remain within 5-10 mph for at least 80% of the test duration.</p>
-                            <p>2. Any deviation exceeding ±1 mph from the specified range for more than 5 continuous seconds is a failure.</p>
-                            <p>3. If the rover exceeds or falls below the speed limit in more than one trial, modifications must be made to the motor control system before retesting.</p>
+                            <p>1. The rover’s speed must remain within 2-5 inches of deviation from the straight line for at least 80% of the test duration.</p>
+                            <p>2. Any deviation exceeding 5 inches from the specified reference line is a failure.</p>
+                            <p>3. If the rover exceeds or falls beyond the deviation limit for more than one trial, modifications must be made to the motor control system before retesting.</p>
+                        
+                            <p class="wow fadeInUp"><strong>Recorded Data:</strong></p>
+                            <table style="width: 100%; border-collapse: collapse; color: white; background-color: transparent;">
+                                <thead>
+                                  <tr style="border-bottom: 2px solid white;">
+                                    <th style="border: 1px solid white; padding: 10px;">Run #</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Terrain</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Checkpoint (1 ft)</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Checkpoint (2 ft)</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Checkpoint (3 ft)</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Max Deviation (in)</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Pass/Fail</th>
+                                    <th style="border: 1px solid white; padding: 10px;">Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td style="border: 1px solid white; padding: 10px;">1</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Concrete</td>
+                                    <td style="border: 1px solid white; padding: 10px;">4.5 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">5.2 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">6.0 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">6.0</td>
+                                    <td style="border: 1px solid white; padding: 10px; color: red;">FAIL</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Initial setup</td>
+                                  </tr>
+                                  <tr>
+                                    <td style="border: 1px solid white; padding: 10px;">2</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Concrete</td>
+                                    <td style="border: 1px solid white; padding: 10px;">3.8 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">4.5 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">5.1 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">5.1</td>
+                                    <td style="border: 1px solid white; padding: 10px; color: red;">FAIL</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Tightened tread tensions</td>
+                                  </tr>
+                                  <tr>
+                                    <td style="border: 1px solid white; padding: 10px;">3</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Concrete</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.9 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">3.4 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">3.8 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">3.8</td>
+                                    <td style="border: 1px solid white; padding: 10px; color: lime;">PASS</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Adjusted wheel alignment</td>
+                                  </tr>
+                                  <tr>
+                                    <td style="border: 1px solid white; padding: 10px;">4</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Concrete</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.2 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.5 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.7 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.7</td>
+                                    <td style="border: 1px solid white; padding: 10px; color: lime;">PASS</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Fine-tuned heading control</td>
+                                  </tr>
+                                  <tr>
+                                    <td style="border: 1px solid white; padding: 10px;">5</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Concrete</td>
+                                    <td style="border: 1px solid white; padding: 10px;">1.8 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">1.9 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.0 in</td>
+                                    <td style="border: 1px solid white; padding: 10px;">2.0</td>
+                                    <td style="border: 1px solid white; padding: 10px; color: lime;">PASS</td>
+                                    <td style="border: 1px solid white; padding: 10px;">Meets target</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                              <div class="spacer-single"></div>
+                              <p class="wow fadeInUp"><strong>Test Video:</strong></p>
+                              <video width="640" height="360" controls poster="poster.jpg">
+                                <source src="video/Concrete_Indoor.m4v" type="video/mp4">
+                                <!-- <source src="path/to/video.webm" type="video/webm"> -->
+                                <!-- fallback for really old browsers: -->
+                                Your browser does not support the HTML5 Video element.
+                              </video>
+                              
+                            
                         </div>
+                        
                         <div class="spacer-double"></div>
                         <div class="spacer-double"></div>
                         <div class="spacer-double"></div>
@@ -275,7 +335,7 @@
                         <div class="spacer-double"></div>
                         <div class="col-lg-12">
                             <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Operating Time (30 min)
+                                <span class="text-gradient"></span> Consistent RF Communication
                             </h2>
             
                             <p class="wow fadeInUp"><strong>Objective:</strong></p>
@@ -410,96 +470,6 @@
                             <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
                             <p>1. The rover must never come within 1 inch of an obstacle in at least 9 out of 10 test runs.</p>
                             <p>2. If the rover contacts an obstacle or violates the clearance threshold, adjustments must be made to the avoidance algorithm.</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="spec7" class="no-top">
-                <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Toughness (18” Drop Test)
-                            </h2>
-            
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Verify that all rover systems remain functional after an 18-inch drop.</p>
-            
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Drop the rover from a height of 18 inches onto a hard surface (e.g., concrete).</p>
-                            <p>2. Inspect for physical damage and perform a full system check (motors, sensors, communications, navigation).</p>
-                            <p>3. Conduct normal operation tests to confirm no degradation in performance.</p>
-                            <p>4. Repeat the drop test at least three times to assess durability over multiple impacts.</p>
-            
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. No significant structural damage should be observed.</p>
-                            <p>2. All core functions (navigation, communication, obstacle avoidance, payload drop) must remain operational.</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                    </div>
-                </div>
-            </section>
-            
-            <section id="spec8" class="no-top">
-                <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Weight Limit (4 lbs)
-                            </h2>
-            
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Ensure the rover does not exceed the maximum weight limit of 4 lbs, including payload.</p>
-            
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Assemble the fully equipped rover with all components, including sensors and battery.</p>
-                            <p>2. Use a high-precision digital scale to measure total weight.</p>
-                            <p>3. If the weight is close to 4 lbs, verify operation with additional loads to test for any efficiency loss.</p>
-            
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The total weight must not exceed 4 lbs.</p>
-                            <p>2. If the rover is overweight, components must be modified or replaced to meet the weight requirement.</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                    </div>
-                </div>
-            </section>  
-
-            <section id="spec9" class="no-top">
-                <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Rain Tight (IP42 Rating)
-                            </h2>
-            
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Ensure the rover remains operational in wet conditions, meeting the IP42 rating for protection against solid objects >1mm and vertically dripping water.</p>
-            
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Place the rover in a controlled environment and expose it to simulated rainfall using a sprinkler system for 10 minutes.</p>
-                            <p>2. After exposure, inspect for water ingress and check if any components show signs of failure.</p>
-                            <p>3. Test all functionalities, including movement, GPS, sensors, and communication.</p>
-                            <p>4. Repeat the test at different angles and intensities of water exposure.</p>
-            
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The rover must function normally immediately after water exposure.</p>
-                            <p>2. No internal components should show evidence of water penetration.</p>
-                            <p>3. If the rover malfunctions due to water exposure, additional sealing or protective casing is required.</p>
                         </div>
                         <div class="spacer-double"></div>
                         <div class="spacer-double"></div>

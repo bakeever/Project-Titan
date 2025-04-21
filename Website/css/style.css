@@ -6131,7 +6131,7 @@ i.font60 {
 
 .ul-style-4 li {
   margin: 2px 0 2px 0;
-  display: ;
+  display: 1px;
   font-weight: 500;
 }
 
@@ -6733,7 +6733,7 @@ i.font60 {
 }
 
 .pricing-s2.text-light .top .price,
-.pricing-s2.text-white .top .price,
+.pricing-s2.text-white .top .price
   {
   color: #ffffff;
 }
@@ -10606,7 +10606,7 @@ blockquote.s1:before {
 .domain-card .d-price {
   font-weight: bold;
   font-size: 48px;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   color: #35404E;
   letter-spacing: -3px;
 }
@@ -20978,15 +20978,23 @@ img {
 .d-text .result-status {
   color: green;
   background: black;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 4px 8px;
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
 }
 .d-text .result-upcoming {
   color: yellow;
   background: black;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 4px 8px;
-  box-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
+
+.price-new {
+  color: white;
+  background: grey;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
 }
 
