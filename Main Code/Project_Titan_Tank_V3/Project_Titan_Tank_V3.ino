@@ -50,16 +50,16 @@ uint8_t i; // For accel and deccel
 #define MAIN_ERROR 29
 
 /* Motor Hat Pins */
-int directionPinR = 12; // Direction Pins
-int directionPinL = 13;
+const int directionPinR = 12; // Direction Pins
+const int directionPinL = 13;
 
-int pwmPinR = 3; // PWM Pins
-int pwmPinL = 11;
+const int pwmPinR = 3; // PWM Pins
+const int pwmPinL = 11;
 
-int brakePinR = 9; // Brake Pins
-int brakePinL = 8;
+const int brakePinR = 9; // Brake Pins
+const int brakePinL = 8;
 
-bool directionState; //boolean to switch direction (not currently used)
+const bool directionState; //boolean to switch direction (not currently used)
 
 // ==========================================================
 //                   Object Declaration
@@ -92,6 +92,9 @@ bool handshakeUltra(){
   // Measure the echo time
   duration = pulseIn(ECHO_PIN_LEFT, HIGH);
 
+  // Added delay for reading accuracy
+  delay(100);
+  
   // Convert time to distance
   distL = (duration * 0.34) / 2;  // Distance in mm
   // Trigger the ultrasonic sensor
@@ -122,8 +125,9 @@ void checkDist(){/* Ultrasonic Sensor Check */
   // Convert time to distance
   distL = (duration * 0.34) / 2;  // Distance in mm
 
+  // Resetting duration variable for reuse
   duration = 0;
-    // Trigger the ultrasonic sensor
+  // Trigger the ultrasonic sensor
   digitalWrite(TRIG_PIN_RIGHT, LOW);
   delayMicroseconds(2);
   digitalWrite(TRIG_PIN_RIGHT, HIGH);
@@ -133,6 +137,9 @@ void checkDist(){/* Ultrasonic Sensor Check */
   distR = (duration * 0.34) / 2;
 
 }
+/* 
+* Function to return bearing from compass as int.
+*/
 int getBearing(){
   compass.read();
   int bearing = compass.getAzimuth();
@@ -143,6 +150,9 @@ int getBearing(){
   if(bearing<0){bearing = bearing+360;}
   return bearing;
 }
+/*
+* Function to return measured distance as long int.
+*/
 long getDistance(int trigPin, int echoPin) {
     long totalDistance, duration, distance;
     int validReadings = 0;
@@ -242,6 +252,10 @@ void setBrakes(bool state){
 //     lastUpdate = millis();
 //   }
 // }
+
+/*
+* Function to command rover to move forward for hardcoded time delay.
+*/
 void forward(){
     Serial.print("Forward debug");
 
@@ -266,7 +280,10 @@ void forward(){
     analogWrite(11, 0);   
 
 }
-// Function: Forward command until wait ends
+/*
+* Function to command rover to move forward for given time delay.
+* Also includes straight line adjustment based on heading value.
+*/
 void forward(int wait){
     int ForwardHeading = getBearing();
     int startTime = millis();
@@ -303,7 +320,9 @@ void forward(int wait){
       digitalWrite(8, HIGH);  //Engage the Brake for Channel B
     }
 }
-// Function: Forward command until wait & loops end
+/*
+* Function to command rover to move forward for given delay time and num of loops.
+*/
 void forward(int wait, int loops){
   /*
     New version of "forward" function, modifying by controlling each motor 
@@ -346,7 +365,9 @@ void forward(int wait, int loops){
   digitalWrite(9, HIGH);  //Engage the Brake for Channel A
   digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 }
-// Function: Backward command with acceleration and deceleration
+/*
+* Function to command rover to move backward for hardcoded time delay.
+*/
 void backward(){
     Serial.print("Backward debug");
 
@@ -370,7 +391,9 @@ void backward(){
     analogWrite(3, 0);  
     analogWrite(11, 0);  
 }
-// Function: Right turn
+/*
+* Function to command rover to turn to the right 90 degrees.
+*/
 void right(){
     Serial.println("RIGHT TURN");
       //Motor A forward @ full speed
@@ -397,29 +420,35 @@ void right(){
     // setDutyRight(0);      // Stop motors
     // setDutyLeft(0);
 }
-// Function: Right turn until rover has rotated approximately 90 degrees
-// void right3(){
-//     Serial.println("RIGHT TURN");
+/*
+* Function to command rover to turn to the right 90 degrees.
+* Includes heading value to turn right with increaed accuracy.
+*/
+void right3(){
+    Serial.println("RIGHT TURN");
 
-//     int ForwardHeading = getBearing(); // Store the current heading
-//     digitalWrite(12, LOW); //Establishes forward direction of Channel A
+    int ForwardHeading = getBearing(); // Store the current heading
+    digitalWrite(12, LOW); //Establishes forward direction of Channel A
+    digitalWrite(13, LOW);
+  
 
+    // Set Duty of both motors
+    analogWrite(3, 255);  
+    analogWrite(11, 255);    
+    // Turn until heading is approx. 90° less than starting heading
+    while (getBearing() > ForwardHeading - 90){
+        Serial.print("turning");
+        delay(5);
+    }
+    digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+    digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 
-
-//     analogWrite(3, 255);   //Spins the motor on Channel A at full speed
-//     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
-//     // Turn until heading is approx. 90° less than starting heading
-//     while (getBearing() > ForwardHeading - 90){
-//         Serial.print("turning");
-//         delay(5);
-//     }
-//     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
-//     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
-
-//     setDutyRight(0);
-//     setDutyLeft(0);
-// }
-// Function: Left turn
+    setDutyRight(0);
+    setDutyLeft(0);
+}
+/*
+* Function to command rover to turn to the left 90 degrees.
+*/
 void left(){
     Serial.println("LEFT TURN");
     //Motor A forward @ full speed
@@ -446,26 +475,32 @@ void left(){
     // setDutyRight(0);      // Stop motors
     // setDutyLeft(0);
 }
-// Function: Left turn until rover has rotated approximately 90 degrees
-// void left3(){
-//     Serial.println("LEFT TURN");
+/*
+* Function: Left turn until rover has rotated approximately 90 degrees.
+* Includes heading value to turn right with increaed accuracy.
+*/
+void left3(){
+    Serial.println("LEFT TURN");
 
-//     int ForwardHeading = getBearing(); // Store the current heading
-//     setDirLeft();                      // Set motors for left turn (right forward, left backward)
-//     setBrakes(false);                 // Release brakes
+    int ForwardHeading = getBearing(); // Store the current heading
+    setDirLeft();                      // Set motors for left turn (right forward, left backward)
+    setBrakes(false);                 // Release brakes
 
-//     setDutyRight(200);                // Power both motors
-//     setDutyLeft(200);
+    setDutyRight(200);                // Power both motors
+    setDutyLeft(200);
 
-//     // Turn until heading
-//     while (getBearing() < ForwardHeading + 90){
-//         Serial.print("turning");
-//         delay(5);
-//     }
-//     setBrakes(true);                 // Stop the rover
-//     setDutyRight(0);
-//     setDutyLeft(0);
-// }
+    // Turn until heading
+    while (getBearing() < ForwardHeading + 90){
+        Serial.print("turning");
+        delay(5);
+    }
+    setBrakes(true);                 // Stop the rover
+    setDutyRight(0);
+    setDutyLeft(0);
+}
+/*
+* Payload Function: Moves swing arm with servo to ejecto the payload.
+*/
 void payload(){
   int pos = 0;    // variable to store the servo position
   for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
@@ -477,6 +512,9 @@ void payload(){
     delay(5);                       // waits 15ms for the servo to reach the position
   }
 }
+/*
+* Function to return distance. Used in previous missions to calculate distance per time.
+*/
 void travelDistance(int distance){
   // Given that 10 feet takes 4000ms, calculate delay as 400ms per foot - changed to 4.77/ft
   int delayTime = distance * 380;
@@ -491,22 +529,27 @@ void travelDistance(int distance){
   delay(500);
   forward(500);
 }
-// bool handshakeRF(){
-//   if (rf_driver.recv(buf, &buflen)) {
-//     buf[buflen] = '\0';  // Null-terminate the received message
-//     Serial.print("Received: ");
-//     Serial.println((char*)buf);
+/*
+* Handshake Function: Verifies RF communication is working.
+*/
+bool handshakeRF(){
+  if (rf_driver.recv(buf, &buflen)) {
+    buf[buflen] = '\0';  // Null-terminate the received message
+    Serial.print("Received: ");
+    Serial.println((char*)buf);
 
-//     // If handshake message received, respond with "ACK"
-//     if (strcmp((char*)buf, "HANDSHAKE") == 0) {
-//         Serial.println("Sending ACK...");
-//         char ackMsg[] = "ACK";
-//         rf_driver1.send((uint8_t *)ackMsg, strlen(ackMsg));
-//         rf_driver1.waitPacketSent();
-//         return true;
-//     }
-// }
-/* Handshake function: Verifies functionality of both motors, direction setting and brakes. */
+    // If handshake message received, respond with "ACK"
+    if (strcmp((char*)buf, "HANDSHAKE") == 0) {
+        Serial.println("Sending ACK...");
+        char ackMsg[] = "ACK";
+        rf_driver1.send((uint8_t *)ackMsg, strlen(ackMsg));
+        rf_driver1.waitPacketSent();
+        return true;
+    }
+}
+/* 
+* Handshake function: Verifies functionality of both motors, direction setting and brakes. 
+*/
 bool handshakeMotor(){
   // Set Direction Forward
   digitalWrite(12, HIGH); //Establishes forward direction of Channel A
@@ -537,7 +580,9 @@ bool handshakeMotor(){
   delay(1000);
   return true;
 }
-/*Mission 1: Drives in a 10'x10' square path.*/
+/*
+* Mission 1A Function: Drives in a 10'x10' square path.
+*/
 void mission_11(){
   int counter = 0;  // Initialize counter
   while (counter < 3) {  // Run while counter is less than 4
@@ -551,10 +596,12 @@ void mission_11(){
   }
   forward(3800);
   delay(500);
-  //payload();
+  payload();
   forward(500);
 }
-/* Misson 2B: Waits for distance command and then travels distance */
+/*
+* Misson 1B Function: Waits for distance command and then travels distance 
+*/
 void mission_12(){
   uint8_t buf[13] = {0};
   uint8_t buflen = sizeof(buf);
@@ -580,7 +627,10 @@ void mission_12(){
     delay(100); // Small delay to avoid busy waiting
   }
 }
-/* Drive in an enclosed area (approx 6’x6’) without contacting walls or obstacles. Mission Time Limit: 60 seconds.*/
+/* 
+* Mission 2A Function: Drive in an enclosed area (approx 6’x6’) without contacting walls or obstacles. 
+* Mission Time Limit: 60 seconds.
+*/
 void mission_21(){
   Serial.println("RUNNING MISSION 2A");
   long L_dist, R_dist;
@@ -623,188 +673,202 @@ void mission_21(){
     }
   }
 }
-static const unsigned long TRAVEL_TIME_FOR_30_FEET = 5000UL;  // 
 /* 
+* Mission 2B Function: Drive 30ft with obstacle avoidance. 
+*/
+void mission_22(){
+  /* 
   Drive forward ~30 feet directly ahead. 
   Demonstrate obstacle avoidance by resuming path to the original waypoint 
   after detouring around a single obstacle. 
   Stop within 5 ft of the waypoint, all under 120 seconds (user requirement).
 */
-// void mission_22(){
-//   compass.read();  // Read initial heading
-//   int startHeading = compass.getAzimuth();
+  static const unsigned long TRAVEL_TIME_FOR_30_FEET = 5000UL;  // 
+  compass.read();  // Read initial heading
+  int startHeading = compass.getAzimuth();
 
-//   // Setup motor speeds
-//   setDirFor();      
-//   setBrakes(false);                 // Release brakes
+  // Setup motor speeds
+  setDirFor();      
+  setBrakes(false);                 // Release brakes
 
-//   setDutyRight(200);                // Power both motors
-//   setDutyLeft(200);
+  setDutyRight(200);                // Power both motors
+  setDutyLeft(200);
 
-//   // Track times
-//   unsigned long startTime     = millis();
-//   unsigned long obstacleTime  = 0; 
-//   unsigned long secondStart   = 0; 
-//   // We'll use 'flag' to indicate if we've already performed obstacle avoidance
-//   int flag = 0;
+  // Track times
+  unsigned long startTime     = millis();
+  unsigned long obstacleTime  = 0; 
+  unsigned long secondStart   = 0; 
+  // We'll use 'flag' to indicate if we've already performed obstacle avoidance
+  int flag = 0;
 
-//   while (true)
-//   {
-//     // Continuously read compass and distance sensors
-//     compass.read();
-//     int currentHeading = compass.getAzimuth();
-//     long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
-//     long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
+  while (true)
+  {
+    // Continuously read compass and distance sensors
+    compass.read();
+    int currentHeading = compass.getAzimuth();
+    long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
+    long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
 
-//     // Basic heading correction: If off course, adjust motor speeds
-//     if (currentHeading < startHeading) {
-//         tread_left += 5;
-//         setDutyLeft(tread_left);
-//     }
-//     else if (currentHeading > startHeading) {
-//         tread_left -= 5;
-//         setDutyLeft(tread_left);
-//     }
+    // Basic heading correction: If off course, adjust motor speeds
+    if (currentHeading < startHeading) {
+        tread_left += 5;
+        setDutyLeft(tread_left);
+    }
+    else if (currentHeading > startHeading) {
+        tread_left -= 5;
+        setDutyLeft(tread_left);
+    }
 
-//     // Detect obstacle if either side sensor < 5 inches (200mm) 
-//     if ((L_dist < 200) || (R_dist < 200)) {
-//       // If we haven't yet performed avoidance
-//       if (flag == 0) {
-//         obstacleTime = millis(); 
-//         unsigned long traveledTime = (obstacleTime - startTime);
+    // Detect obstacle if either side sensor < 5 inches (200mm) 
+    if ((L_dist < 200) || (R_dist < 200)) {
+      // If we haven't yet performed avoidance
+      if (flag == 0) {
+        obstacleTime = millis(); 
+        unsigned long traveledTime = (obstacleTime - startTime);
 
-//         // Stop motors while we do avoidance maneuvers
-//         setBrakes(true);
+        // Stop motors while we do avoidance maneuvers
+        setBrakes(true);
 
-//         // Example obstacle-avoidance sequence:
-//         left();
-//         forward(500);   // Move forward (500 ms) after turning left
-//         right();
+        // Example obstacle-avoidance sequence:
+        left();
+        forward(500);   // Move forward (500 ms) after turning left
+        right();
 
-//         // Mark that we’ve already done our single obstacle detour
-//         flag = 1;
+        // Mark that we’ve already done our single obstacle detour
+        flag = 1;
 
-//         // Optionally re-read heading if it changed significantly
-//         compass.read();
-//         startHeading = compass.getAzimuth(); 
-//       }
-//     }
+        // Optionally re-read heading if it changed significantly
+        compass.read();
+        startHeading = compass.getAzimuth(); 
+      }
+    }
 
-//     // Begin movement toward the final waypoint
-//     secondStart = millis();        // Record the current time as the new movement start
-//     setDirFor();                   // Set both motors to move forward
-//     setBrakes(false);              // Release the brakes to allow movement
-//     setDutyRight(200);             // Apply power to the right motor
-//     setDutyLeft(200);              // Apply power to the left motor
+    // Begin movement toward the final waypoint
+    secondStart = millis();        // Record the current time as the new movement start
+    setDirFor();                   // Set both motors to move forward
+    setBrakes(false);              // Release the brakes to allow movement
+    setDutyRight(200);             // Apply power to the right motor
+    setDutyLeft(200);              // Apply power to the left motor
 
-//     // Calculate how long we traveled before the obstacle 
-//     // (so we only complete the "remaining" distance)
-//     unsigned long traveledSoFar = (obstacleTime > 0) ? (obstacleTime - startTime) : 0;
+    // Calculate how long we traveled before the obstacle 
+    // (so we only complete the "remaining" distance)
+    unsigned long traveledSoFar = (obstacleTime > 0) ? (obstacleTime - startTime) : 0;
 
-//     // Continue driving until we’ve covered total “30 ft” time
-//     while (traveledSoFar + (millis() - secondStart) < TRAVEL_TIME_FOR_30_FEET) 
-//     {
-//       // Continuously correct heading inside this inner loop
-//       compass.read();
-//       currentHeading = compass.getAzimuth();
+    // Continue driving until we’ve covered total “30 ft” time
+    while (traveledSoFar + (millis() - secondStart) < TRAVEL_TIME_FOR_30_FEET) 
+    {
+      // Continuously correct heading inside this inner loop
+      compass.read();
+      currentHeading = compass.getAzimuth();
 
-//     if (currentHeading < startHeading) {
-//         tread_left += 5;
-//         setDutyLeft(tread_left);
-//     }
-//     else if (currentHeading > startHeading) {
-//         tread_left -= 5;
-//         setDutyLeft(tread_left);
-//     }
+    if (currentHeading < startHeading) {
+        tread_left += 5;
+        setDutyLeft(tread_left);
+    }
+    else if (currentHeading > startHeading) {
+        tread_left -= 5;
+        setDutyLeft(tread_left);
+    }
 
-//       // Optionally check sensors again in here 
-//     }
+      // Optionally check sensors again in here 
+    }
 
-//     setBrakes(true);                 // Stop the rover
-//     setDutyRight(0);
-//     setDutyLeft(0);
-//     // End this mission
-//     break;
-//   }
-// }
-// void mission_3(){
-//     int i = 10;
+    setBrakes(true);                 // Stop the rover
+    setDutyRight(0);
+    setDutyLeft(0);
+    // End this mission
+    break;
+  }
+}
+/*
+* Mission 3 Function: Turn rover until pointed North.
+*/
+void mission_3(){
+    int i = 10;
 
-//     while (true) {
-//         compass.read();                 // Update compass data
-//         i = compass.getAzimuth();       // Get current azimuth (heading)
+    while (true) {
+        compass.read();                 // Update compass data
+        i = compass.getAzimuth();       // Get current azimuth (heading)
 
-//         Serial.print("m3: ");
-//         Serial.println(i);
+        Serial.print("m3: ");
+        Serial.println(i);
 
-//         // Check if rover is pointing approximately North (within 35–55 degrees)
-//         if (i > 35 && i < 55) {
-//             Serial.println("Mission 3 complete");
-//             break;
-//         }
+        // Check if rover is pointing approximately North (within 35–55 degrees)
+        if (i > 35 && i < 55) {
+            Serial.println("Mission 3 complete");
+            break;
+        }
 
-//         // Begin turning right in place to reorient
-//         setDirRight();                  // Set motors: right backward, left forward
-//         setBrakes(false);              // Release brakes
+        // Begin turning right in place to reorient
+        setDirRight();                  // Set motors: right backward, left forward
+        setBrakes(false);              // Release brakes
 
-//         setDutyRight(250);             // Set speed for right motor
-//         setDutyLeft(250);              // Set speed for left motor
+        setDutyRight(250);             // Set speed for right motor
+        setDutyLeft(250);              // Set speed for left motor
 
-//         delay(200);                    // Turn for 200ms before checking heading again
-//     }
+        delay(200);                    // Turn for 200ms before checking heading again
+    }
 
-//     // Stop motors and perform final tasks
-//     setBrakes(true);                   // Engage brakes
-//     setDutyRight(0);                   // Stop right motor
-//     setDutyLeft(0);                    // Stop left motor
-//     payload();                         // Custom function: possibly for deploying or logging payload?
-// }
-// void mission_41(){
-// }
-// void mission_42(){
-// }
-// Parses a string command and executes the corresponding movement or mission routine.
-// void parseCommand(char *message) {
-//     if (strcmp(message, "FORWARD") == 0) {
-//       forward();
-//     }
-//     else if (strcmp(message, "BACKWARD") == 0) {
-//       backward();
-//     }
-//     else if (strcmp(message, "RIGHT") == 0) {
-//       right();
-//     }
-//     else if (strcmp(message, "LEFT") == 0) {
-//       left();
-//     }
-//     else if (strcmp(message, "STOP") == 0) {
-//       setBrakes(true);
-//     }
-//     else if (strcmp(message, "Mission 1A") == 0) {
-//       mission_11();
-//     }  
-//     else if (strcmp(message, "Mission 1B") == 0) {
-//       mission_12();
-//     }
-//     else if (strcmp(message, "Mission 2A") == 0) {
-//       mission_21();
-//     }
-//     else if (strcmp(message, "Mission 2B") == 0) {
-//       mission_22();
-//     }
-//     else if (strcmp(message, "Mission 3A") == 0) {
-//       mission_3();
-//     }
-//     else if (strcmp(message, "Mission 4A") == 0) {
-//       mission_41();
-//     }
-//     else if (strcmp(message, "Mission 4B") == 0) {
-//       mission_42();
-//     }
-//     else{
-//       return;
-//     }
-// }
+    // Stop motors and perform final tasks
+    setBrakes(true);                   // Engage brakes
+    setDutyRight(0);                   // Stop right motor
+    setDutyLeft(0);                    // Stop left motor
+    payload();                         // Custom function: possibly for deploying or logging payload?
+}
+/*
+* Mission 4A Function: .
+*/
+void mission_41(){
+}
+/*
+* Mission 4B Function: .
+*/
+void mission_42(){
+}
+/*
+* Parses a string command and executes the corresponding movement or mission routine.
+*/
+void parseCommand(char *message) {
+    if (strcmp(message, "FORWARD") == 0) {
+      forward();
+    }
+    else if (strcmp(message, "BACKWARD") == 0) {
+      backward();
+    }
+    else if (strcmp(message, "RIGHT") == 0) {
+      right();
+    }
+    else if (strcmp(message, "LEFT") == 0) {
+      left();
+    }
+    else if (strcmp(message, "STOP") == 0) {
+      setBrakes(true);
+    }
+    else if (strcmp(message, "Mission 1A") == 0) {
+      mission_11();
+    }  
+    else if (strcmp(message, "Mission 1B") == 0) {
+      mission_12();
+    }
+    else if (strcmp(message, "Mission 2A") == 0) {
+      mission_21();
+    }
+    else if (strcmp(message, "Mission 2B") == 0) {
+      mission_22();
+    }
+    else if (strcmp(message, "Mission 3A") == 0) {
+      mission_3();
+    }
+    else if (strcmp(message, "Mission 4A") == 0) {
+      mission_41();
+    }
+    else if (strcmp(message, "Mission 4B") == 0) {
+      mission_42();
+    }
+    else{
+      return;
+    }
+}
 void setup() {
   /* Pin Declaration */
   pinMode(TRIG_PIN_LEFT, OUTPUT);
@@ -821,10 +885,6 @@ void setup() {
   pinMode(pwmPinL, OUTPUT);
   pinMode(brakePinL, OUTPUT);
 
-  /* Motor handshake */
-  // if(handshakeMotor() == true){
-  //   Serial.println("Motor Initialize Complete");
-  // }
 
   /* Setup Serial Monitor */
   Serial.begin(115200);
@@ -840,15 +900,16 @@ void setup() {
   }
   myServo.write(pos); // put it before the attach() so it goes straight to that position
   myServo.attach(6);  // Attach the servo to pin 9
-  payload();
   /* RF Handshake */
-  // if(handshakeRF() == true){
-  //   continue;
-  //}
+  handshakeRF();
+
+  /* Motor handshake */
+  handshakeMotor();
 
   /* Ultrasonic Handshake */
   handshakeUltra();
-  //*****COMPASS SETUP*****
+  
+  /* COMPASS SETUP */
   Wire.begin();
   compass.init();
   // compass.setCalibrationOffsets(-471.00, -148.00, -991.00);
@@ -861,11 +922,7 @@ void setup() {
   Serial.print("Heading: ");
   Serial.println(heading);
 
-  // mission_21();
-  forward();
-  delay(1000);
-  backward();
-  // mission_21();
+  /* DEBUG & TESTING FUNCTIONS BELOW THIS */
 
 }
 void loop() {
@@ -873,15 +930,15 @@ void loop() {
   static uint8_t buf[10] = {0};  
   uint8_t buflen = sizeof(buf);
   
-  // if (rf_driver.recv(buf, &buflen)) {
-  //     buf[buflen] = '\0';  // Null-terminate the received message
-  //     Serial.print("Received: ");
-  //     Serial.println((char*)buf);
+  if (rf_driver.recv(buf, &buflen)) {
+      buf[buflen] = '\0';  // Null-terminate the received message
+      Serial.print("Received: ");
+      Serial.println((char*)buf);
 
-  //     // Process movement commands
-  //     parseCommand((char*)buf);
-  //     Serial.print("Waiting for next command");
-  //     memset(buf, 0, sizeof(buf));
-  //     delay(50);  // Small delay to prevent CPU overload
-  // }
+      // Process movement commands
+      parseCommand((char*)buf);
+      Serial.print("Waiting for next command");
+      memset(buf, 0, sizeof(buf));
+      delay(50);  // Small delay to prevent CPU overload
+  }
 }
