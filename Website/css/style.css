@@ -6131,7 +6131,7 @@ i.font60 {
 
 .ul-style-4 li {
   margin: 2px 0 2px 0;
-  display: ;
+  display: 1px;
   font-weight: 500;
 }
 
@@ -6733,7 +6733,7 @@ i.font60 {
 }
 
 .pricing-s2.text-light .top .price,
-.pricing-s2.text-white .top .price,
+.pricing-s2.text-white .top .price
   {
   color: #ffffff;
 }
@@ -10606,7 +10606,7 @@ blockquote.s1:before {
 .domain-card .d-price {
   font-weight: bold;
   font-size: 48px;
-  margin-bottom: 30px;
+  /* margin-bottom: 30px; */
   color: #35404E;
   letter-spacing: -3px;
 }
@@ -20962,3 +20962,39 @@ img {
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+/* .d-text {
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 12px;
+  padding: 15px;
+  color: white;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+} */
+
+.d-text h3 {
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+.d-text .result-status {
+  color: green;
+  background: black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
+.d-text .result-upcoming {
+  color: yellow;
+  background: black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
+
+.price-new {
+  color: white;
+  background: grey;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
+

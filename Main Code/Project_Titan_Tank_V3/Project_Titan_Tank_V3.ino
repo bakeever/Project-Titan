@@ -247,19 +247,23 @@ void forward(){
 
     // Set Direction Forward
     digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+    digitalWrite(13, HIGH);  //Establishes forward direction of Channel B
 
     // 
     digitalWrite(9, LOW);   //Disengage the Brake for Channel A
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
-  
-    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
-    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(15);
+    int tread = 255;
+    analogWrite(3, tread);   //Spins the motor on Channel A at full speed
+    analogWrite(11, tread);    //Spins the motor on Channel B at full speed
+
+    delay(1000);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+
+    analogWrite(3, 0);  
+    analogWrite(11, 0);   
 
 }
 // Function: Forward command until wait ends
@@ -281,7 +285,7 @@ void forward(int wait){
     if (getBearing() < ForwardHeading){
         tread_right = tread_right - 5;
         // setDutyRight(tread_right);
-        analogWrite(3, treat_right);   // Changes the speed of Channel A
+        analogWrite(3, tread_right);   // Changes the speed of Channel A
         tread_left = tread_left +5;
         // setDutyLeft(tread_left);
         analogWrite(11, tread_left);    // Changes the speed of Channel B
@@ -289,7 +293,7 @@ void forward(int wait){
     else if (getBearing() > ForwardHeading){
         tread_right = tread_right + 5;
         // setDutyRight(tread_right);
-        analogWrite(3, treat_right);   // Changes the speed of Channel A
+        analogWrite(3, tread_right);   // Changes the speed of Channel A
         tread_left = tread_left - 5;
         // setDutyLeft(tread_left);
         analogWrite(11, tread_left);    // Changes the speed of Channel B
@@ -327,7 +331,7 @@ void forward(int wait, int loops){
     Serial.print("Forward debug");
     // setDutyRight(tread_right);
     // setDutyLeft(tread_left);
-    analogWrite(3, treat_right);   // Changes the speed of Channel A
+    analogWrite(3, tread_right);   // Changes the speed of Channel A
     analogWrite(11, tread_left);    // Changes the speed of Channel B
     delay(wait);
 
@@ -346,20 +350,25 @@ void forward(int wait, int loops){
 void backward(){
     Serial.print("Backward debug");
 
-    //Motor A forward @ full speed
+    // Set Direction Forward
     digitalWrite(12, LOW); //Establishes forward direction of Channel A
-    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
-    analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+    digitalWrite(13, LOW);  //Establishes forward direction of Channel B
 
-    //Motor B backward @ half speed
-    digitalWrite(13, HIGH);  //Establishes backward direction of Channel B
+    // 
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
-    analogWrite(11, 255);    //Spins the motor on Channel B at half speed
+
+    int tread = 255;
+    analogWrite(3, tread);   //Spins the motor on Channel A at full speed
+    analogWrite(11, tread);    //Spins the motor on Channel B at full speed
 
     delay(1000);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+
+    analogWrite(3, 0);  
+    analogWrite(11, 0);  
 }
 // Function: Right turn
 void right(){
@@ -389,25 +398,27 @@ void right(){
     // setDutyLeft(0);
 }
 // Function: Right turn until rover has rotated approximately 90 degrees
-void right3(){
-    Serial.println("RIGHT TURN");
+// void right3(){
+//     Serial.println("RIGHT TURN");
 
-    int ForwardHeading = getBearing(); // Store the current heading
-    setDirRight();                     // Set turning direction (left motor forward, right motor backward)
-    setBrakes(false);                  // Release brakes
+//     int ForwardHeading = getBearing(); // Store the current heading
+//     digitalWrite(12, LOW); //Establishes forward direction of Channel A
 
-    setDutyRight(200);                 // Set motor speeds
-    setDutyLeft(200);
 
-    // Turn until heading is approx. 90° less than starting heading
-    while (getBearing() > ForwardHeading - 90){
-        Serial.print("turning");
-        delay(5);
-    }
-    setBrakes(true);                   // Stop movement
-    setDutyRight(0);
-    setDutyLeft(0);
-}
+
+//     analogWrite(3, 255);   //Spins the motor on Channel A at full speed
+//     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
+//     // Turn until heading is approx. 90° less than starting heading
+//     while (getBearing() > ForwardHeading - 90){
+//         Serial.print("turning");
+//         delay(5);
+//     }
+//     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
+//     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
+
+//     setDutyRight(0);
+//     setDutyLeft(0);
+// }
 // Function: Left turn
 void left(){
     Serial.println("LEFT TURN");
@@ -436,25 +447,25 @@ void left(){
     // setDutyLeft(0);
 }
 // Function: Left turn until rover has rotated approximately 90 degrees
-void left3(){
-    Serial.println("LEFT TURN");
+// void left3(){
+//     Serial.println("LEFT TURN");
 
-    int ForwardHeading = getBearing(); // Store the current heading
-    setDirLeft();                      // Set motors for left turn (right forward, left backward)
-    setBrakes(false);                 // Release brakes
+//     int ForwardHeading = getBearing(); // Store the current heading
+//     setDirLeft();                      // Set motors for left turn (right forward, left backward)
+//     setBrakes(false);                 // Release brakes
 
-    setDutyRight(200);                // Power both motors
-    setDutyLeft(200);
+//     setDutyRight(200);                // Power both motors
+//     setDutyLeft(200);
 
-    // Turn until heading
-    while (getBearing() < ForwardHeading + 90){
-        Serial.print("turning");
-        delay(5);
-    }
-    setBrakes(true);                 // Stop the rover
-    setDutyRight(0);
-    setDutyLeft(0);
-}
+//     // Turn until heading
+//     while (getBearing() < ForwardHeading + 90){
+//         Serial.print("turning");
+//         delay(5);
+//     }
+//     setBrakes(true);                 // Stop the rover
+//     setDutyRight(0);
+//     setDutyLeft(0);
+// }
 void payload(){
   int pos = 0;    // variable to store the servo position
   for (pos = 180; pos >= 0; pos -= 1) { // goes from 180 degrees to 0 degrees
@@ -619,181 +630,181 @@ static const unsigned long TRAVEL_TIME_FOR_30_FEET = 5000UL;  //
   after detouring around a single obstacle. 
   Stop within 5 ft of the waypoint, all under 120 seconds (user requirement).
 */
-void mission_22(){
-  compass.read();  // Read initial heading
-  int startHeading = compass.getAzimuth();
+// void mission_22(){
+//   compass.read();  // Read initial heading
+//   int startHeading = compass.getAzimuth();
 
-  // Setup motor speeds
-  setDirFor();      
-  setBrakes(false);                 // Release brakes
+//   // Setup motor speeds
+//   setDirFor();      
+//   setBrakes(false);                 // Release brakes
 
-  setDutyRight(200);                // Power both motors
-  setDutyLeft(200);
+//   setDutyRight(200);                // Power both motors
+//   setDutyLeft(200);
 
-  // Track times
-  unsigned long startTime     = millis();
-  unsigned long obstacleTime  = 0; 
-  unsigned long secondStart   = 0; 
-  // We'll use 'flag' to indicate if we've already performed obstacle avoidance
-  int flag = 0;
+//   // Track times
+//   unsigned long startTime     = millis();
+//   unsigned long obstacleTime  = 0; 
+//   unsigned long secondStart   = 0; 
+//   // We'll use 'flag' to indicate if we've already performed obstacle avoidance
+//   int flag = 0;
 
-  while (true)
-  {
-    // Continuously read compass and distance sensors
-    compass.read();
-    int currentHeading = compass.getAzimuth();
-    long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
-    long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
+//   while (true)
+//   {
+//     // Continuously read compass and distance sensors
+//     compass.read();
+//     int currentHeading = compass.getAzimuth();
+//     long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
+//     long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
 
-    // Basic heading correction: If off course, adjust motor speeds
-    if (currentHeading < startHeading) {
-        tread_left += 5;
-        setDutyLeft(tread_left);
-    }
-    else if (currentHeading > startHeading) {
-        tread_left -= 5;
-        setDutyLeft(tread_left);
-    }
+//     // Basic heading correction: If off course, adjust motor speeds
+//     if (currentHeading < startHeading) {
+//         tread_left += 5;
+//         setDutyLeft(tread_left);
+//     }
+//     else if (currentHeading > startHeading) {
+//         tread_left -= 5;
+//         setDutyLeft(tread_left);
+//     }
 
-    // Detect obstacle if either side sensor < 5 inches (200mm) 
-    if ((L_dist < 200) || (R_dist < 200)) {
-      // If we haven't yet performed avoidance
-      if (flag == 0) {
-        obstacleTime = millis(); 
-        unsigned long traveledTime = (obstacleTime - startTime);
+//     // Detect obstacle if either side sensor < 5 inches (200mm) 
+//     if ((L_dist < 200) || (R_dist < 200)) {
+//       // If we haven't yet performed avoidance
+//       if (flag == 0) {
+//         obstacleTime = millis(); 
+//         unsigned long traveledTime = (obstacleTime - startTime);
 
-        // Stop motors while we do avoidance maneuvers
-        setBrakes(true);
+//         // Stop motors while we do avoidance maneuvers
+//         setBrakes(true);
 
-        // Example obstacle-avoidance sequence:
-        left();
-        forward(500);   // Move forward (500 ms) after turning left
-        right();
+//         // Example obstacle-avoidance sequence:
+//         left();
+//         forward(500);   // Move forward (500 ms) after turning left
+//         right();
 
-        // Mark that we’ve already done our single obstacle detour
-        flag = 1;
+//         // Mark that we’ve already done our single obstacle detour
+//         flag = 1;
 
-        // Optionally re-read heading if it changed significantly
-        compass.read();
-        startHeading = compass.getAzimuth(); 
-      }
-    }
+//         // Optionally re-read heading if it changed significantly
+//         compass.read();
+//         startHeading = compass.getAzimuth(); 
+//       }
+//     }
 
-    // Begin movement toward the final waypoint
-    secondStart = millis();        // Record the current time as the new movement start
-    setDirFor();                   // Set both motors to move forward
-    setBrakes(false);              // Release the brakes to allow movement
-    setDutyRight(200);             // Apply power to the right motor
-    setDutyLeft(200);              // Apply power to the left motor
+//     // Begin movement toward the final waypoint
+//     secondStart = millis();        // Record the current time as the new movement start
+//     setDirFor();                   // Set both motors to move forward
+//     setBrakes(false);              // Release the brakes to allow movement
+//     setDutyRight(200);             // Apply power to the right motor
+//     setDutyLeft(200);              // Apply power to the left motor
 
-    // Calculate how long we traveled before the obstacle 
-    // (so we only complete the "remaining" distance)
-    unsigned long traveledSoFar = (obstacleTime > 0) ? (obstacleTime - startTime) : 0;
+//     // Calculate how long we traveled before the obstacle 
+//     // (so we only complete the "remaining" distance)
+//     unsigned long traveledSoFar = (obstacleTime > 0) ? (obstacleTime - startTime) : 0;
 
-    // Continue driving until we’ve covered total “30 ft” time
-    while (traveledSoFar + (millis() - secondStart) < TRAVEL_TIME_FOR_30_FEET) 
-    {
-      // Continuously correct heading inside this inner loop
-      compass.read();
-      currentHeading = compass.getAzimuth();
+//     // Continue driving until we’ve covered total “30 ft” time
+//     while (traveledSoFar + (millis() - secondStart) < TRAVEL_TIME_FOR_30_FEET) 
+//     {
+//       // Continuously correct heading inside this inner loop
+//       compass.read();
+//       currentHeading = compass.getAzimuth();
 
-    if (currentHeading < startHeading) {
-        tread_left += 5;
-        setDutyLeft(tread_left);
-    }
-    else if (currentHeading > startHeading) {
-        tread_left -= 5;
-        setDutyLeft(tread_left);
-    }
+//     if (currentHeading < startHeading) {
+//         tread_left += 5;
+//         setDutyLeft(tread_left);
+//     }
+//     else if (currentHeading > startHeading) {
+//         tread_left -= 5;
+//         setDutyLeft(tread_left);
+//     }
 
-      // Optionally check sensors again in here 
-    }
+//       // Optionally check sensors again in here 
+//     }
 
-    setBrakes(true);                 // Stop the rover
-    setDutyRight(0);
-    setDutyLeft(0);
-    // End this mission
-    break;
-  }
-}
-void mission_3(){
-    int i = 10;
+//     setBrakes(true);                 // Stop the rover
+//     setDutyRight(0);
+//     setDutyLeft(0);
+//     // End this mission
+//     break;
+//   }
+// }
+// void mission_3(){
+//     int i = 10;
 
-    while (true) {
-        compass.read();                 // Update compass data
-        i = compass.getAzimuth();       // Get current azimuth (heading)
+//     while (true) {
+//         compass.read();                 // Update compass data
+//         i = compass.getAzimuth();       // Get current azimuth (heading)
 
-        Serial.print("m3: ");
-        Serial.println(i);
+//         Serial.print("m3: ");
+//         Serial.println(i);
 
-        // Check if rover is pointing approximately North (within 35–55 degrees)
-        if (i > 35 && i < 55) {
-            Serial.println("Mission 3 complete");
-            break;
-        }
+//         // Check if rover is pointing approximately North (within 35–55 degrees)
+//         if (i > 35 && i < 55) {
+//             Serial.println("Mission 3 complete");
+//             break;
+//         }
 
-        // Begin turning right in place to reorient
-        setDirRight();                  // Set motors: right backward, left forward
-        setBrakes(false);              // Release brakes
+//         // Begin turning right in place to reorient
+//         setDirRight();                  // Set motors: right backward, left forward
+//         setBrakes(false);              // Release brakes
 
-        setDutyRight(250);             // Set speed for right motor
-        setDutyLeft(250);              // Set speed for left motor
+//         setDutyRight(250);             // Set speed for right motor
+//         setDutyLeft(250);              // Set speed for left motor
 
-        delay(200);                    // Turn for 200ms before checking heading again
-    }
+//         delay(200);                    // Turn for 200ms before checking heading again
+//     }
 
-    // Stop motors and perform final tasks
-    setBrakes(true);                   // Engage brakes
-    setDutyRight(0);                   // Stop right motor
-    setDutyLeft(0);                    // Stop left motor
-    payload();                         // Custom function: possibly for deploying or logging payload?
-}
-void mission_41(){
-}
-void mission_42(){
-}
+//     // Stop motors and perform final tasks
+//     setBrakes(true);                   // Engage brakes
+//     setDutyRight(0);                   // Stop right motor
+//     setDutyLeft(0);                    // Stop left motor
+//     payload();                         // Custom function: possibly for deploying or logging payload?
+// }
+// void mission_41(){
+// }
+// void mission_42(){
+// }
 // Parses a string command and executes the corresponding movement or mission routine.
-void parseCommand(char *message) {
-    if (strcmp(message, "FORWARD") == 0) {
-      forward();
-    }
-    else if (strcmp(message, "BACKWARD") == 0) {
-      backward();
-    }
-    else if (strcmp(message, "RIGHT") == 0) {
-      right();
-    }
-    else if (strcmp(message, "LEFT") == 0) {
-      left();
-    }
-    else if (strcmp(message, "STOP") == 0) {
-      setBrakes(true);
-    }
-    else if (strcmp(message, "Mission 1A") == 0) {
-      mission_11();
-    }  
-    else if (strcmp(message, "Mission 1B") == 0) {
-      mission_12();
-    }
-    else if (strcmp(message, "Mission 2A") == 0) {
-      mission_21();
-    }
-    else if (strcmp(message, "Mission 2B") == 0) {
-      mission_22();
-    }
-    else if (strcmp(message, "Mission 3A") == 0) {
-      mission_3();
-    }
-    else if (strcmp(message, "Mission 4A") == 0) {
-      mission_41();
-    }
-    else if (strcmp(message, "Mission 4B") == 0) {
-      mission_42();
-    }
-    else{
-      return;
-    }
-}
+// void parseCommand(char *message) {
+//     if (strcmp(message, "FORWARD") == 0) {
+//       forward();
+//     }
+//     else if (strcmp(message, "BACKWARD") == 0) {
+//       backward();
+//     }
+//     else if (strcmp(message, "RIGHT") == 0) {
+//       right();
+//     }
+//     else if (strcmp(message, "LEFT") == 0) {
+//       left();
+//     }
+//     else if (strcmp(message, "STOP") == 0) {
+//       setBrakes(true);
+//     }
+//     else if (strcmp(message, "Mission 1A") == 0) {
+//       mission_11();
+//     }  
+//     else if (strcmp(message, "Mission 1B") == 0) {
+//       mission_12();
+//     }
+//     else if (strcmp(message, "Mission 2A") == 0) {
+//       mission_21();
+//     }
+//     else if (strcmp(message, "Mission 2B") == 0) {
+//       mission_22();
+//     }
+//     else if (strcmp(message, "Mission 3A") == 0) {
+//       mission_3();
+//     }
+//     else if (strcmp(message, "Mission 4A") == 0) {
+//       mission_41();
+//     }
+//     else if (strcmp(message, "Mission 4B") == 0) {
+//       mission_42();
+//     }
+//     else{
+//       return;
+//     }
+// }
 void setup() {
   /* Pin Declaration */
   pinMode(TRIG_PIN_LEFT, OUTPUT);
@@ -852,7 +863,9 @@ void setup() {
 
   // mission_21();
   forward();
-  mission_21();
+  delay(1000);
+  backward();
+  // mission_21();
 
 }
 void loop() {
@@ -860,15 +873,15 @@ void loop() {
   static uint8_t buf[10] = {0};  
   uint8_t buflen = sizeof(buf);
   
-  if (rf_driver.recv(buf, &buflen)) {
-      buf[buflen] = '\0';  // Null-terminate the received message
-      Serial.print("Received: ");
-      Serial.println((char*)buf);
+  // if (rf_driver.recv(buf, &buflen)) {
+  //     buf[buflen] = '\0';  // Null-terminate the received message
+  //     Serial.print("Received: ");
+  //     Serial.println((char*)buf);
 
-      // Process movement commands
-      parseCommand((char*)buf);
-      Serial.print("Waiting for next command");
-      memset(buf, 0, sizeof(buf));
-      delay(50);  // Small delay to prevent CPU overload
-  }
+  //     // Process movement commands
+  //     parseCommand((char*)buf);
+  //     Serial.print("Waiting for next command");
+  //     memset(buf, 0, sizeof(buf));
+  //     delay(50);  // Small delay to prevent CPU overload
+  // }
 }
