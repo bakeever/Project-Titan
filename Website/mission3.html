@@ -179,16 +179,31 @@
                                         </ul>
                                         <h3>Hardware Documentation</h3>
                                         <ul>
-                                            <li>fill in</li>
+                                            <li>Arduino Mega 2560 - ATmega2560 @ 16 MHz, 5V logic for central control</li>
+                                            <li>Adafruit Motor Shield V1 - L293D H-bridge driver, up to 4 DC motors</li>
+                                            <li>33GB-520 DC Gear Motor (12V DC rated, 170-350 RPM no-load speed, 100mA no-load current, 5mm shaft diameter, 100g weight)</li>
+                                            <li>Plastic bearing wheels - M4 mount screws, 50x35mm footprint</li>
+                                            <li>Plastic driving sprockets - 54x5mm diameter (including teeth), 31.5mm height, 5mm coupling bore</li>
+                                            <li>5V 4A LiPo battery pack to power motors and electronics</li>
+                                            <li>433 MHz RF transceiver module for receiving distance commands</li>
+                                            <li>SG90 micro-servo (1.8kg·cm, 180°) for payload deployment</li>
+                                            <li>2x HC-SR04 ultrasonic distance sensors (for obstacle detection/avoidance)</li>
+                                            <li>QMC5883L Compass Module (3-axis magnetometer for heading stabilization)</li>
                                         </ul>
-                                        <h3>Firmware Documentation</h3>
+                                        <h3>Potential Improvements for Mission 4</h3>
                                         <ul>
-                                            <li>fill in</li>
+                                            <li><strong>High-precision GPS integration</strong>  
+                                                • Add GPS module for payload placement and return.</li>
+                                            <li><strong>Adaptive return path planning</strong>  
+                                                • Record the outbound trajectory and follow it in reverse (or compute a mirrored path) to minimize return error, rather than relying on fresh GPS fixes alone.</li>
+                                            <li><strong>Dynamic obstacle detection & rerouting</strong>  
+                                                • Incorporate ultrasonic sensors to detect unexpected obstacles en route to the waypoint and dynamically replan the path, ensuring marker placement remains within the 15 ft threshold.</li>
+                                            <li><strong>Automated beacon calibration</strong>  
+                                                • Use RF signal strength or time-of-flight measurements from the starting beacon to refine the rover's home position, improving return-to-start accuracy for the second task.</li>
                                         </ul>
-                                        <h3>Improvements</h3>
-                                        <ul>
-                                            <li>fill in</li>
-                                        </ul>
+                                        
+                                        <h3>Mission 3 Full Code</h3>
+                                        Click <a href="downloads.html" class="text-gradient">Here</a> to Download Mission 3 Code.
                                         </p>
                                     <div class="row">
                                         <div class="col-lg-6"></div>

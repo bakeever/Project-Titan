@@ -179,7 +179,7 @@
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec2"><h3>Accepts RF Communication</h3></a>
+                                <a href="#spec2"><h3>Robust RF Communication</h3></a>
                             </div>
                         </div>
             
@@ -197,13 +197,13 @@
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec5"><h3>Obstacle Avoidance</h3></a>
+                                <a href="#spec5"><h3>Turn Accuracy</h3></a>
                             </div>
                         </div>
             
                         <div class="col-lg-4 col-md-6">
                             <div class="de-box-cat h-100">
-                                <a href="#spec6"><h3>Weight Limit</h3></a>
+                                <a href="#spec6"><h3>Obstacle Avoidance</h3></a>
                             </div>
                         </div>
             
@@ -310,13 +310,13 @@
                                 </tbody>
                               </table>
                               <div class="spacer-single"></div>
-                              <p class="wow fadeInUp"><strong>Test Video:</strong></p>
+                              <!-- <p class="wow fadeInUp"><strong>Test Video:</strong></p>
                               <video width="640" height="360" controls poster="poster.jpg">
-                                <source src="video/Concrete_Indoor.m4v" type="video/mp4">
+                                <source src="video/Concrete_Indoor.m4v" type="video/mp4"> -->
                                 <!-- <source src="path/to/video.webm" type="video/webm"> -->
                                 <!-- fallback for really old browsers: -->
-                                Your browser does not support the HTML5 Video element.
-                              </video>
+                                <!-- Your browser does not support the HTML5 Video element.
+                              </video> -->
                               
                             
                         </div>
@@ -330,124 +330,395 @@
             
             <section id="spec2" class="no-top">
                 <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Consistent RF Communication
-                            </h2>
-            
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Verify that the rover can sustain continuous operation for a minimum of 30 minutes without a loss of power or system failure.</p>
-            
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Fully charge the battery before testing and ensure all sensors and subsystems are active.</p>
-                            <p>2. Operate the rover on a test course under normal working conditions, including GPS navigation, obstacle avoidance, and payload carrying.</p>
-                            <p>3. Record the time until the rover stops or experiences a significant drop in performance.</p>
-                            <p>4. Conduct multiple tests to determine if battery life is consistent across different conditions (e.g., smooth terrain, rough terrain, variable inclines).</p>
-            
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The rover must remain functional for a minimum of 30 minutes without significant power loss or performance degradation.</p>
-                            <p>2. If the rover ceases to function before 30 minutes in more than one test, the power system must be revised (e.g., larger battery, optimized power consumption).</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
+                  <div class="row g-6">
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                    <div class="col-lg-12">
+                      <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
+                        <span class="text-gradient"></span> Consistent RF Communication
+                      </h2>
+              
+                      <p class="wow fadeInUp"><strong>Objective:</strong></p>
+                      <p>Verify the rover maintains ≥ 95% command‐delivery success over a series of control commands (forward, backward, right, left).</p>
+              
+                      <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
+                      <p>1. Place rover 5 ft from the RF beacon on level ground.</p>
+                      <p>2. Send commands at 433 MHz in this fixed sequence: forward, backward, right, left.</p>
+                      <p>3. Repeat until each direction command has been sent 5 times for a total of 20 times per test run.</p>
+                      <p>4. Repeat for five independent runs.</p>
+              
+                      <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
+                      <p>1. ≥ 95% of total commands must be acknowledged in each run.</p>
+                      <p>2. Any run < 95% is a “FAIL” and requires RF tuning before retest.</p>
+              
+                      <p class="wow fadeInUp"><strong>Recorded Data:</strong></p>
+                      <table style="width:100%; border-collapse:collapse; margin-top:1rem;">
+                        <thead>
+                          <tr>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Run #</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Forward Sent</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Backward Sent</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Right Sent</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Left Sent</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Ack’d</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Success Rate (%)</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Pass/Fail</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">19</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">95.0</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">2</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">19</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">95.0</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">3</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">17</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">85.0</td>
+                            <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">4</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">18</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90.0</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">19</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">95.0</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
                     </div>
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                  </div>
                 </div>
-            </section>
+              </section>      
             
             <section id="spec3" class="no-top">
-                <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> GPS Accuracy (±3 ft)
-                            </h2>
+            <div class="container">
+                <div class="row g-6">
+                <div class="spacer-double"></div>
+                <div class="spacer-double"></div>
+                <div class="col-lg-12">
+                    <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
+                    <span class="text-gradient"></span> Radio Range (20 ft)
+                    </h2>
             
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Confirm that the rover can reach a designated GPS waypoint with an accuracy of ±3 feet.</p>
+                    <p class="wow fadeInUp"><strong>Objective:</strong></p>
+                    <p>Verify that the rover can maintain stable communication with the RF transmitter up to a distance of 20 feet.</p>
             
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Select 10 random GPS waypoints in an open field with minimal interference.</p>
-                            <p>2. Command the rover to navigate autonomously to each waypoint.</p>
-                            <p>3. Measure the actual stopping position relative to the target using a high-accuracy GPS device or a laser rangefinder.</p>
-                            <p>4. Repeat the test on rough terrain and under different weather conditions to assess consistency.</p>
+                    <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
+                    <p>1. Place the RF transmitter at a fixed location in an open area with minimal signal interference.</p>
+                    <p>2. Move the rover away from the transmitter in 5 ft increments while monitoring signal integrity.</p>
+                    <p>3. Record the maximum distance (in feet) at which communication is still reliable.</p>
+                    <p>4. Repeat in different environments (open field, urban, obstructed, indoor, etc.).</p>
             
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The rover must reach within 3 feet of the designated GPS location in at least 8 out of 10 trials.</p>
-                            <p>2. If the rover deviates by more than 3 feet in more than 2 trials, recalibration of the GPS module and navigation algorithm is required.</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                    </div>
+                    <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
+                    <p>1. The rover must maintain uninterrupted communication at 20 feet.</p>
+                    <p>2. If link is lost before 20 feet in more than two tests, upgrade antenna or amplifier is required.</p>
+            
+                    <p class="wow fadeInUp"><strong>Recorded Data:</strong></p>
+                    <!-- Results Table -->
+                    <table style="width:100%; border-collapse:collapse; margin-top:1rem;">
+                    <thead>
+                        <tr>
+                        <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Test #</th>
+                        <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Environment</th>
+                        <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Max Range Achieved (ft)</th>
+                        <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Maintained at 20 ft?</th>
+                        <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Outcome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Open Field</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">25</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                        <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                        </tr>
+                        <tr>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">2</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Urban (buildings)</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">22</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                        <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                        </tr>
+                        <tr>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">3</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Obstructed (trees)</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">18</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">No</td>
+                        <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                        </tr>
+                        <tr>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">4</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Indoor (hallway)</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">20</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                        <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                        </tr>
+                        <tr>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Urban (vehicles)</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">20</td>
+                        <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                        <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                        </tr>
+                    </tbody>
+                    </table>
                 </div>
+                <div class="spacer-double"></div>
+                <div class="spacer-double"></div>
+                <div class="spacer-double"></div>
+                </div>
+            </div>
             </section>
-            
+              
             <section id="spec4" class="no-top">
                 <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Radio Range (50 ft)
-                            </h2>
-            
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Verify that the rover can maintain stable communication with the RF transmitter up to a distance of 50 feet.</p>
-            
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Place the RF transmitter at a fixed location in an open area with minimal signal interference.</p>
-                            <p>2. Move the rover away from the transmitter in 10-ft increments while monitoring signal strength.</p>
-                            <p>3. Record the distance at which communication is lost or significantly degraded.</p>
-                            <p>4. Conduct the test in environments with possible interference, such as urban settings or areas with obstacles.</p>
-            
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The rover must maintain uninterrupted communication at 50 feet.</p>
-                            <p>2. If the signal is lost before 50 feet in more than two tests, an improved antenna or signal amplifier is needed.</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
+                  <div class="row g-6">
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                    <div class="col-lg-12">
+                      <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
+                        <span class="text-gradient"></span> Payload Drop Mechanism
+                      </h2>
+              
+                      <p class="wow fadeInUp"><strong>Objective:</strong></p>
+                      <p>Ensure the rover successfully deploys the payload at a designated location.</p>
+              
+                      <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
+                      <p>1. Load the rover with a 1.5” × 1.5” × 1.5” wooden block (simulated payload).</p>
+                      <p>2. Command the rover to navigate to a predefined drop zone.</p>
+                      <p>3. Activate the servo‑driven swing arm to push the block out the back; record landing position.</p>
+                      <p>4. Repeat the process 10 times under different terrain conditions.</p>
+              
+                      <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
+                      <p>1. The payload must land within 1 foot of the designated drop zone in at least 9 out of 10 attempts.</p>
+                      <p>2. Failure to release the payload or excessive deviation indicates adjustment is required.</p>
+              
+                      <!-- Recorded Data -->
+                      <table style="width:100%; border-collapse:collapse; margin-top:1rem;">
+                        <thead>
+                          <tr>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Run #</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Terrain</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Offset (ft)</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Within ±1 ft?</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Outcome</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Smooth Concrete</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">0.5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">2</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Sand</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1.4</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">No</td>
+                            <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">3</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Packed Dirt</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">0.9</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">4</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Grass Turf</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1.2</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">No</td>
+                            <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Gravel Road</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">0.3</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Yes</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
                     </div>
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                  </div>
                 </div>
-            </section>
-            
-            <section id="spec5" class="no-top">
+              </section>
+              
+              <section id="spec5" class="no-top">
                 <div class="container">
-                    <div class="row g-6">
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="col-lg-12">
-                            <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
-                                <span class="text-gradient"></span> Payload Drop Mechanism
-                            </h2>
-            
-                            <p class="wow fadeInUp"><strong>Objective:</strong></p>
-                            <p>Ensure the rover successfully deploys the payload at a designated location.</p>
-            
-                            <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
-                            <p>1. Load the rover with a 1.5” x 1.5” x 1.5” wooden block (simulated payload).</p>
-                            <p>2. Command the rover to navigate to a predefined drop zone.</p>
-                            <p>3. Activate the payload drop mechanism and record the landing position.</p>
-                            <p>4. Repeat the process 10 times under different terrain conditions.</p>
-            
-                            <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
-                            <p>1. The payload must land within 1 foot of the designated drop zone in at least 9 out of 10 attempts.</p>
-                            <p>2. Failure to release the payload or excessive deviation from the target indicates a need for adjustment to the drop mechanism.</p>
-                        </div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
-                        <div class="spacer-double"></div>
+                  <div class="row g-6">
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                    <div class="col-lg-12">
+                      <h2 class="wow fadeInUp text-center" data-wow-delay=".2s">
+                        <span class="text-gradient"></span> Turn Accuracy (90° Left/Right Rotations)
+                      </h2>
+              
+                      <p class="wow fadeInUp"><strong>Objective:</strong></p>
+                      <p>Verify the rover can reliably execute precise 90° in‑place rotations both left and right.</p>
+              
+                      <p class="wow fadeInUp"><strong>Test Procedure:</strong></p>
+                      <p>1. Place the rover on a level test surface, aligned to a visible reference line.</p>
+                      <p>2. For each <em>Direction</em> (Left, Right):</p>
+                      <p>&nbsp;&nbsp;a. Command an in‑place 90° turn.</p>
+                      <p>&nbsp;&nbsp;b. After completion, measure the actual angle change with a protractor</p>
+                      <p>&nbsp;&nbsp;d. Realign to the reference and repeat for a total of 5 runs per direction.</p>
+              
+                      <p class="wow fadeInUp"><strong>Pass/Fail Criteria:</strong></p>
+                      <p>1. Error ≤ ±10° for at least 4 out of 5 runs in each direction.</p>
+                      <p>2. If more than one run per direction exceeds 10°, the turn control algorithm must be adjusted.</p>
+              
+                      <p class="wow fadeInUp"><strong>Recorded Data:</strong></p>
+                      <table style="width:100%; border-collapse:collapse; margin-top:1rem;">
+                        <thead>
+                          <tr>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Run #</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Direction</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Commanded (°)</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Measured (°)</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Error (°)</th>
+                            <th style="border:1px solid #fff; color:#fff; padding:.5rem;">Outcome</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- Left turns -->
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Left</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">102</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">12</td>
+                            <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">2</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Left</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">80</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">10</td>
+                            <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">3</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Left</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">96</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">6</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">4</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Left</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">89</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Left</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">91</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <!-- Right turns -->
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">1</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Right</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">105</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">15</td>
+                            <td style="border:1px solid #fff; color:#f00; padding:.5rem;">FAIL</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">2</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Right</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">88</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">2</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">3</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Right</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">95</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">4</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Right</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">97</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">7</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                          <tr>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">5</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">Right</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">90</td>
+                            <td style="border:1px solid #fff; color:#fff; padding:.5rem;">0</td>
+                            <td style="border:1px solid #fff; color:#0f0; padding:.5rem;">PASS</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
                     </div>
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                    <div class="spacer-double"></div>
+                  </div>
                 </div>
-            </section>
-            
+              </section>
+              
             <section id="spec6" class="no-top">
                 <div class="container">
                     <div class="row g-6">

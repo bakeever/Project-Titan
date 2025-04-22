@@ -168,7 +168,7 @@
                                 <div class="col-lg-6 mb-sm-30">
                                     <h1 class="slider-title text-uppercase mb-1">Mission 2 Report</h1>
                                     <p class="slider-text"><h2>Obstacle Avoidance (Without GPS Navigation)</h2>
-
+                                        <h3>Result: <span style="color: red;">INCOMPLETE</span></h3>
                                         <p>The rover must successfully complete two consecutive runs to meet the requirements.</p>
                                         
                                         <h3>Task 1: Enclosed Area Navigation</h3>
@@ -187,12 +187,29 @@
                                         </ul>
                                         <h3>Hardware Documentation</h3>
                                         <ul>
-                                            <li>fill in</li>
+                                            <li>Arduino Mega 2560 - ATmega2560 @ 16 MHz, 5V logic for central control</li>
+                                            <li>Adafruit Motor Shield V1 - L293D H-bridge driver, up to 4 DC motors</li>
+                                            <li>33GB-520 DC Gear Motor (12V DC rated, 170-350 RPM no-load speed, 100mA no-load current, 5mm shaft diameter, 100g weight)</li>
+                                            <li>Plastic bearing wheels - M4 mount screws, 50x35mm footprint</li>
+                                            <li>Plastic driving sprockets - 54x5mm diameter (including teeth), 31.5mm height, 5mm coupling bore</li>
+                                            <li>5V 4A LiPo battery pack to power motors and electronics</li>
+                                            <li>433 MHz RF transceiver module for receiving distance commands</li>
+                                            <li>SG90 micro-servo (1.8kg·cm, 180°) for payload deployment</li>
+                                            <li>2x HC-SR04 ultrasonic distance sensors (for obstacle detection/avoidance)</li>
+                                            <li>QMC5883L Compass Module (3-axis magnetometer for heading stabilization)</li>
                                         </ul>
-                                        <h3>Improvements</h3>
+                                        
+                                        <h3>Potential Improvements for Mission 3</h3>
                                         <ul>
-                                            <li>fill in</li>
+                                            <li><strong>PID-controlled heading alignment</strong>  
+                                                • Implement a closed-loop PID controller on the compass error to reduce overshoot and oscillation when turning to North.</li>
+                                            <li><strong>Variable turn speed profiles</strong>  
+                                                • Ramp motor speed up and down during the turn (rather than fixed speed) to minimize mechanical backlash and reduce overshoot.</li>
+                                            <li><strong>Real-time heading averaging</strong>  
+                                                • Sample and average multiple compass readings before and after the turn to filter out noise.</li>
                                         </ul>
+                                        <h3>Mission 2 Full Code</h3>
+                                        Click <a href="downloads.html" class="text-gradient">Here</a> to Download Mission 2 Code when complete.
                                         </p>
                                     <div class="row">
                                         <div class="col-lg-6"></div>

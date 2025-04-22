@@ -191,22 +191,86 @@
                                         <h3>RF Distance Transmission</h3>
                                         <ul>
                                             <li>The distance to drive will be transmitted as a 12-character message.</li>
-                                            <li>The format consists of the distance as two digits, preceded by an ‘X’, with the remaining characters padded with ‘Z’.</li>
+                                            <li>The format consists of the distance as two digits, preceded by an 'X', with the remaining characters padded with 'Z'.</li>
                                             <li>For example, a message instructing the rover to travel 15 feet would be: <code>X15ZZZZZZZZZ</code>.</li>
                                             <li>The intended distance will be continuously transmitted from the RF beacon at 5-second intervals.</li>
                                         </ul>
                                         <h3>Hardware Documentation</h3>
                                         <ul>
-                                            <li>fill in</li>
+                                            <li>Arduino Mega 2560 - ATmega2560 @ 16 MHz, 5V logic for central control</li>
+                                            <li>Adafruit Motor Shield V1 - L293D H-bridge driver, up to 4 DC motors</li>
+                                            <li>33GB-520 DC Gear Motor (12V DC rated, 170-350 RPM no-load speed, 100mA no-load current, 5mm shaft diameter, 100g weight)</li>
+                                            <li>Plastic bearing wheels - M4 mount screws, 50x35mm footprint</li>
+                                            <li>Plastic driving sprockets - 54x5mm diameter (including teeth), 31.5mm height, 5mm coupling bore</li>
+                                            <li>5V 4A LiPo battery pack to power motors and electronics</li>
+                                            <li>433 MHz RF transceiver module for receiving distance commands</li>
+                                            <li>SG90 micro-servo (1.8kg·cm, 180°) for payload deployment</li>
                                         </ul>
-                                        <h3>Firmware Documentation</h3>
+                                        <!-- <h3>Firmware Documentation</h3>
                                         <ul>
-                                            <li>fill in</li>
-                                        </ul>
-                                        <h3>Improvements</h3>
+                                          <li>
+                                            <strong>mission_11()</strong> (10 ft square & drop):
+                                            <ul>
+                                              <li>Print “Starting Mission 1A”.</li>
+                                              <li>Initialize <code>counter = 0</code>.</li>
+                                              <li>Repeat 3 times:
+                                                <ol>
+                                                  <li>Log the counter to Serial.</li>
+                                                  <li><code>forward(3800)</code> → drive ~10 ft.</li>
+                                                  <li><code>delay(500)</code> → brief pause.</li>
+                                                  <li><code>right()</code> → 90° turn in place.</li>
+                                                  <li>Increment counter & <code>delay(1000)</code>.</li>
+                                                </ol>
+                                              </li>
+                                              <li>After loop: 
+                                                <ol>
+                                                  <li><code>forward(3800)</code> → complete last side.</li>
+                                                  <li><code>delay(500)</code>.</li>
+                                                  <li><code>payload()</code> → deploy marker.</li>
+                                                  <li><code>forward(500)</code> → move clear of drop.</li>
+                                                </ol>
+                                              </li>
+                                            </ul>
+                                          </li>
+                                          <li>
+                                            <strong>mission_12()</strong> (RF‐driven distance & drop):
+                                            <ul>
+                                              <li>Prepare <code>buf[13]</code> & <code>buflen</code>.</li>
+                                              <li>Print “Starting Mission 1B”.</li>
+                                              <li>Loop until a valid RF packet arrives:
+                                                <ol>
+                                                  <li><code>rf_driver.recv(buf, &buflen)</code> checks for data.</li>
+                                                  <li>If <code>buf[0] == 'X'</code>:
+                                                    <ul>
+                                                      <li>Parse <code>atoi(&buf[1])</code> into <code>receivedNum</code>.</li>
+                                                      <li>Log the full message.</li>
+                                                      <li>Call <code>travelDistance(receivedNum)</code>.</li>
+                                                      <li>Travel distance recieved and stop.</li>
+                                                      <li><code>payload()</code> → deploy marker.</li>
+                                                      <li><code>break</code> out of loop.</li>
+                                                    </ul>
+                                                  </li>
+                                                  <li>Else log “Invalid message format received.”</li>
+                                                  <li>Reset <code>buflen = sizeof(buf)</code> & <code>delay(100)</code>.</li>
+                                                </ol>
+                                              </li>
+                                            </ul>
+                                          </li>
+                                        </ul> -->
+                                
+                                        <h3>Potential Improvements for Mission 2</h3>
                                         <ul>
-                                            <li>fill in</li>
+                                            <li><strong>Fine‑tune turning capabilities</strong>  
+                                                • Calibrate turn durations (or use encoder feedback) to ensure precise 90° rotations and reduce drift in the 6×6 ft arena.</li>
+                                            <li><strong>Integrate ultrasonic distance sensors</strong>  
+                                                • Leverage the HC‑SR04 readings to perform proactive obstacle detection and smoother avoidance without collisions.</li>
+                                            <li><strong>Integrate compass module for heading capabilities</strong>  
+                                                • Use the QMC5883L to maintain a stable reference heading during both enclosed‑area navigation and waypoint pursuit.</li>
                                         </ul>
+                                        
+
+                                        <h3>Mission 1 Full Code</h3>
+                                        Click <a href="downloads.html" class="text-gradient">Here</a> to Download Mission 1 Code.
                                         </p>
                                     <div class="row">
                                         <div class="col-lg-6"></div>

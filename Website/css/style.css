@@ -20989,7 +20989,13 @@ img {
   padding: 4px 8px;
   box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
 }
-
+.d-text .result-incomplete {
+  color: red;
+  background: black;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 0 6px rgba(0, 255, 0, 0.6);
+}
 .price-new {
   color: white;
   background: grey;
