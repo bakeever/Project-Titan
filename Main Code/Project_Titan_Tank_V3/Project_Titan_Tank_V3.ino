@@ -190,34 +190,36 @@ long getDistance(int trigPin, int echoPin) {
 
     //return (validReadings > 0) ? totalDistance / validReadings : -1;  // Return average or error
 }
-// void setDutyRight(int duty){
-//   analogWrite(pwmPinR,duty);
-// }
-// void setDutyLeft(int duty){
-//   analogWrite(pwmPinL,duty);
-// }
-// // Function: Sets Rover Direction Forward
-// void setDirFor(){
-//   digitalWrite(directionPinR, HIGH); 
-//   digitalWrite(directionPinL, LOW);  
-// }
-// // Function: Sets Rover Direction Backwards
-// void setDirBack(){
-//   digitalWrite(directionPinR, LOW); 
-//   digitalWrite(directionPinL, HIGH);  
-// }
-// // Function: Sets Rover Direction Right
-// void setDirRight(){
-//   digitalWrite(directionPinR, LOW); 
-//   digitalWrite(directionPinL, LOW);  
-// }
-// // Function: Sets Rover Direction Left
-// void setDirLeft(){
-//   digitalWrite(directionPinR, HIGH); 
-//   digitalWrite(directionPinL, HIGH);  
-// }
-
+void setDutyRight(int duty){
+  analogWrite(pwmPinR,duty);
+}
+void setDutyLeft(int duty){
+  analogWrite(pwmPinL,duty);
+}
 // Function: Sets Rover Direction Forward
+void setDirFor(){
+  digitalWrite(directionPinR, HIGH); 
+  digitalWrite(directionPinL, LOW);  
+}
+// Function: Sets Rover Direction Backwards
+void setDirBack(){
+  digitalWrite(directionPinR, LOW); 
+  digitalWrite(directionPinL, HIGH);  
+}
+// Function: Sets Rover Direction Right
+void setDirRight(){
+  digitalWrite(directionPinR, LOW); 
+  digitalWrite(directionPinL, LOW);  
+}
+// Function: Sets Rover Direction Left
+void setDirLeft(){
+  digitalWrite(directionPinR, HIGH); 
+  digitalWrite(directionPinL, HIGH);  
+}
+
+/*
+* Function: Sets rover brakes based on passed input (T/F).
+*/
 void setBrakes(bool state){
   if(state == true){
     //activate brakes

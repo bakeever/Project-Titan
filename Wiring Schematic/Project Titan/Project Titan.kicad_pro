@@ -475,6 +475,10 @@
     [
       "5fdd947f-b283-469a-8e6a-e2aef2c8707a",
       "Hyperion"
+    ],
+    [
+      "e6cae1dc-4f3d-42fc-837a-cd37f906fab9",
+      "RoverController"
     ]
   ],
   "text_variables": {}
