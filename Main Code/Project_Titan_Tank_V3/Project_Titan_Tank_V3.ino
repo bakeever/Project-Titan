@@ -20,12 +20,18 @@
 #include <Wire.h>
 // QMC5883L Compass Library
 #include <QMC5883LCompass.h>
+#include <TinyGPS++.h>
 // ==========================================================
 //                      Program Variables
 // ==========================================================
+// === Serial and GPS Settings ===
+#define GPS_SERIAL Serial3
+#define GPS_BAUD 38400
+#define PC_BAUD 115200
+
+// === Ultrasonic Variables ===
 #define NUM_SAMPLES 5  // Number of readings to average
 #define PULSE_TIMEOUT 30000  // Timeout for pulseIn() in microseconds
-
 bool sensorsEnabled = true;  // Boolean flag to enable or disable sensors
 const long sensorInterval = 1000;  // 1-second interval
 
@@ -37,7 +43,9 @@ int pos = 0; // Initial position for servo
 uint16_t tread_right = 250; // Initial speed for 
 uint16_t tread_left = 250;
 uint8_t i; // For accel and deccel
-
+// === RF Messaging ===
+static uint8_t buf[10] = {0};  
+uint8_t buflen = sizeof(buf);
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -70,45 +78,16 @@ RH_ASK rf_driver(2000,19,18,10); // Reciever [Pin 18]
 RH_ASK rf_driver1(2000,18,19,10,true); // Transmitter [Pin 19]
 
 /* Servo object */
-Servo myServo;  // Create a servo object
-
+Servo myServo; 
 /* Compass Object */
 QMC5883LCompass compass;
-
+/* GPS Object */
+TinyGPSPlus gps;
 // ==========================================================
 //               Program Variable Initialization
 // ==========================================================
 
-bool handshakeUltra(){
-  long duration, distL, distR;
 
-  // Trigger the ultrasonic sensor
-  digitalWrite(TRIG_PIN_LEFT, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG_PIN_LEFT, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN_LEFT, LOW);
-
-  // Measure the echo time
-  duration = pulseIn(ECHO_PIN_LEFT, HIGH);
-
-  // Added delay for reading accuracy
-  delay(100);
-  
-  // Convert time to distance
-  distL = (duration * 0.34) / 2;  // Distance in mm
-  // Trigger the ultrasonic sensor
-  digitalWrite(TRIG_PIN_RIGHT, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG_PIN_RIGHT, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN_RIGHT, LOW);
-  // Measure the echo time
-  duration = pulseIn(ECHO_PIN_RIGHT, HIGH);
-  distR = (duration * 0.343) / 2;
-  Serial.print("Distance Left:"); Serial.println(distL);
-  Serial.print("Distance Right:"); Serial.println(distR);
-}
 void checkDist(){/* Ultrasonic Sensor Check */
   long duration, dist_mm, distL, distR;
 
@@ -144,7 +123,7 @@ int getBearing(){
   compass.read();
   int bearing = compass.getAzimuth();
   //adjust for factory calibration being off by 90 degrees
-  bearing = bearing + 270;
+  // bearing = bearing + 270;
   //Adjust for values over 360
   if(bearing>360){bearing=bearing-360;}
   if(bearing<0){bearing = bearing+360;}
@@ -201,7 +180,7 @@ void setDirFor(){
   digitalWrite(directionPinR, HIGH); 
   digitalWrite(directionPinL, LOW);  
 }
-// Function: Sets Rover Direction Backwards
+// Function: Sets Rover Direction backward_debugs
 void setDirBack(){
   digitalWrite(directionPinR, LOW); 
   digitalWrite(directionPinL, HIGH);  
@@ -258,11 +237,11 @@ void setBrakes(bool state){
 /*
 * Function to command rover to move forward for hardcoded time delay.
 */
-void forward(){
+void forward_debug(){
     Serial.print("Forward debug");
 
     // Set Direction Forward
-    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
+    digitalWrite(12, LOW); //Establishes forward direction of Channel A
     digitalWrite(13, HIGH);  //Establishes forward direction of Channel B
 
     // 
@@ -292,7 +271,7 @@ void forward(int wait){
     Serial.print("Forward debug");
     // Set Direction Forward
     digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+    digitalWrite(13, LOW);  //Establishes backward_debug direction of Channel B
 
     // Disengagese Brakes
     digitalWrite(9, LOW);   //Disengage the Brake for Channel A
@@ -341,7 +320,7 @@ void forward(int wait, int loops){
 
   // Set Direction Forward
   digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-  digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+  digitalWrite(13, LOW);  //Establishes backward_debug direction of Channel B
   // Disengagese Brakes
   digitalWrite(9, LOW);   //Disengage the Brake for Channel A
   digitalWrite(8, LOW);   //Disengage the Brake for Channel B
@@ -368,13 +347,29 @@ void forward(int wait, int loops){
   digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 }
 /*
-* Function to command rover to move backward for hardcoded time delay.
+* Mission Function: Move rover forward.
 */
-void backward(){
-    Serial.print("Backward debug");
-
+void Forward(){
     // Set Direction Forward
     digitalWrite(12, LOW); //Establishes forward direction of Channel A
+    digitalWrite(13, HIGH);  //Establishes forward direction of Channel B
+
+    // 
+    digitalWrite(9, LOW);   //Disengage the Brake for Channel A
+    digitalWrite(8, LOW);   //Disengage the Brake for Channel B
+
+    int tread = 255;
+    analogWrite(3, tread);   //Spins the motor on Channel A at full speed
+    analogWrite(11, tread);    //Spins the motor on Channel B at full speed
+}
+/*
+* Function to command rover to move backward for hardcoded time delay.
+*/
+void backward_debug(){
+    Serial.print("backward debug");
+
+    // Set Direction Forward
+    digitalWrite(12, HIGH); //Establishes forward direction of Channel A
     digitalWrite(13, LOW);  //Establishes forward direction of Channel B
 
     // 
@@ -394,6 +389,12 @@ void backward(){
     analogWrite(11, 0);  
 }
 /*
+* Mission Function: Move rover backward.
+*/
+void Backward(){
+
+}
+/*
 * Function to command rover to turn to the right 90 degrees.
 */
 void right(){
@@ -403,8 +404,8 @@ void right(){
     digitalWrite(9, LOW);   //Disengage the Brake for Channel A
     analogWrite(3, 255);   //Spins the motor on Channel A at full speed
 
-    //Motor B backward @ half speed
-    digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+    //Motor B backward_debug @ half speed
+    digitalWrite(13, LOW);  //Establishes backward_debug direction of Channel B
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
@@ -412,10 +413,12 @@ void right(){
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
-    
-    // setDirRight();        // Set motors to turn right (left motor forward, right motor backward)
+
+    analogWrite(3, 0);  
+    analogWrite(11, 0);  
+    // setDirRight();        // Set motors to turn right (left motor forward, right motor backward_debug)
     // setBrakes(false);     // Release brakes
-    // setDutyRight(200);    // Power for right motor (backward)
+    // setDutyRight(200);    // Power for right motor (backward_debug)
     // setDutyLeft(200);     // Power for left motor (forward)
     // delay(300);           // Duration of the turn
     // setBrakes(true);      // Apply brakes
@@ -458,8 +461,8 @@ void left(){
     digitalWrite(9, LOW);   //Disengage the Brake for Channel A
     analogWrite(3, 255);   //Spins the motor on Channel A at full speed
 
-    //Motor B backward @ half speed
-    digitalWrite(13, HIGH);  //Establishes backward direction of Channel B
+    //Motor B backward_debug @ half speed
+    digitalWrite(13, HIGH);  //Establishes backward_debug direction of Channel B
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
@@ -468,10 +471,12 @@ void left(){
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 
-    // setDirLeft();         // Set motors to turn left (right motor forward, left motor backward)
+    analogWrite(3, 0);  
+    analogWrite(11, 0);  
+    // setDirLeft();         // Set motors to turn left (right motor forward, left motor backward_debug)
     // setBrakes(false);     // Release brakes
     // setDutyRight(200);    // Power for right motor (forward)
-    // setDutyLeft(200);     // Power for left motor (backward)
+    // setDutyLeft(200);     // Power for left motor (backward_debug)
     // delay(300);           // Duration of the turn
     // setBrakes(true);      // Apply brakes
     // setDutyRight(0);      // Stop motors
@@ -485,7 +490,7 @@ void left3(){
     Serial.println("LEFT TURN");
 
     int ForwardHeading = getBearing(); // Store the current heading
-    setDirLeft();                      // Set motors for left turn (right forward, left backward)
+    setDirLeft();                      // Set motors for left turn (right forward, left backward_debug)
     setBrakes(false);                 // Release brakes
 
     setDutyRight(200);                // Power both motors
@@ -548,6 +553,7 @@ bool handshakeRF(){
         rf_driver1.waitPacketSent();
         return true;
     }
+  }
 }
 /* 
 * Handshake function: Verifies functionality of both motors, direction setting and brakes. 
@@ -555,7 +561,7 @@ bool handshakeRF(){
 bool handshakeMotor(){
   // Set Direction Forward
   digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-  digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+  digitalWrite(13, LOW);  //Establishes backward_debug direction of Channel B
   //release breaks
   digitalWrite(brakePinR, LOW);
   digitalWrite(brakePinL, LOW);
@@ -566,9 +572,9 @@ bool handshakeMotor(){
   //activate breaks
   digitalWrite(brakePinR, HIGH);
   digitalWrite(brakePinL, HIGH);
-  // Set Direction Backward
+  // Set Direction backward_debug
   digitalWrite(12, HIGH); //Establishes forward direction of Channel A
-  digitalWrite(13, LOW);  //Establishes backward direction of Channel B
+  digitalWrite(13, LOW);  //Establishes backward_debug direction of Channel B
   //set work duty for the motor
   analogWrite(pwmPinR, 255);
   analogWrite(pwmPinL, 255);
@@ -582,6 +588,109 @@ bool handshakeMotor(){
   delay(1000);
   return true;
 }
+/* 
+* Handshake function: Verifies functionality of GPS and GPS-Compass.
+*/
+
+/* 
+* Handshake function: Verifies functionality of both Ultrasonic distance sensors.
+*/
+bool handshakeUltra(){
+  long duration, distL, distR;
+
+  // Trigger the ultrasonic sensor
+  digitalWrite(TRIG_PIN_LEFT, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN_LEFT, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN_LEFT, LOW);
+
+  // Measure the echo time
+  duration = pulseIn(ECHO_PIN_LEFT, HIGH);
+
+  // Added delay for reading accuracy
+  delay(100);
+  
+  // Convert time to distance
+  distL = (duration * 0.34) / 2;  // Distance in mm
+  // Trigger the ultrasonic sensor
+  digitalWrite(TRIG_PIN_RIGHT, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN_RIGHT, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN_RIGHT, LOW);
+  // Measure the echo time
+  duration = pulseIn(ECHO_PIN_RIGHT, HIGH);
+  distR = (duration * 0.343) / 2;
+  Serial.print("Distance Left:"); Serial.println(distL);
+  Serial.print("Distance Right:"); Serial.println(distR);
+  return true;
+}
+float calculateBearing(float lat1, float lon1, float lat2, float lon2) {
+    lat1 = radians(lat1);
+    lon1 = radians(lon1);
+    lat2 = radians(lat2);
+    lon2 = radians(lon2);
+
+    float dLon = lon2 - lon1;
+    float x = sin(dLon) * cos(lat2);
+    float y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+
+    float bearing = atan2(x, y);
+    bearing = degrees(bearing);
+    bearing = fmod((bearing + 360.0), 360.0); // Normalize to 0-360
+    return bearing;
+}
+
+float headingError(float currentHeading, float targetBearing) {
+    float error = targetBearing - currentHeading;
+    if (error > 180) error -= 360;
+    if (error < -180) error += 360;
+    return error;
+}
+void driveTowardsTarget(float currLat, float currLon, float destLat, float destLon) {
+  Serial.print("Driving towards target");
+    compass.read();
+    float currentHeading = compass.getAzimuth();  // Compass heading in degrees
+    float targetBearing = calculateBearing(currLat, currLon, destLat, destLon);
+    float error = headingError(currentHeading, targetBearing);
+
+    Serial.print("Current Heading: ");
+    Serial.println(currentHeading);
+    Serial.print("Target Bearing: ");
+    Serial.println(targetBearing);
+    Serial.print("Heading Error: ");
+    Serial.println(error);
+
+    if (abs(error) < 10) {
+        Serial.println("Moving Forward");
+        Forward();
+    } else if (error > 0) {
+        Serial.println("Turning Right");
+        right();
+    } else {
+        Serial.println("Turning Left");
+        left();
+    }
+}
+float distanceToTarget(float lat1, float lon1, float lat2, float lon2) {
+    const float R = 6371000; // Earth's radius in meters
+    lat1 = radians(lat1);
+    lon1 = radians(lon1);
+    lat2 = radians(lat2);
+    lon2 = radians(lon2);
+
+    float dLat = lat2 - lat1;
+    float dLon = lon2 - lon1;
+
+    float a = sin(dLat/2) * sin(dLat/2) +
+              cos(lat1) * cos(lat2) *
+              sin(dLon/2) * sin(dLon/2);
+    float c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+    return R * c;
+}
+
 /*
 * Mission 1A Function: Drives in a 10'x10' square path.
 */
@@ -671,7 +780,7 @@ void mission_21(){
       Serial.println("Forward");
       digitalWrite(9, HIGH);  //Engage the Brake for Channel A
       digitalWrite(8, HIGH);  //Engage the Brake for Channel B
-      forward();//This is the alternate forward for wobbling.
+      forward_debug();//This is the alternate forward for wobbling.
     }
   }
 }
@@ -802,7 +911,7 @@ void mission_3(){
         }
 
         // Begin turning right in place to reorient
-        setDirRight();                  // Set motors: right backward, left forward
+        setDirRight();                  // Set motors: right backward_debug, left forward
         setBrakes(false);              // Release brakes
 
         setDutyRight(250);             // Set speed for right motor
@@ -820,8 +929,43 @@ void mission_3(){
 /*
 * Mission 4A Function: .
 */
-void mission_41(){
+void mission_41() {
+  Serial.println("Starting Mission 4A");
+
+  bool missionComplete = false;
+
+  while (!missionComplete) {
+    // Continuously read GPS serial data!
+    while (GPS_SERIAL.available() > 0) {
+      gps.encode(GPS_SERIAL.read());
+    }
+
+    // Now we can check if GPS has an updated fix
+    if (gps.location.isUpdated()) {
+      float currLat = gps.location.lat();
+      float currLon = gps.location.lng();
+
+      float destLat = 39.102434;   // Example destination
+      float destLon = -108.594951; // Example destination
+
+      driveTowardsTarget(currLat, currLon, destLat, destLon);
+
+      // OPTIONAL: you can add a distance check here!
+      float distance = distanceToTarget(currLat, currLon, destLat, destLon);
+      if (distance < 2.0) { // Example: 2 meters
+        Serial.println("Destination Reached!");
+        //activate breaks
+        digitalWrite(brakePinR, HIGH);
+        digitalWrite(brakePinL, HIGH);
+        //set work duty for the motor to 0 (off)
+        analogWrite(pwmPinR, 0);
+        analogWrite(pwmPinL, 0);
+        missionComplete = true;
+      }
+    }
+  }
 }
+
 /*
 * Mission 4B Function: .
 */
@@ -831,13 +975,13 @@ void mission_42(){
 * Parses a string command and executes the corresponding movement or mission routine.
 */
 void parseCommand(char *message) {
-    if (strcmp(message, "FORWARD") == 0) {
-      forward();
+    if (strcmp(message, "FORW") == 0) {
+      forward_debug();
     }
-    else if (strcmp(message, "BACKWARD") == 0) {
-      backward();
+    else if (strcmp(message, "BACK") == 0) {
+      backward_debug();
     }
-    else if (strcmp(message, "RIGHT") == 0) {
+    else if (strcmp(message, "RIGH") == 0) {
       right();
     }
     else if (strcmp(message, "LEFT") == 0) {
@@ -858,7 +1002,7 @@ void parseCommand(char *message) {
     else if (strcmp(message, "Mission 2B") == 0) {
       mission_22();
     }
-    else if (strcmp(message, "Mission 3A") == 0) {
+    else if (strcmp(message, "Mission 3B") == 0) {
       mission_3();
     }
     else if (strcmp(message, "Mission 4A") == 0) {
@@ -871,28 +1015,128 @@ void parseCommand(char *message) {
       return;
     }
 }
+bool handshakeGPS() {
+    bool gpsReady = false;
+
+    // Continuously read GPS serial data
+    while (GPS_SERIAL.available() > 0) {
+        gps.encode(GPS_SERIAL.read());
+    }
+
+    // Only act when we get a valid GPS update
+    if (gps.location.isUpdated()) {
+        gpsReady = true; // handshake success!
+
+        Serial.println("===============================");
+
+        // --- GPS Data ---
+        if (gps.date.isValid() && gps.time.isValid()) {
+            Serial.print("Date: ");
+            Serial.print(gps.date.year());
+            Serial.print("-");
+            Serial.print(gps.date.month());
+            Serial.print("-");
+            Serial.print(gps.date.day());
+            Serial.print("  Time: ");
+            Serial.print(gps.time.hour());
+            Serial.print(":");
+            Serial.print(gps.time.minute());
+            Serial.print(":");
+            Serial.println(gps.time.second());
+        } else {
+            Serial.println("Date/Time: Not Available");
+        }
+
+        if (gps.location.isValid()) {
+            Serial.print("Latitude: ");
+            Serial.print(gps.location.lat(), 6);
+            Serial.println(gps.location.rawLat().negative ? " S" : " N");
+
+            Serial.print("Longitude: ");
+            Serial.print(gps.location.lng(), 6);
+            Serial.println(gps.location.rawLng().negative ? " W" : " E");
+        } else {
+            Serial.println("Location: Not Available");
+        }
+
+        if (gps.altitude.isValid()) {
+            Serial.print("Altitude: ");
+            Serial.print(gps.altitude.meters());
+            Serial.println(" m");
+        } else {
+            Serial.println("Altitude: Not Available");
+        }
+
+        if (gps.speed.isValid()) {
+            Serial.print("Speed: ");
+            Serial.print(gps.speed.kmph(), 2);
+            Serial.println(" km/h");
+        } else {
+            Serial.println("Speed: Not Available");
+        }
+
+        if (gps.course.isValid()) {
+            Serial.print("GPS Course: ");
+            Serial.print(gps.course.deg(), 2);
+            Serial.println("°");
+        } else {
+            Serial.println("GPS Course: Not Available");
+        }
+
+        if (gps.satellites.isValid()) {
+            Serial.print("Satellites: ");
+            Serial.println(gps.satellites.value());
+        } else {
+            Serial.println("Satellites: Not Available");
+        }
+
+        // --- Compass Data ---
+        compass.read();
+        int heading = compass.getAzimuth();
+        int x = compass.getX();
+        int y = compass.getY();
+        int z = compass.getZ();
+
+        Serial.println("--- Compass Data ---");
+        Serial.print("Heading: ");
+        Serial.print(heading);
+        Serial.println("°");
+
+        Serial.print("Raw X: ");
+        Serial.print(x);
+        Serial.print("  Y: ");
+        Serial.print(y);
+        Serial.print("  Z: ");
+        Serial.println(z);
+
+        Serial.println("===============================");
+        Serial.println();
+    }
+
+    return gpsReady; // return handshake result
+}
+
 void setup() {
-  /* Pin Declaration */
+  // Ultrasonic Sensor Setup
   pinMode(TRIG_PIN_LEFT, OUTPUT);
   pinMode(ECHO_PIN_LEFT, INPUT);
   pinMode(TRIG_PIN_RIGHT, OUTPUT);
   pinMode(ECHO_PIN_RIGHT, INPUT);
 
-  // Motor Hat Pins
-  pinMode(directionPinR, OUTPUT);
+  // Motor Shield Setup
+  pinMode(directionPinR, OUTPUT); // Right Tread
   pinMode(pwmPinR, OUTPUT);
   pinMode(brakePinR, OUTPUT);
 
-  pinMode(directionPinL, OUTPUT);
+  pinMode(directionPinL, OUTPUT); // Left Tread
   pinMode(pwmPinL, OUTPUT);
   pinMode(brakePinL, OUTPUT);
 
-
   /* Setup Serial Monitor */
-  Serial.begin(115200);
-  Serial1.begin(9600);
-  Serial.println("Waiting for message");
-  // Initialize ASK Object
+  Serial.begin(PC_BAUD);
+  GPS_SERIAL.begin(GPS_BAUD);
+  Wire.begin(); // Start I2C for compass
+  /* Initialize RF ASK Object */
   rf_driver.init();
   if (!rf_driver.init()) {
       Serial.println("RF Module Initialization Failed!");
@@ -900,43 +1144,136 @@ void setup() {
       Serial.println("RF Module Initialized.");
       Serial.println("Waiting for messages...");
   }
-  myServo.write(pos); // put it before the attach() so it goes straight to that position
-  myServo.attach(6);  // Attach the servo to pin 9
-  /* RF Handshake */
-  handshakeRF();
-
-  /* Motor handshake */
-  handshakeMotor();
-
-  /* Ultrasonic Handshake */
-  handshakeUltra();
   
   /* COMPASS SETUP */
-  Wire.begin();
   compass.init();
   // compass.setCalibrationOffsets(-471.00, -148.00, -991.00);
   // compass.setCalibrationScales(1.01, 1.21, 0.85);
-  compass.setCalibrationOffsets(-193.00, 22.00, -747.00);
-  compass.setCalibrationScales(1.13, 0.77, 1.22);
+  // compass.setCalibrationOffsets(-193.00, 22.00, -747.00);
+  // compass.setCalibrationScales(1.13, 0.77, 1.22);
   // compass.read();
   // int heading = compass.getAzimuth();
   int heading = getBearing();
   Serial.print("Heading: ");
   Serial.println(heading);
+  /* RF Verfication */
+  // handshakeRF();
+  /* Ultrasonic Handhshake */
+  handshakeUltra();
+  /* GPS Verification */
+  handshakeGPS();
+  // Read GPS data
+  // while(true){
+  //   while (GPS_SERIAL.available() > 0) {
+  //       gps.encode(GPS_SERIAL.read());
+  //   }
 
+  //   if (gps.location.isUpdated()) {
+  //       Serial.println("===============================");
+
+  //       // --- GPS Data ---
+  //       // Date and Time
+  //       if (gps.date.isValid() && gps.time.isValid()) {
+  //           Serial.print("Date: ");
+  //           Serial.print(gps.date.year());
+  //           Serial.print("-");
+  //           Serial.print(gps.date.month());
+  //           Serial.print("-");
+  //           Serial.print(gps.date.day());
+  //           Serial.print("  Time: ");
+  //           Serial.print(gps.time.hour());
+  //           Serial.print(":");
+  //           Serial.print(gps.time.minute());
+  //           Serial.print(":");
+  //           Serial.println(gps.time.second());
+  //       } else {
+  //           Serial.println("Date/Time: Not Available");
+  //       }
+
+  //       // Location
+  //       if (gps.location.isValid()) {
+  //           Serial.print("Latitude: ");
+  //           Serial.print(gps.location.lat(), 6);
+  //           Serial.println(gps.location.rawLat().negative ? " S" : " N");
+
+  //           Serial.print("Longitude: ");
+  //           Serial.print(gps.location.lng(), 6);
+  //           Serial.println(gps.location.rawLng().negative ? " W" : " E");
+  //       } else {
+  //           Serial.println("Location: Not Available");
+  //       }
+
+  //       // Altitude
+  //       if (gps.altitude.isValid()) {
+  //           Serial.print("Altitude: ");
+  //           Serial.print(gps.altitude.meters());
+  //           Serial.println(" m");
+  //       } else {
+  //           Serial.println("Altitude: Not Available");
+  //       }
+
+  //       // Speed
+  //       if (gps.speed.isValid()) {
+  //           Serial.print("Speed: ");
+  //           Serial.print(gps.speed.kmph(), 2);
+  //           Serial.println(" km/h");
+  //       } else {
+  //           Serial.println("Speed: Not Available");
+  //       }
+
+  //       // Course (GPS heading)
+  //       if (gps.course.isValid()) {
+  //           Serial.print("GPS Course: ");
+  //           Serial.print(gps.course.deg(), 2);
+  //           Serial.println("°");
+  //       } else {
+  //           Serial.println("GPS Course: Not Available");
+  //       }
+
+  //       // Satellites
+  //       if (gps.satellites.isValid()) {
+  //           Serial.print("Satellites: ");
+  //           Serial.println(gps.satellites.value());
+  //       } else {
+  //           Serial.println("Satellites: Not Available");
+  //       }
+  //     // --- Compass Data ---
+  //       compass.read();
+
+  //       int heading = compass.getAzimuth();
+  //       int x = compass.getX();
+  //       int y = compass.getY();
+  //       int z = compass.getZ();
+
+  //       Serial.println("--- Compass Data ---");
+  //       Serial.print("Heading: ");
+  //       Serial.print(heading);
+  //       Serial.println("°");
+
+  //       Serial.print("Raw X: ");
+  //       Serial.print(x);
+  //       Serial.print("  Y: ");
+  //       Serial.print(y);
+  //       Serial.print("  Z: ");
+  //       Serial.println(z);
+
+  //       Serial.println("===============================");
+  //       Serial.println();
+
+  //       delay(500); // Update rate
+  //       Serial.println();
+  //       break;
+  //   }
+  //}
   /* DEBUG & TESTING FUNCTIONS BELOW THIS */
+  // mission_41();
 
 }
 void loop() {
-  /* RF Messaging */
-  static uint8_t buf[10] = {0};  
-  uint8_t buflen = sizeof(buf);
-  
   if (rf_driver.recv(buf, &buflen)) {
       buf[buflen] = '\0';  // Null-terminate the received message
       Serial.print("Received: ");
       Serial.println((char*)buf);
-
       // Process movement commands
       parseCommand((char*)buf);
       Serial.print("Waiting for next command");

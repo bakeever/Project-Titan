@@ -189,11 +189,11 @@ void handleMissionButton(int button, bool &buttonState, bool &prevButtonState, c
 }
 
 void moveForward() { 
-  sendCommand("FORWARD"); 
+  sendCommand("FORW"); 
   Serial.print("Jog Forward");
 }
 void moveBackward() { 
-  sendCommand("BACKWARD"); 
+  sendCommand("BACK"); 
   Serial.print("Jog Backward");
 }
 void turnLeft() { 
@@ -201,7 +201,7 @@ void turnLeft() {
   Serial.print("Jog Left");
 }
 void turnRight() { 
-  sendCommand("RIGHT"); 
+  sendCommand("RIGH"); 
   Serial.print("Jog Right");
 }
 void mission_11(){
@@ -226,8 +226,8 @@ void loop() {
     handleMissionButton(button8, buttonState8, prevButtonState4, "Mission 3", "Delivering payload", "Mission 3");
     
     if (digitalRead(button7) == LOW) moveBackward();
-    if (digitalRead(button6) == LOW) turnLeft();
-    if (digitalRead(button5) == LOW) turnRight();
+    if (digitalRead(button6) == LOW) turnRight();
+    if (digitalRead(button5) == LOW) turnLeft();
     if (digitalRead(button4) == LOW) moveForward();
 
 }
