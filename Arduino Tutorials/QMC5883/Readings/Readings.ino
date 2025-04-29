@@ -14,7 +14,7 @@ QMC5883LCompass compass;
 
 void setup() {
   // Initialize the serial port.
-  Serial.begin(9600);
+  Serial.begin(115200);
   // Initialize I2C.
   Wire.begin();
   // Initialize the Compass.

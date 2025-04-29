@@ -123,11 +123,11 @@ int getBearing(){
   compass.read();
   int bearing = compass.getAzimuth();
   //adjust for factory calibration being off by 90 degrees
-  // bearing = bearing + 270;
+  bearing = bearing + 293+45;
   //Adjust for values over 360
   if(bearing>360){bearing=bearing-360;}
   if(bearing<0){bearing = bearing+360;}
-  return bearing;
+  return 360-bearing;
 }
 /*
 * Function to return measured distance as long int.
@@ -361,6 +361,7 @@ void Forward(){
     int tread = 255;
     analogWrite(3, tread);   //Spins the motor on Channel A at full speed
     analogWrite(11, tread);    //Spins the motor on Channel B at full speed
+    delay(1000);
 }
 /*
 * Function to command rover to move backward for hardcoded time delay.
@@ -409,7 +410,7 @@ void right(){
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(300);
+    delay(150);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
@@ -466,7 +467,7 @@ void left(){
     digitalWrite(8, LOW);   //Disengage the Brake for Channel B
     analogWrite(11, 255);    //Spins the motor on Channel B at half speed
 
-    delay(300);
+    delay(150);
 
     digitalWrite(9, HIGH);  //Engage the Brake for Channel A
     digitalWrite(8, HIGH);  //Engage the Brake for Channel B
@@ -651,7 +652,9 @@ float headingError(float currentHeading, float targetBearing) {
 void driveTowardsTarget(float currLat, float currLon, float destLat, float destLon) {
   Serial.print("Driving towards target");
     compass.read();
-    float currentHeading = compass.getAzimuth();  // Compass heading in degrees
+    float bearing = getBearing();
+    // float currentHeading = compass.getAzimuth();  // Compass heading in degrees
+    float currentHeading = bearing;  // Compass heading in degrees
     float targetBearing = calculateBearing(currLat, currLon, destLat, destLon);
     float error = headingError(currentHeading, targetBearing);
 
@@ -662,15 +665,17 @@ void driveTowardsTarget(float currLat, float currLon, float destLat, float destL
     Serial.print("Heading Error: ");
     Serial.println(error);
 
-    if (abs(error) < 10) {
+    if (abs(error) < 20) {
         Serial.println("Moving Forward");
         Forward();
     } else if (error > 0) {
         Serial.println("Turning Right");
         right();
+        // left();
     } else {
         Serial.println("Turning Left");
         left();
+        // right();
     }
 }
 float distanceToTarget(float lat1, float lon1, float lat2, float lon2) {
@@ -945,8 +950,8 @@ void mission_41() {
       float currLat = gps.location.lat();
       float currLon = gps.location.lng();
 
-      float destLat = 39.102434;   // Example destination
-      float destLon = -108.594951; // Example destination
+      float destLat = 39.08111;   // Example destination
+      float destLon = -108.55949; // Example destination
 
       driveTowardsTarget(currLat, currLon, destLat, destLon);
 
@@ -1147,15 +1152,17 @@ void setup() {
   
   /* COMPASS SETUP */
   compass.init();
-  // compass.setCalibrationOffsets(-471.00, -148.00, -991.00);
-  // compass.setCalibrationScales(1.01, 1.21, 0.85);
+  compass.setCalibrationOffsets(-289.00, -666.00, 965.00);
+  compass.setCalibrationScales(1.72, 1.01, 0.70);
   // compass.setCalibrationOffsets(-193.00, 22.00, -747.00);
   // compass.setCalibrationScales(1.13, 0.77, 1.22);
   // compass.read();
-  // int heading = compass.getAzimuth();
-  int heading = getBearing();
+  int heading = compass.getAzimuth();
   Serial.print("Heading: ");
   Serial.println(heading);
+  int heading2 = getBearing();
+  Serial.print("Heading2: ");
+  Serial.println(heading2);
   /* RF Verfication */
   // handshakeRF();
   /* Ultrasonic Handhshake */
@@ -1266,18 +1273,25 @@ void setup() {
   //   }
   //}
   /* DEBUG & TESTING FUNCTIONS BELOW THIS */
-  // mission_41();
+  mission_41();
 
 }
 void loop() {
-  if (rf_driver.recv(buf, &buflen)) {
-      buf[buflen] = '\0';  // Null-terminate the received message
-      Serial.print("Received: ");
-      Serial.println((char*)buf);
-      // Process movement commands
-      parseCommand((char*)buf);
-      Serial.print("Waiting for next command");
-      memset(buf, 0, sizeof(buf));
-      delay(50);  // Small delay to prevent CPU overload
-  }
+  // int heading = compass.getAzimuth();
+  // Serial.print("Heading: ");
+  // Serial.println(heading-23);
+  // int heading2 = getBearing();
+  // Serial.print("Heading2: ");
+  // Serial.println(heading2);
+  // if (rf_driver.recv(buf, &buflen)) {
+  //     buf[buflen] = '\0';  // Null-terminate the received message
+  //     Serial.print("Received: ");
+  //     Serial.println((char*)buf);
+  //     // Process movement commands
+  //     parseCommand((char*)buf);
+  //     Serial.print("Waiting for next command");
+  //     memset(buf, 0, sizeof(buf));
+  //     delay(50);  // Small delay to prevent CPU overload
+  // }
+  // delay(500);
 }
