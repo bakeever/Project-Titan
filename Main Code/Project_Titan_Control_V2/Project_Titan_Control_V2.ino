@@ -19,29 +19,41 @@
 //                      Object Declaration
 // ==========================================================
 TFT_HX8357 tft = TFT_HX8357();
-RH_ASK rf_driver(2000, 19, 18, 10);  // TX on D16, RX on D17
-
+RH_ASK rf_driver(2000, 19, 18, 10);  // TX on D18, RX on D18
+bool wasManualAdjustActive = false;
+int activeManualAdjust = -1; // Index in missions[], or -1 if none active
 // ==========================================================
 //                      Mission Struct
 // ==========================================================
 struct Mission {
-  int buttonPin;
+  int pin;
   bool state;
-  bool prevState;
-  String missionName;
-  String activeText;
-  String stopText;
+  int prevState;
+  const char* name;
+  const char* onMessage;
+  const char* offMessage;
+  bool isManualAdjust;
+  int potIndex;
 };
+
 
 // ==========================================================
 //                      Mission Array
 // ==========================================================
 Mission missions[] = {
-  {11, false, HIGH, "Mission 1A", "Scouting Perimeter", "Stop Mission 1A"},
-  {10, false, HIGH, "Mission 1B", "Kamikaze Assignment", "Stop Mission 1B"},
-  {9,  false, HIGH, "Mission 2A", "Analyzing Minerals", "Stop Mission 2A"},
-  {8,  false, HIGH, "Mission 3",  "Delivering Payload", "Stop Mission 3"}
+  {11, false, HIGH, "Mission 1A", "Scouting Perimeter", "Stop Mission 1A", false, -1},
+  {10, false, HIGH, "Mission 1B", "Kamikaze Assignment", "Stop Mission 1B", false, -1},
+  {9,  false, HIGH, "Mission 2A", "Analyzing Minerals", "Stop Mission 2A", false, -1},
+  {8,  false, HIGH, "Mission 4A",  "I'm going on an adventure!", "Stop Mission 3", false, -1},
+
+  {14, false, HIGH, "Adjust1", "Manual Adjust 1 Enabled", "Manual Adjust 1 Disabled", true, 0},
+  {15, false, HIGH, "Adjust2", "Manual Adjust 2 Enabled", "Manual Adjust 2 Disabled", true, 1},
+  {A9, false, HIGH, "Adjust3", "Manual Adjust 3 Enabled", "Manual Adjust 3 Disabled", true, 2},
+  {A8, false, HIGH, "Adjust4", "Manual Adjust 4 Enabled", "Manual Adjust 4 Disabled", true, 3}
 };
+
+
+
 
 const int NUM_MISSIONS = sizeof(missions) / sizeof(missions[0]);
 
@@ -57,14 +69,6 @@ const int button3 = 3;  // E-STOP
 // Manual Adjustment Buttons
 const int button14 = 14;  // Set Manual Adjust 1
 const int button15 = 15;  // Set Manual Adjust 2
-const int button16 = 16;  // Set Manual Adjust 3
-const int button17 = 17;  // Set Manual Adjust 4 
-
-// Adjustment Mode Buttons
-const int button31 = 40;  // Adjustment Mode 1
-const int button32 = 41;  // Adjustment Mode 2
-const int button33 = 42;  // Adjustment Mode 3
-const int button34 = 43;  // Adjustment Mode 4
 
 const int potPin_1 = A0;
 const int potPin_2 = A1;
@@ -103,6 +107,9 @@ void setup() {
   for (int i = 14; i <= 17; i++) {
     pinMode(i, INPUT_PULLUP);
   }
+    for (int i = A4; i <= A9; i++) {
+    pinMode(i, INPUT_PULLUP);
+  }
 }
 
 
@@ -119,7 +126,7 @@ void splash() {
   tft.setTextSize(2);
   tft.setCursor(x, 170);  // 30 pixels below
   tft.print("Tiny Frame. Boundless Vision.");
-  delay(4000);
+  delay(3000);
 
   tft.fillScreen(TFT_BLACK);
   tft.setTextSize(2);
@@ -170,12 +177,12 @@ void updateMissionData(String data) {
 // ==========================================================
 void handleMissions() {
   for (int i = 0; i < NUM_MISSIONS; i++) {
-    bool current = digitalRead(missions[i].buttonPin);
+    bool current = digitalRead(missions[i].pin);
     if (current == LOW && missions[i].prevState == HIGH) {
       missions[i].state = !missions[i].state;
-      updateActiveMission(missions[i].missionName);
-      updateMissionData(missions[i].state ? missions[i].activeText : "Idle");
-      sendCommand(missions[i].state ? missions[i].missionName.c_str() : missions[i].stopText.c_str());
+      updateActiveMission(missions[i].name);
+      updateMissionData(missions[i].state ? missions[i].onMessage : "Idle");
+      sendCommand(missions[i].state ? missions[i].name : missions[i].offMessage);
     }
     missions[i].prevState = current;
   }
@@ -205,7 +212,6 @@ void turnRight() {
 // ==========================================================
 
 
-
 // ==========================================================
 //                      Communication
 // ==========================================================
@@ -224,6 +230,21 @@ void toggleLoop() {
   sendCommand("ESTOP");
 }
 
+void displayPotValue(int potIndex) {
+  int potValue = analogRead(A0 + potIndex);
+  Serial.print("Pot Value: ");
+  Serial.println(potValue);
+
+  tft.fillRect(20, 200, 440, 30, TFT_BLACK);
+  tft.setCursor(20, 200);
+  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+  tft.setTextSize(2);
+  tft.print("Potentiometer ");
+  tft.print(potIndex + 1);
+  tft.print(" Value: ");
+  tft.print(potValue);
+}
+
 // ==========================================================
 //                      Loop
 // ==========================================================
@@ -235,8 +256,54 @@ void loop() {
   if (digitalRead(button5) == LOW) turnRight();
   if (digitalRead(button4) == LOW) moveForward();
 
-  if (digitalRead(button14) == LOW) Serial.println("Manual Adjust 1");
-  if (digitalRead(button15) == LOW) Serial.println("Manual Adjust 2");
-  if (digitalRead(button16) == LOW) Serial.println("Manual Adjust 3");
-  if (digitalRead(button17) == LOW) Serial.println("Manual Adjust 4");
+  // if (digitalRead(button14) == LOW) Serial.println("Manual Adjust 1");
+  // if (digitalRead(button15) == LOW) Serial.println("Manual Adjust 2");
+  // if (digitalRead(A9) == LOW) Serial.println("Manual Adjust 3");
+  // if (digitalRead(A8) == LOW) Serial.println("Manual Adjust 4");
+
+  // if (digitalRead(A4) == LOW) Serial.println("Set Adjust 1");
+  // if (digitalRead(A5) == LOW) Serial.println("Set Adjust 2");
+  // if (digitalRead(A6) == LOW) Serial.println("Set Adjust 3");
+  // if (digitalRead(A7) == LOW) Serial.println("Set Adjust 4");
+for (int i = 0; i < NUM_MISSIONS; i++) {
+  int current = digitalRead(missions[i].pin);
+
+  if (current == LOW && missions[i].prevState == HIGH) {
+    missions[i].state = !missions[i].state;
+
+    if (missions[i].isManualAdjust) {
+      if (missions[i].state) {
+        for (int j = 0; j < NUM_MISSIONS; j++) {
+          if (j != i && missions[j].isManualAdjust) {
+            missions[j].state = false;
+          }
+        }
+        activeManualAdjust = i;
+      } else {
+        activeManualAdjust = -1;
+      }
+    } else {
+      updateActiveMission(missions[i].name);
+      updateMissionData(missions[i].state ? missions[i].onMessage : "Idle");
+      sendCommand(missions[i].state ? missions[i].name : missions[i].offMessage);
+    }
+  }
+
+  missions[i].prevState = current;
+}
+
+if (activeManualAdjust != -1) {
+  displayPotValue(missions[activeManualAdjust].potIndex);
+  delay(200);
+  wasManualAdjustActive = true;
+  Serial.print("Active Manual Adjust: ");
+  Serial.println(activeManualAdjust);
+
+} 
+else if (wasManualAdjustActive) {
+  tft.fillRect(20, 200, 440, 30, TFT_BLACK);
+  wasManualAdjustActive = false;
+}
+
+
 }
