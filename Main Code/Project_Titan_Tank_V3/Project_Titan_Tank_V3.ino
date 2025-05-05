@@ -46,6 +46,16 @@ uint8_t i; // For accel and deccel
 // === RF Messaging ===
 static uint8_t buf[10] = {0};  
 uint8_t buflen = sizeof(buf);
+
+// === Mission 4B Variables ===
+float startLat = 0;
+float startLon = 0;
+float targetLat = 0;
+float targetLon = 0;
+
+bool waypointReceived = false;
+unsigned long lastMessageTime = 0;
+
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -974,8 +984,90 @@ void mission_41() {
 /*
 * Mission 4B Function: .
 */
-void mission_42(){
+bool parseWaypointMessage(char* msg, float& lat, float& lon) {
+  if (strlen(msg) != 12 || msg[0] != 'N' || msg[6] != 'W') return false;
+
+  char latPart[6] = {0};
+  char lonPart[6] = {0};
+
+  strncpy(latPart, msg + 1, 5);  // e.g. "09495"
+  strncpy(lonPart, msg + 7, 5);  // e.g. "58784"
+
+  lat = 39.0 + atof(latPart) / 100000.0;
+  lon = -108.0 - atof(lonPart) / 100000.0;
+
+  return true;
 }
+
+void mission_42() {
+  Serial.println("Starting Mission 4B - Waypoint Navigation & Return");
+
+  // Step 1: Wait for valid GPS fix
+  while (!gps.location.isValid()) {
+    while (GPS_SERIAL.available() > 0) {
+      gps.encode(GPS_SERIAL.read());
+    }
+    delay(100);
+  }
+
+  // Save starting position
+  startLat = gps.location.lat();
+  startLon = gps.location.lng();
+  Serial.print("Start Position: ");
+  Serial.print(startLat, 6); Serial.print(", ");
+  Serial.println(startLon, 6);
+
+  // Step 2: Wait for valid RF message
+  while (!waypointReceived) {
+    if (rf_driver.recv(buf, &buflen)) {
+      buf[buflen] = '\0';
+      Serial.print("Received RF: ");
+      Serial.println((char*)buf);
+
+      if (parseWaypointMessage((char*)buf, targetLat, targetLon)) {
+        waypointReceived = true;
+        Serial.print("Parsed Target: ");
+        Serial.print(targetLat, 6); Serial.print(", ");
+        Serial.println(targetLon, 6);
+      } else {
+        Serial.println("Invalid RF format");
+      }
+    }
+    delay(100);
+  }
+
+  // Step 3: Drive to waypoint
+  while (distanceToTarget(gps.location.lat(), gps.location.lng(), targetLat, targetLon) > 4.5) {
+    while (GPS_SERIAL.available() > 0) {
+      gps.encode(GPS_SERIAL.read());
+    }
+    driveTowardsTarget(gps.location.lat(), gps.location.lng(), targetLat, targetLon);
+    delay(100);
+  }
+
+  // Step 4: Drop payload/marker
+  Serial.println("Arrived at waypoint. Deploying payload...");
+  payload();
+  delay(500);
+
+  // Step 5: Return to start
+  Serial.println("Returning to start location...");
+  while (distanceToTarget(gps.location.lat(), gps.location.lng(), startLat, startLon) > 4.5) {
+    while (GPS_SERIAL.available() > 0) {
+      gps.encode(GPS_SERIAL.read());
+    }
+    driveTowardsTarget(gps.location.lat(), gps.location.lng(), startLat, startLon);
+    delay(100);
+  }
+
+  Serial.println("Returned to start position. Mission Complete.");
+
+  // Final stop
+  setBrakes(true);
+  setDutyRight(0);
+  setDutyLeft(0);
+}
+
 /*
 * Parses a string command and executes the corresponding movement or mission routine.
 */
