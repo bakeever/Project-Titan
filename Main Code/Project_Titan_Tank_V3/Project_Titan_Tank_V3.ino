@@ -44,7 +44,7 @@ uint16_t tread_right = 250; // Initial speed for
 uint16_t tread_left = 250;
 uint8_t i; // For accel and deccel
 // === RF Messaging ===
-static uint8_t buf[10] = {0};  
+static uint8_t buf[12] = {0};  
 uint8_t buflen = sizeof(buf);
 
 // === Mission 4B Variables ===
@@ -668,12 +668,12 @@ void driveTowardsTarget(float currLat, float currLon, float destLat, float destL
     float targetBearing = calculateBearing(currLat, currLon, destLat, destLon);
     float error = headingError(currentHeading, targetBearing);
 
-    Serial.print("Current Heading: ");
-    Serial.println(currentHeading);
-    Serial.print("Target Bearing: ");
-    Serial.println(targetBearing);
-    Serial.print("Heading Error: ");
-    Serial.println(error);
+    // Serial.print("Current Heading: ");
+    // Serial.println(currentHeading);
+    // Serial.print("Target Bearing: ");
+    // Serial.println(targetBearing);
+    // Serial.print("Heading Error: ");
+    // Serial.println(error);
 
     if (abs(error) < 20) {
         Serial.println("Moving Forward");
@@ -967,6 +967,7 @@ void mission_41() {
 
       // OPTIONAL: you can add a distance check here!
       float distance = distanceToTarget(currLat, currLon, destLat, destLon);
+      Serial.println(distance);
       if (distance < 2.0) { // Example: 2 meters
         Serial.println("Destination Reached!");
         //activate breaks
@@ -1001,23 +1002,9 @@ bool parseWaypointMessage(char* msg, float& lat, float& lon) {
 
 void mission_42() {
   Serial.println("Starting Mission 4B - Waypoint Navigation & Return");
-
-  // Step 1: Wait for valid GPS fix
-  while (!gps.location.isValid()) {
-    while (GPS_SERIAL.available() > 0) {
-      gps.encode(GPS_SERIAL.read());
-    }
-    delay(100);
-  }
-
-  // Save starting position
-  startLat = gps.location.lat();
-  startLon = gps.location.lng();
-  Serial.print("Start Position: ");
-  Serial.print(startLat, 6); Serial.print(", ");
-  Serial.println(startLon, 6);
-
-  // Step 2: Wait for valid RF message
+  float currLat = gps.location.lat();
+  float currLon = gps.location.lng();
+  // Step 1: Wait for valid RF message
   while (!waypointReceived) {
     if (rf_driver.recv(buf, &buflen)) {
       buf[buflen] = '\0';
@@ -1035,14 +1022,45 @@ void mission_42() {
     }
     delay(100);
   }
-
-  // Step 3: Drive to waypoint
-  while (distanceToTarget(gps.location.lat(), gps.location.lng(), targetLat, targetLon) > 4.5) {
+  // Step 2: Wait for valid GPS fix
+  while (!gps.location.isValid()) {
     while (GPS_SERIAL.available() > 0) {
       gps.encode(GPS_SERIAL.read());
     }
-    driveTowardsTarget(gps.location.lat(), gps.location.lng(), targetLat, targetLon);
     delay(100);
+  }
+
+  // Save starting position
+  startLat = gps.location.lat();
+  startLon = gps.location.lng();
+  Serial.print("Start Position: ");
+  Serial.print(startLat, 6); Serial.print(", ");
+  Serial.println(startLon, 6);
+
+  // Step 3: Drive to waypoint
+  bool Step3 = false;
+  while(Step3 == false){
+    while (GPS_SERIAL.available() > 0) {
+        gps.encode(GPS_SERIAL.read());
+      }
+    if (gps.location.isUpdated()) {
+      float currLat = gps.location.lat();
+      float currLon = gps.location.lng();
+
+      driveTowardsTarget(currLat, currLon, targetLat, targetLon);
+    }
+    // OPTIONAL: you can add a distance check here!
+    float distance = distanceToTarget(currLat, currLon, targetLat, targetLon);
+    Serial.println(distance);
+    if (distance < 2.0) { // Example: 2 meters
+      Serial.println("Destination Reached!");
+      //activate breaks
+      digitalWrite(brakePinR, HIGH);
+      digitalWrite(brakePinL, HIGH);
+      //set work duty for the motor to 0 (off)
+      analogWrite(pwmPinR, 0);
+      analogWrite(pwmPinL, 0);
+    }
   }
 
   // Step 4: Drop payload/marker
@@ -1365,7 +1383,7 @@ void setup() {
   //   }
   //}
   /* DEBUG & TESTING FUNCTIONS BELOW THIS */
-  mission_41();
+  mission_42();
 
 }
 void loop() {
