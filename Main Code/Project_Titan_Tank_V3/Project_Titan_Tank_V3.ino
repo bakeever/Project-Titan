@@ -342,10 +342,6 @@ void forward(int wait, int loops){
     i++;
   }
   //activate breaks
-  // setBrakes(true);
-  // //set work duty for the motor to 0 (off)
-  // setDutyRight(0);
-  // setDutyLeft(0);
   digitalWrite(9, HIGH);  //Engage the Brake for Channel A
   digitalWrite(8, HIGH);  //Engage the Brake for Channel B
 }
@@ -420,14 +416,6 @@ void right(){
 
     analogWrite(3, 0);  
     analogWrite(11, 0);  
-    // setDirRight();        // Set motors to turn right (left motor forward, right motor backward_debug)
-    // setBrakes(false);     // Release brakes
-    // setDutyRight(200);    // Power for right motor (backward_debug)
-    // setDutyLeft(200);     // Power for left motor (forward)
-    // delay(300);           // Duration of the turn
-    // setBrakes(true);      // Apply brakes
-    // setDutyRight(0);      // Stop motors
-    // setDutyLeft(0);
 }
 /*
 * Function to command rover to turn to the right 90 degrees.
@@ -477,14 +465,6 @@ void left(){
 
     analogWrite(3, 0);  
     analogWrite(11, 0);  
-    // setDirLeft();         // Set motors to turn left (right motor forward, left motor backward_debug)
-    // setBrakes(false);     // Release brakes
-    // setDutyRight(200);    // Power for right motor (forward)
-    // setDutyLeft(200);     // Power for left motor (backward_debug)
-    // delay(300);           // Duration of the turn
-    // setBrakes(true);      // Apply brakes
-    // setDutyRight(0);      // Stop motors
-    // setDutyLeft(0);
 }
 /*
 * Function: Left turn until rover has rotated approximately 90 degrees.
@@ -653,34 +633,54 @@ float headingError(float currentHeading, float targetBearing) {
     return error;
 }
 void driveTowardsTarget(float currLat, float currLon, float destLat, float destLon) {
-  Serial.print("Driving towards target");
-    compass.read();
-    float bearing = getBearing();
-    // float currentHeading = compass.getAzimuth();  // Compass heading in degrees
-    float currentHeading = bearing;  // Compass heading in degrees
-    float targetBearing = calculateBearing(currLat, currLon, destLat, destLon);
-    float error = headingError(currentHeading, targetBearing);
+  compass.read();
+  float currentHeading = getBearing();
+  float targetBearing = calculateBearing(currLat, currLon, destLat, destLon);
+  float error = headingError(currentHeading, targetBearing);
 
-    // Serial.print("Current Heading: ");
-    // Serial.println(currentHeading);
-    // Serial.print("Target Bearing: ");
-    // Serial.println(targetBearing);
-    // Serial.print("Heading Error: ");
-    // Serial.println(error);
+  // === Obstacle Avoidance ===
+  long L_dist = getDistance(TRIG_PIN_LEFT, ECHO_PIN_LEFT);
+  long R_dist = getDistance(TRIG_PIN_RIGHT, ECHO_PIN_RIGHT);
 
-    if (abs(error) < 20) {
-        Serial.println("Moving Forward");
-        Forward();
-    } else if (error > 0) {
-        Serial.println("Turning Right");
-        right();
-        // left();
-    } else {
-        Serial.println("Turning Left");
-        left();
-        // right();
-    }
+  if (L_dist < 300 && R_dist < 300) {
+    Serial.println("Obstacle ahead! Performing U-turn...");
+    setBrakes(true);
+    delay(200);
+    right();     // turn away
+    forward(500); // short move
+    left();      // reorient
+    return;      // skip this cycle
+  } else if (L_dist < 300) {
+    Serial.println("Left obstacle! Turning right...");
+    setBrakes(true);
+    delay(200);
+    right();
+    forward(300);
+    left();
+    return;
+  } else if (R_dist < 300) {
+    Serial.println("Right obstacle! Turning left...");
+    setBrakes(true);
+    delay(200);
+    left();
+    forward(300);
+    right();
+    return;
+  }
+
+  // === Normal GPS Heading Navigation ===
+  if (abs(error) < 20) {
+    Serial.println("Path Clear — Moving Forward");
+    Forward();
+  } else if (error > 0) {
+    Serial.println("Adjusting Right");
+    right();
+  } else {
+    Serial.println("Adjusting Left");
+    left();
+  }
 }
+
 float distanceToTarget(float lat1, float lon1, float lat2, float lon2) {
     const float R = 6371000; // Earth's radius in meters
     lat1 = radians(lat1);
@@ -1297,25 +1297,18 @@ void setup() {
   handshakeGPS();
   
   /* DEBUG & TESTING FUNCTIONS BELOW THIS */
-  mission_42();
+  // mission_42();
 
 }
 void loop() {
-  // int heading = compass.getAzimuth();
-  // Serial.print("Heading: ");
-  // Serial.println(heading-23);
-  // int heading2 = getBearing();
-  // Serial.print("Heading2: ");
-  // Serial.println(heading2);
-  // if (rf_driver.recv(buf, &buflen)) {
-  //     buf[buflen] = '\0';  // Null-terminate the received message
-  //     Serial.print("Received: ");
-  //     Serial.println((char*)buf);
-  //     // Process movement commands
-  //     parseCommand((char*)buf);
-  //     Serial.print("Waiting for next command");
-  //     memset(buf, 0, sizeof(buf));
-  //     delay(50);  // Small delay to prevent CPU overload
-  // }
-  // delay(500);
+  if (rf_driver.recv(buf, &buflen)) {
+      buf[buflen] = '\0';  // Null-terminate the received message
+      Serial.print("Received: ");
+      Serial.println((char*)buf);
+      // Process movement commands
+      parseCommand((char*)buf);
+      Serial.print("Waiting for next command");
+      memset(buf, 0, sizeof(buf));
+      delay(50);  // Small delay to prevent CPU overload
+  }
 }
