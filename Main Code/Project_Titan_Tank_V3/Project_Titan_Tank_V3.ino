@@ -47,14 +47,7 @@ uint8_t i; // For accel and deccel
 static uint8_t buf[12] = {0};  
 uint8_t buflen = sizeof(buf);
 
-// === Mission 4B Variables ===
-float startLat = 0;
-float startLon = 0;
-float targetLat = 0;
-float targetLon = 0;
 
-bool waypointReceived = false;
-unsigned long lastMessageTime = 0;
 
 // ==========================================================
 //                      Pin Declaration
@@ -985,6 +978,15 @@ void mission_41() {
 /*
 * Mission 4B Function: .
 */
+// === Mission 4B Variables ===
+float startLat = 0;
+float startLon = 0;
+float targetLat = 0;
+float targetLon = 0;
+
+bool waypointReceived = false;
+unsigned long lastMessageTime = 0;
+
 bool parseWaypointMessage(char* msg, float& lat, float& lon) {
   if (strlen(msg) != 12 || msg[0] != 'N' || msg[6] != 'W') return false;
 
@@ -1001,10 +1003,10 @@ bool parseWaypointMessage(char* msg, float& lat, float& lon) {
 }
 
 void mission_42() {
-  Serial.println("Starting Mission 4B - Waypoint Navigation & Return");
-  float currLat = gps.location.lat();
-  float currLon = gps.location.lng();
-  // Step 1: Wait for valid RF message
+  Serial.println("=== Starting Mission 4B: Navigate to Waypoint & Return ===");
+
+  // Step 1: Wait for RF waypoint
+  Serial.println("Waiting for RF waypoint...");
   while (!waypointReceived) {
     if (rf_driver.recv(buf, &buflen)) {
       buf[buflen] = '\0';
@@ -1013,16 +1015,18 @@ void mission_42() {
 
       if (parseWaypointMessage((char*)buf, targetLat, targetLon)) {
         waypointReceived = true;
-        Serial.print("Parsed Target: ");
+        Serial.print("Waypoint Target: ");
         Serial.print(targetLat, 6); Serial.print(", ");
         Serial.println(targetLon, 6);
       } else {
-        Serial.println("Invalid RF format");
+        Serial.println("Invalid RF message.");
       }
     }
     delay(100);
   }
+
   // Step 2: Wait for valid GPS fix
+  Serial.println("Waiting for valid GPS fix...");
   while (!gps.location.isValid()) {
     while (GPS_SERIAL.available() > 0) {
       gps.encode(GPS_SERIAL.read());
@@ -1030,61 +1034,77 @@ void mission_42() {
     delay(100);
   }
 
-  // Save starting position
+  // Step 3: Save start position
   startLat = gps.location.lat();
   startLon = gps.location.lng();
   Serial.print("Start Position: ");
   Serial.print(startLat, 6); Serial.print(", ");
   Serial.println(startLon, 6);
 
-  // Step 3: Drive to waypoint
-  bool Step3 = false;
-  while(Step3 == false){
-    while (GPS_SERIAL.available() > 0) {
-        gps.encode(GPS_SERIAL.read());
-      }
-    if (gps.location.isUpdated()) {
-      float currLat = gps.location.lat();
-      float currLon = gps.location.lng();
+  // Step 4: Go to waypoint
+  Serial.println("Navigating to waypoint...");
+  bool reachedWaypoint = false;
 
-      driveTowardsTarget(currLat, currLon, targetLat, targetLon);
-    }
-    // OPTIONAL: you can add a distance check here!
-    float distance = distanceToTarget(currLat, currLon, targetLat, targetLon);
-    Serial.println(distance);
-    if (distance < 2.0) { // Example: 2 meters
-      Serial.println("Destination Reached!");
-      //activate breaks
-      digitalWrite(brakePinR, HIGH);
-      digitalWrite(brakePinL, HIGH);
-      //set work duty for the motor to 0 (off)
-      analogWrite(pwmPinR, 0);
-      analogWrite(pwmPinL, 0);
-    }
-  }
-
-  // Step 4: Drop payload/marker
-  Serial.println("Arrived at waypoint. Deploying payload...");
-  payload();
-  delay(500);
-
-  // Step 5: Return to start
-  Serial.println("Returning to start location...");
-  while (distanceToTarget(gps.location.lat(), gps.location.lng(), startLat, startLon) > 4.5) {
+  while (!reachedWaypoint) {
     while (GPS_SERIAL.available() > 0) {
       gps.encode(GPS_SERIAL.read());
     }
-    driveTowardsTarget(gps.location.lat(), gps.location.lng(), startLat, startLon);
-    delay(100);
+
+    if (gps.location.isUpdated()) {
+      float currLat = gps.location.lat();
+      float currLon = gps.location.lng();
+      float distance = distanceToTarget(currLat, currLon, targetLat, targetLon);
+      Serial.print("Distance to Target: ");
+      Serial.println(distance);
+
+      driveTowardsTarget(currLat, currLon, targetLat, targetLon);
+
+      if (distance < 2.0) {
+        Serial.println("Destination Reached!");
+        setBrakes(true);
+        setDutyRight(0);
+        setDutyLeft(0);
+        reachedWaypoint = true;
+      }
+    }
   }
 
-  Serial.println("Returned to start position. Mission Complete.");
+  // Step 5: Deploy payload
+  Serial.println("Deploying payload...");
+  payload();
+  delay(500);
 
-  // Final stop
-  setBrakes(true);
-  setDutyRight(0);
-  setDutyLeft(0);
+  // Step 6: Return to start
+  Serial.println("Returning to start...");
+  bool returnedToStart = false;
+
+  while (!returnedToStart) {
+    while (GPS_SERIAL.available() > 0) {
+      gps.encode(GPS_SERIAL.read());
+    }
+
+    if (gps.location.isUpdated()) {
+      float currLat = gps.location.lat();
+      float currLon = gps.location.lng();
+      float distance = distanceToTarget(currLat, currLon, startLat, startLon);
+      Serial.print("Distance to Start: ");
+      Serial.println(distance);
+
+      driveTowardsTarget(currLat, currLon, startLat, startLon);
+
+      if (distance < 2.0) {
+        Serial.println("Returned to Start Position!");
+        setBrakes(true);
+        setDutyRight(0);
+        setDutyLeft(0);
+        returnedToStart = true;
+      }
+    }
+  }
+
+  Serial.println("Mission 4B Complete");
 }
+
 
 /*
 * Parses a string command and executes the corresponding movement or mission routine.
@@ -1264,124 +1284,18 @@ void setup() {
   compass.init();
   compass.setCalibrationOffsets(-289.00, -666.00, 965.00);
   compass.setCalibrationScales(1.72, 1.01, 0.70);
-  // compass.setCalibrationOffsets(-193.00, 22.00, -747.00);
-  // compass.setCalibrationScales(1.13, 0.77, 1.22);
-  // compass.read();
-  int heading = compass.getAzimuth();
-  Serial.print("Heading: ");
-  Serial.println(heading);
   int heading2 = getBearing();
   Serial.print("Heading2: ");
-  Serial.println(heading2);
+  Serial.println(heading2);\
+
   /* RF Verfication */
   // handshakeRF();
+
   /* Ultrasonic Handhshake */
   handshakeUltra();
   /* GPS Verification */
   handshakeGPS();
-  // Read GPS data
-  // while(true){
-  //   while (GPS_SERIAL.available() > 0) {
-  //       gps.encode(GPS_SERIAL.read());
-  //   }
-
-  //   if (gps.location.isUpdated()) {
-  //       Serial.println("===============================");
-
-  //       // --- GPS Data ---
-  //       // Date and Time
-  //       if (gps.date.isValid() && gps.time.isValid()) {
-  //           Serial.print("Date: ");
-  //           Serial.print(gps.date.year());
-  //           Serial.print("-");
-  //           Serial.print(gps.date.month());
-  //           Serial.print("-");
-  //           Serial.print(gps.date.day());
-  //           Serial.print("  Time: ");
-  //           Serial.print(gps.time.hour());
-  //           Serial.print(":");
-  //           Serial.print(gps.time.minute());
-  //           Serial.print(":");
-  //           Serial.println(gps.time.second());
-  //       } else {
-  //           Serial.println("Date/Time: Not Available");
-  //       }
-
-  //       // Location
-  //       if (gps.location.isValid()) {
-  //           Serial.print("Latitude: ");
-  //           Serial.print(gps.location.lat(), 6);
-  //           Serial.println(gps.location.rawLat().negative ? " S" : " N");
-
-  //           Serial.print("Longitude: ");
-  //           Serial.print(gps.location.lng(), 6);
-  //           Serial.println(gps.location.rawLng().negative ? " W" : " E");
-  //       } else {
-  //           Serial.println("Location: Not Available");
-  //       }
-
-  //       // Altitude
-  //       if (gps.altitude.isValid()) {
-  //           Serial.print("Altitude: ");
-  //           Serial.print(gps.altitude.meters());
-  //           Serial.println(" m");
-  //       } else {
-  //           Serial.println("Altitude: Not Available");
-  //       }
-
-  //       // Speed
-  //       if (gps.speed.isValid()) {
-  //           Serial.print("Speed: ");
-  //           Serial.print(gps.speed.kmph(), 2);
-  //           Serial.println(" km/h");
-  //       } else {
-  //           Serial.println("Speed: Not Available");
-  //       }
-
-  //       // Course (GPS heading)
-  //       if (gps.course.isValid()) {
-  //           Serial.print("GPS Course: ");
-  //           Serial.print(gps.course.deg(), 2);
-  //           Serial.println("°");
-  //       } else {
-  //           Serial.println("GPS Course: Not Available");
-  //       }
-
-  //       // Satellites
-  //       if (gps.satellites.isValid()) {
-  //           Serial.print("Satellites: ");
-  //           Serial.println(gps.satellites.value());
-  //       } else {
-  //           Serial.println("Satellites: Not Available");
-  //       }
-  //     // --- Compass Data ---
-  //       compass.read();
-
-  //       int heading = compass.getAzimuth();
-  //       int x = compass.getX();
-  //       int y = compass.getY();
-  //       int z = compass.getZ();
-
-  //       Serial.println("--- Compass Data ---");
-  //       Serial.print("Heading: ");
-  //       Serial.print(heading);
-  //       Serial.println("°");
-
-  //       Serial.print("Raw X: ");
-  //       Serial.print(x);
-  //       Serial.print("  Y: ");
-  //       Serial.print(y);
-  //       Serial.print("  Z: ");
-  //       Serial.println(z);
-
-  //       Serial.println("===============================");
-  //       Serial.println();
-
-  //       delay(500); // Update rate
-  //       Serial.println();
-  //       break;
-  //   }
-  //}
+  
   /* DEBUG & TESTING FUNCTIONS BELOW THIS */
   mission_42();
 
