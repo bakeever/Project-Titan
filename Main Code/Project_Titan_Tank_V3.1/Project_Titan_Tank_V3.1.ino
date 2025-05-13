@@ -46,6 +46,11 @@ uint8_t i; // For accel and deccel
 // === RF Messaging ===
 static uint8_t buf[10] = {0};  
 uint8_t buflen = sizeof(buf);
+char currentCommand[10] = "STOP"; // Initial state is STOP
+bool turning = false;
+int startHeading = 0;
+int targetHeading = 0;
+
 // ==========================================================
 //                      Pin Declaration
 // ==========================================================
@@ -84,8 +89,9 @@ QMC5883LCompass compass;
 /* GPS Object */
 TinyGPSPlus gps;
 // ==========================================================
-//               Program Variable Initialization
+//               Program Function Initialization
 // ==========================================================
+
 
 
 void checkDist(){/* Ultrasonic Sensor Check */
@@ -612,6 +618,106 @@ bool handshakeUltra(){
   Serial.print("Distance Right:"); Serial.println(distR);
   return true;
 }
+bool handshakeGPS() {
+    bool gpsReady = false;
+
+    // Continuously read GPS serial data
+    while (GPS_SERIAL.available() > 0) {
+        gps.encode(GPS_SERIAL.read());
+    }
+
+    // Only act when we get a valid GPS update
+    if (gps.location.isUpdated()) {
+        gpsReady = true; // handshake success!
+
+        Serial.println("===============================");
+
+        // --- GPS Data ---
+        if (gps.date.isValid() && gps.time.isValid()) {
+            Serial.print("Date: ");
+            Serial.print(gps.date.year());
+            Serial.print("-");
+            Serial.print(gps.date.month());
+            Serial.print("-");
+            Serial.print(gps.date.day());
+            Serial.print("  Time: ");
+            Serial.print(gps.time.hour());
+            Serial.print(":");
+            Serial.print(gps.time.minute());
+            Serial.print(":");
+            Serial.println(gps.time.second());
+        } else {
+            Serial.println("Date/Time: Not Available");
+        }
+
+        if (gps.location.isValid()) {
+            Serial.print("Latitude: ");
+            Serial.print(gps.location.lat(), 6);
+            Serial.println(gps.location.rawLat().negative ? " S" : " N");
+
+            Serial.print("Longitude: ");
+            Serial.print(gps.location.lng(), 6);
+            Serial.println(gps.location.rawLng().negative ? " W" : " E");
+        } else {
+            Serial.println("Location: Not Available");
+        }
+
+        if (gps.altitude.isValid()) {
+            Serial.print("Altitude: ");
+            Serial.print(gps.altitude.meters());
+            Serial.println(" m");
+        } else {
+            Serial.println("Altitude: Not Available");
+        }
+
+        if (gps.speed.isValid()) {
+            Serial.print("Speed: ");
+            Serial.print(gps.speed.kmph(), 2);
+            Serial.println(" km/h");
+        } else {
+            Serial.println("Speed: Not Available");
+        }
+
+        if (gps.course.isValid()) {
+            Serial.print("GPS Course: ");
+            Serial.print(gps.course.deg(), 2);
+            Serial.println("°");
+        } else {
+            Serial.println("GPS Course: Not Available");
+        }
+
+        if (gps.satellites.isValid()) {
+            Serial.print("Satellites: ");
+            Serial.println(gps.satellites.value());
+        } else {
+            Serial.println("Satellites: Not Available");
+        }
+
+        // --- Compass Data ---
+        compass.read();
+        int heading = compass.getAzimuth();
+        int x = compass.getX();
+        int y = compass.getY();
+        int z = compass.getZ();
+
+        Serial.println("--- Compass Data ---");
+        Serial.print("Heading: ");
+        Serial.print(heading);
+        Serial.println("°");
+
+        Serial.print("Raw X: ");
+        Serial.print(x);
+        Serial.print("  Y: ");
+        Serial.print(y);
+        Serial.print("  Z: ");
+        Serial.println(z);
+
+        Serial.println("===============================");
+        Serial.println();
+    }
+
+    return gpsReady; // return handshake result
+}
 float calculateBearing(float lat1, float lon1, float lat2, float lon2) {
     lat1 = radians(lat1);
     lon1 = radians(lon1);
@@ -965,20 +1071,15 @@ void mission_42(){
 * Parses a string command and executes the corresponding movement or mission routine.
 */
 void parseCommand(char *message) {
-    if (strcmp(message, "FORW") == 0) {
-      forward_debug();
-    }
-    else if (strcmp(message, "BACK") == 0) {
-      backward_debug();
-    }
-    else if (strcmp(message, "RIGH") == 0) {
-      right();
-    }
-    else if (strcmp(message, "LEFT") == 0) {
-      left();
-    }
-    else if (strcmp(message, "STOP") == 0) {
-      setBrakes(true);
+     if (strcmp(message, "FORW") == 0 ||
+        strcmp(message, "BACK") == 0 ||
+        strcmp(message, "RIGH") == 0 ||
+        strcmp(message, "LEFT") == 0 ||
+        strcmp(message, "STOP") == 0) {
+
+        strcpy(currentCommand, message);  // Save new command
+        Serial.print("Command set to: ");
+        Serial.println(currentCommand);
     }
     else if (strcmp(message, "Mission 1A") == 0) {
       mission_11();
@@ -1001,111 +1102,99 @@ void parseCommand(char *message) {
     else if (strcmp(message, "Mission 4B") == 0) {
       mission_42();
     }
+        // 90-degree turns
+    else if (strcmp(message, "LEFT90") == 0 ||
+             strcmp(message, "RIGHT90") == 0) {
+
+        strcpy(currentCommand, message);  // Save command
+        turning = false;                  // Reset turn state (execMovement will initialize it)
+    }
     else{
       return;
     }
 }
-bool handshakeGPS() {
-    bool gpsReady = false;
 
-    // Continuously read GPS serial data
-    while (GPS_SERIAL.available() > 0) {
-        gps.encode(GPS_SERIAL.read());
+void executeMovement() {
+    compass.read();
+    int currentHeading = getBearing();
+
+    if (strcmp(currentCommand, "RIGHT90") == 0) {
+        if (!turning) {
+            startHeading = currentHeading;
+            targetHeading = startHeading - 90;
+            turning = true;
+
+            // Set spin right
+            setDirRight();
+            setBrakes(false);
+            setDutyRight(255);
+            setDutyLeft(255);
+        }
+        else {
+            if (abs(currentHeading - targetHeading) < 5) {
+                // Stop
+                setBrakes(true);
+                setDutyRight(0);
+                setDutyLeft(0);
+                turning = false;
+                strcpy(currentCommand, "STOP");
+            }
+        }
     }
+    else if (strcmp(currentCommand, "LEFT90") == 0) {
+        if (!turning) {
+            startHeading = currentHeading;
+            targetHeading = startHeading + 90;
+            turning = true;
 
-    // Only act when we get a valid GPS update
-    if (gps.location.isUpdated()) {
-        gpsReady = true; // handshake success!
-
-        Serial.println("===============================");
-
-        // --- GPS Data ---
-        if (gps.date.isValid() && gps.time.isValid()) {
-            Serial.print("Date: ");
-            Serial.print(gps.date.year());
-            Serial.print("-");
-            Serial.print(gps.date.month());
-            Serial.print("-");
-            Serial.print(gps.date.day());
-            Serial.print("  Time: ");
-            Serial.print(gps.time.hour());
-            Serial.print(":");
-            Serial.print(gps.time.minute());
-            Serial.print(":");
-            Serial.println(gps.time.second());
-        } else {
-            Serial.println("Date/Time: Not Available");
+            // Set spin left
+            setDirLeft();
+            setBrakes(false);
+            setDutyRight(255);
+            setDutyLeft(255);
         }
-
-        if (gps.location.isValid()) {
-            Serial.print("Latitude: ");
-            Serial.print(gps.location.lat(), 6);
-            Serial.println(gps.location.rawLat().negative ? " S" : " N");
-
-            Serial.print("Longitude: ");
-            Serial.print(gps.location.lng(), 6);
-            Serial.println(gps.location.rawLng().negative ? " W" : " E");
-        } else {
-            Serial.println("Location: Not Available");
+        else {
+            if (abs(currentHeading - targetHeading) < 5) {
+                // Stop
+                setBrakes(true);
+                setDutyRight(0);
+                setDutyLeft(0);
+                turning = false;
+                strcpy(currentCommand, "STOP");
+            }
         }
-
-        if (gps.altitude.isValid()) {
-            Serial.print("Altitude: ");
-            Serial.print(gps.altitude.meters());
-            Serial.println(" m");
-        } else {
-            Serial.println("Altitude: Not Available");
-        }
-
-        if (gps.speed.isValid()) {
-            Serial.print("Speed: ");
-            Serial.print(gps.speed.kmph(), 2);
-            Serial.println(" km/h");
-        } else {
-            Serial.println("Speed: Not Available");
-        }
-
-        if (gps.course.isValid()) {
-            Serial.print("GPS Course: ");
-            Serial.print(gps.course.deg(), 2);
-            Serial.println("°");
-        } else {
-            Serial.println("GPS Course: Not Available");
-        }
-
-        if (gps.satellites.isValid()) {
-            Serial.print("Satellites: ");
-            Serial.println(gps.satellites.value());
-        } else {
-            Serial.println("Satellites: Not Available");
-        }
-
-        // --- Compass Data ---
-        compass.read();
-        int heading = compass.getAzimuth();
-        int x = compass.getX();
-        int y = compass.getY();
-        int z = compass.getZ();
-
-        Serial.println("--- Compass Data ---");
-        Serial.print("Heading: ");
-        Serial.print(heading);
-        Serial.println("°");
-
-        Serial.print("Raw X: ");
-        Serial.print(x);
-        Serial.print("  Y: ");
-        Serial.print(y);
-        Serial.print("  Z: ");
-        Serial.println(z);
-
-        Serial.println("===============================");
-        Serial.println();
     }
-
-    return gpsReady; // return handshake result
+    // Existing movement cases (FORW, BACK, etc.)
+    else if (strcmp(currentCommand, "FORW") == 0) {
+        setDirFor();
+        setBrakes(false);
+        setDutyRight(255);
+        setDutyLeft(255);
+    }
+    else if (strcmp(currentCommand, "BACK") == 0) {
+        setDirBack();
+        setBrakes(false);
+        setDutyRight(255);
+        setDutyLeft(255);
+    }
+    else if (strcmp(currentCommand, "LEFT") == 0) {
+        setDirLeft();
+        setBrakes(false);
+        setDutyRight(255);
+        setDutyLeft(255);
+    }
+    else if (strcmp(currentCommand, "RIGH") == 0) {
+        setDirRight();
+        setBrakes(false);
+        setDutyRight(255);
+        setDutyLeft(255);
+    }
+    else if (strcmp(currentCommand, "STOP") == 0) {
+        setBrakes(true);
+        setDutyRight(0);
+        setDutyLeft(0);
+    }
 }
-
 void setup() {
   // Ultrasonic Sensor Setup
   pinMode(TRIG_PIN_LEFT, OUTPUT);
@@ -1272,5 +1361,6 @@ void loop() {
       memset(buf, 0, sizeof(buf));
       delay(50);  // Small delay to prevent CPU overload
   }
-  delay(500);
+  // Continuously execute movement based on latest command
+  executeMovement();
 }
